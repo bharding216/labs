@@ -3,10 +3,45 @@
 {% block title %}USL | Find a Lab Near You{% endblock %}
 
 {% block content %}
-<h1>List of Lab Tests</h1>
-<ul>
-{% for test in tests %}
-    <li>{{ test.name }}</li>
-{% endfor %}
-</ul>
+<br>
+
+<div class="container">
+
+    <form>
+
+        <div class="form-group">
+
+            <select class="form-select" aria-label="Default select example"
+                style="width:auto">
+
+                <option selected disabled="disabled">Choose a lab test</option>
+                {% for test in tests %}
+                    <option value=test>{{ test.name }}</option>
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+        <br>
+
+        <div class="form-floating mb-3">
+
+            <input type="text" pattern="[0-9]{5}" 
+                class="form-control" id="zip_input"
+                style="width:auto" placeholder="ZIP Code"/>
+            <label for="zip_input">ZIP Code</label>
+
+        </div>
+
+        <button type="submit" class="btn btn-outline-success">Find a Lab</button>
+
+    </form>
+
+</div>
+
+
+<br><br><br><br>
+<br><br><br><br>
+
 {% endblock %}
