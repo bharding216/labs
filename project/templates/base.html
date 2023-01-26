@@ -11,6 +11,9 @@
         integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" 
         crossorigin="anonymous">
 
+    <!-- Animate on Scroll -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
     <!-- Custom CSS -->
     <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
 
@@ -54,6 +57,21 @@
             <!--Links to the right-->
             <div class="navbar-collapse collapse id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto">
+
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" 
+                            href="{{ url_for('views.about') }}">
+                            About
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" 
+                            href="{{ url_for('views.team') }}">
+                            Team
+                        </a>
+                    </li>
+
                     <li class="nav-item">
                         <a class="nav-link" aria-current="page" 
                             href="{{ url_for('views.help') }}">
@@ -80,7 +98,9 @@
 
     <div>{% block content %}{% endblock %}</div>
 
-    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+    <!--p-3 = padding
+    https://getbootstrap.com/docs/4.0/utilities/spacing/-->
+    <div class="text-center p-5" style="background-color: rgba(0, 0, 0, 0.2);">
     <!--Great example for the footer: (https://mdbootstrap.com/docs/standard/navigation/footer/)-->
         <p>
         {% block footer %}
@@ -91,8 +111,15 @@
         </p>
     </div>
 
-<!-- Bootstrap Javascripts -->  
+<!-- Bootstrap Javascript -->  
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+
+<!-- Animate on Scroll Javascript -->  
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+<script>
+    AOS.init();
+</script>
 
 </body>
 </html>
