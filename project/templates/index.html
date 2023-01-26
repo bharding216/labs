@@ -3,66 +3,91 @@
 {% block title %}USL | Find a Lab Near You{% endblock %}
 
 {% block content %}
-<br>
 
-<div class="container">
 
-    <form>
 
-        <div class="form-group">
+<div class="container my-5">
 
-            <select class="form-select" aria-label="Default select example"
-                style="width:auto">
-
-                <option selected disabled="disabled">Choose a lab test</option>
-                {% for test in tests %}
-                    <option value=test>{{ test.name }}</option>
-                {% endfor %}
-
-            </select>
-
+    <div class="row">
+        <div class="col-md-12 pb-4 text-center d-flex flex-column justify-content-center"> 
+            <h1>Let's Get Started</h1>
         </div>
+    </div>
 
-        <br>
+    <form action="{{ url_for('views.labs') }}" method="get">
 
-        <div class="form-floating mb-3">
+        <div class="form-group mb-3">
 
-            <input type="text" pattern="[0-9]{5}" 
-                class="form-control" id="zip_input"
-                style="width:auto" placeholder="ZIP Code"/>
-            <label for="zip_input">ZIP Code</label>
+            <div class="col-md-12">
 
-        </div>
+                <select class="form-select" style="width:auto">
 
+                    <option selected disabled="disabled">Choose a lab test</option>
+                    {% for test in tests %}
+                        <option value=test>{{ test.name }}</option>
+                    {% endfor %}
 
+                </select>
 
-        <div class="md-form md-outline input-with-post-icon datepicker" 
-            inline="true">
-
-            <label for="date-picker">Select Date</label>
-            
-            <br>
-
-            <input type="date" id="date-picker" class="form-control"
-                style="width:auto" value="{{ date }}">
+            </div>
             
         </div>
 
-        <br>
 
-        <button type="submit" class="btn btn-outline-success">Find a Lab</button>
+        <div class="form-group mb-3">
 
+            <div class="form-floating">
+
+                <input type="text" pattern="[0-9]{5}" 
+                    class="form-control" id="zipcode"
+                    style="width:auto" placeholder="ZIP Code"/>
+                <label for="zipcode">ZIP Code</label>
+
+            </div>
+            
+        </div>
+
+
+
+
+
+        <div class="form-group mb-3">
+
+            <div class="col-md-6">
+
+                <label for="date-picker">Ready to send sample on:</label>
+        
+                <input type="date" id="date-picker" class="form-control"
+                    style="width:auto" value="{{ date }}">
+
+            </div>
+            
+        </div>
+
+
+
+
+
+        <div class="form-group mb-3">
+            <div class="col-md-3"> 
+                <button type="submit" 
+                    class="btn btn-outline-primary"
+                    style="width:auto">
+                    Find a Lab
+                </button>
+            </div>
+        </div>
 
     </form>
 
-
 </div>
 
-<br><br>
 
 
-<div class="container">
-    <div class="row" style="height: 200px">
+
+
+<div class="container my-5">
+    <div class="row" data-aos="fade-up" style="height: 200px">
         <!--text-center = horizontally center
             d-flex = replacement for 'float'
             flex-column = allows you to align items within column
@@ -70,7 +95,15 @@
         <div class="col-md-12 text-center d-flex flex-column justify-content-center" 
             style="background-color: rgba(19, 17, 151, 0.2)">
 
-        List your lab with USL!
+            <h1 class="pb-4">List Your Lab with Unified Labs</h1>
+
+
+            <a class="btn btn-outline-primary mx-auto" 
+            href="{{ url_for('views.contact') }}" role="button"
+            style="width: 50%">
+            
+            Join Us
+            </a>
 
 
         </div>

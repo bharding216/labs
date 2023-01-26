@@ -55,7 +55,7 @@
 
 
             <!--Links to the right-->
-            <div class="navbar-collapse collapse id="navbarSupportedContent">
+            <div class="navbar-collapse collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto">
 
                     <li class="nav-item">
@@ -74,8 +74,8 @@
 
                     <li class="nav-item">
                         <a class="nav-link" aria-current="page" 
-                            href="{{ url_for('views.help') }}">
-                            Help
+                            href="{{ url_for('views.contact') }}">
+                            Contact
                         </a>
                     </li>
 
@@ -104,7 +104,7 @@
     <!--Great example for the footer: (https://mdbootstrap.com/docs/standard/navigation/footer/)-->
         <p>
         {% block footer %}
-        &copy; 2023 by USL + <a class="text-dark" href="https://outdoexcel.com/"
+        &copy; 2023 by Unified Science Labs + <a class="text-dark" href="https://outdoexcel.com/"
             target="_blank"
             rel="noopener noreferrer">Outdo</a>.
         {% endblock %}

@@ -14,13 +14,17 @@ def index():
 def about():
     return render_template('about.html')
 
+@views.route('/labs', methods=['GET'])
+def labs():
+    return render_template('labs.html')
+
 @views.route('/team', methods=['GET'])
 def team():
     return render_template('team.html')
 
-@views.route('/help', methods=['GET'])
-def help():
-    return render_template('help.html')
+@views.route('/contact', methods=['GET'])
+def contact():
+    return render_template('contact.html')
 
 @views.route('/login', methods=['GET'])
 def login():
