@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect
-from .models import tests
+from .models import tests, labs
 import datetime
 
 views = Blueprint("views", __name__)
@@ -15,8 +15,9 @@ def about():
     return render_template('about.html')
 
 @views.route('/labs', methods=['GET'])
-def labs():
-    return render_template('labs.html')
+def lab_function():
+    lab_query = labs.query.all()
+    return render_template('labs.html', lab_query=lab_query)
 
 @views.route('/team', methods=['GET'])
 def team():

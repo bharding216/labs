@@ -1,0 +1,7 @@
+.section-with-background {
+    background-image: url('/static/lab1.jpg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+
+}

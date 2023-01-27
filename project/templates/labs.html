@@ -6,5 +6,44 @@
 {% endblock %}
 
 {% block content %}
-<h1>A list of labs that can perform your test.</h1>
+<h1>Choose your lab</h1>
+
+<div class="table-responsive mx-5 py-5">
+    <table class="table">
+        <thead>
+            <tr>
+                <th class="text-center" scope="col">Lab Name</th>
+                <th class="text-center" scope="col">Specialty</th>
+                <th class="text-center" scope="col">City</th>
+                <th class="text-center" scope="col">State</th>
+                <th class="text-center" scope="col">Select</th>
+            </tr>
+        </thead>
+
+
+        <tbody>
+            {% for lab in lab_query %}
+                <tr>
+                    <td class="text-center">{{ lab.name }}</td>
+                    <td class="text-center">{{ lab.major_category }}</td>
+                    <td class="text-center">{{ lab.city }}</td>
+                    <td class="text-center">{{ lab.state }}</td>
+                    <td class="text-center">
+                        <a 
+                            class="btn btn-outline-primary my-1" 
+                            href="#" 
+                            role="button">
+                            Choose Lab
+                        </a>
+                    
+                    </td>
+                </tr>
+
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+</div>
+
 {% endblock %}
