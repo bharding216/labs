@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect
 from .models import tests, labs
 import datetime
 
-views = Blueprint("views", __name__)
+views = Blueprint('views', __name__)
 
 @views.route('/', methods=['GET'])
 def index():
@@ -23,9 +23,19 @@ def lab_function():
 def team():
     return render_template('team.html')
 
-@views.route('/contact', methods=['GET'])
-def contact():
-    return render_template('contact.html')
+
+# @views.route('/contact', methods=['GET', 'POST'])
+# def contact():
+#     if request.method == 'POST':
+#         name = request.form['name']
+#         email = request.form['email']
+#         phone = request.form['phone']
+#         message = request.form['message']
+
+#         return 'Form submitted successfully!'
+
+#     return render_template('contact.html')
+
 
 @views.route('/login', methods=['GET'])
 def login():

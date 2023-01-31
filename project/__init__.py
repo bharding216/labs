@@ -26,7 +26,10 @@ def create_app():
     with app.app_context():
 
         from .views import views
+        from .contact import contact_bp
+
         app.register_blueprint(views, url_prefix="/")
+        app.register_blueprint(contact_bp, url_prefix="/contact")
 
         db.create_all()
         return app

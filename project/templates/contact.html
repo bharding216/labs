@@ -3,5 +3,45 @@
 {% block title %}Contact Support{% endblock %}
 
 {% block content %}
-<h1>This page will contain a Contact Form</h1>
+
+<div class="container my-5">
+    <h1>Contact Form</h1>
+</div>
+
+
+<div class="container my-5">
+
+    <form action="{{ url_for('contact.contact_function') }}" method="post">
+
+        <div class="form-floating mb-3 col-md-8 col-lg-6">
+            <input type="text" class="form-control" id="name" name="name"
+                placeholder="Name">
+            <label for="name">Name</label>
+        </div>
+
+        <div class="form-floating mb-3 col-md-8 col-lg-6">
+            <input type="email" class="form-control" id="email" name="email"
+                placeholder="Email">
+            <label for="email">Email</label>
+        </div>
+
+        <div class="form-floating mb-3 col-md-8 col-lg-6">
+            <input type="tel" class="form-control" name="phone" id="phone" 
+                placeholder="Phone Number" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" maxlength="12"/> 
+            <label for="phone">Phone Number</label>
+            <p class="mx-1"><small>Format: 123-456-7890</small></p>
+        </div>
+
+        <div class="form-floating mb-3 col-md-12 col-lg-8">
+            <textarea class="form-control" id="message" name="message"
+                placeholder="Message"></textarea>
+            <label for="message">Message</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+
+    </form>
+
+</div>
+
 {% endblock %}
