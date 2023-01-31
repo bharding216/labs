@@ -24,19 +24,10 @@ def team():
     return render_template('team.html')
 
 
-# @views.route('/contact', methods=['GET', 'POST'])
-# def contact():
-#     if request.method == 'POST':
-#         name = request.form['name']
-#         email = request.form['email']
-#         phone = request.form['phone']
-#         message = request.form['message']
-
-#         return 'Form submitted successfully!'
-
-#     return render_template('contact.html')
-
-
 @views.route('/login', methods=['GET'])
 def login():
     return render_template('login.html')
+
+@views.route('/booking', methods=['GET'])
+def booking():
+    return render_template('booking.html')

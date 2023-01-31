@@ -2,7 +2,8 @@ from flask import Blueprint, render_template, request, redirect, url_for
 from .models import tests, labs
 import datetime
 
-contact_bp = Blueprint('contact', __name__)
+contact_bp = Blueprint('contact', __name__, 
+    template_folder='contact_templates', static_folder='contact_static')
 
 @contact_bp.route('/', methods=['GET', 'POST'])
 def contact_function():
