@@ -9,6 +9,11 @@
 
 <div class="container my-5">
     <h1>Choose your lab</h1>
+    <br>
+    <p>Here is a list of labs in your area that can perform this test: 
+        <b>{{ selected_test }}</b>
+
+    </p>
 </div>
 
 
@@ -21,6 +26,7 @@
                 <th class="text-center" scope="col">Specialty</th>
                 <th class="text-center" scope="col">City</th>
                 <th class="text-center" scope="col">State</th>
+                <th class="text-center" scope="col">Price [$USD]</th>
                 <th class="text-center" scope="col">Select</th>
             </tr>
         </thead>
@@ -33,10 +39,20 @@
                     <td class="text-center">{{ lab.major_category }}</td>
                     <td class="text-center">{{ lab.city }}</td>
                     <td class="text-center">{{ lab.state }}</td>
+
+
+                    <td class="text-center">
+                        {% for row in price_table %}
+                            {% if row.lab_id == lab.id %}
+                                {{ row.price }}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+
                     <td class="text-center">
                         <a 
                             class="btn btn-outline-primary my-1" 
-                            href="{{ url_for('views.booking') }}" 
+                            href="{{ url_for('views.booking', id=lab.id) }}" 
                             role="button">
                             Choose Lab
                         </a>

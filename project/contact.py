@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template, request, redirect, url_for
-from .models import tests, labs
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash
+from .models import tests, labs, labs_tests
 import datetime
 
 contact_bp = Blueprint('contact', __name__, 
