@@ -14,6 +14,8 @@ def create_app():
     app.config['MYSQL_USER'] = test['mysql_user']
     app.config['MYSQL_PASSWORD'] = test['mysql_password']
     app.config['MYSQL_DB'] = test['mysql_db']
+    app.config['SECRET_KEY'] = test['secret_key']
+
 
     app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://' + test['mysql_user'] + \
         ':' + test['mysql_password'] + '@' + test['mysql_host'] + '/' + test['mysql_db']
