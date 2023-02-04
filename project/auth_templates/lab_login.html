@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Lab Login{% endblock %}
+
+{% block content %}
+
+<!--LOGIN-->
+
+<div class="container my-5">
+
+    <form action="{{ url_for('auth.lab_login') }}" method="POST">
+
+        <h3>Welcome Back!</h3>
+        <p>Returning labs login here</p>
+
+        <div class="form-floating mb-3">
+            <input type="text" id="username" placeholder="Username"
+                class="form-control" name="username">
+            <label for="username">Lab Email</label>
+        </div>
+
+        <div class="form-floating mb-3">
+            <input type="password" id="password" placeholder="Password"
+                class="form-control" name="password">
+            <label for="password">Password</label>
+        </div>
+
+        <button type="submit" class="btn btn-outline-primary">Login</button>
+
+    </form>
+
+</div>
+
+
+<!--SIGNUP-->
+<div class="container my-5">
+
+        <h3 class="my-3">Want to join Unified Labs?</h3>
+        <a class="btn btn-outline-primary mx-auto" 
+        href="{{ url_for('contact.contact_function') }}" role="button"
+        style="width: 20%">
+        
+        Contact Us
+        </a>
+
+
+</div>
+
+
+<!--SIGNUP CODE DOWN HERE-->
+
+
+{% endblock %}

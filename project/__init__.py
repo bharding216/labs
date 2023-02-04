@@ -1,9 +1,12 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import yaml
+from flask_login import LoginManager
 
 
 db = SQLAlchemy()
+login_manager = LoginManager()
+
 
 def create_app():
     app = Flask(__name__)
@@ -29,9 +32,25 @@ def create_app():
 
         from .views import views
         from .contact import contact_bp
+        from .auth import auth_bp
+        from .models import labs_login
 
         app.register_blueprint(views, url_prefix="/")
         app.register_blueprint(contact_bp, url_prefix="/contact")
+        app.register_blueprint(auth_bp, url_prefix="/login")
+
 
         db.create_all()
+
+        login_manager.login_view = "auth_bp.lab_login"
+        login_manager.login_message = ""
+        login_manager.login_message_category = "error"
+        login_manager.init_app(app)
+
+        @login_manager.user_loader
+        def load_user(id):
+            return labs_login.query.get(int(id))
+
+
+
         return app
