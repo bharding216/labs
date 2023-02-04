@@ -84,10 +84,13 @@ def confirmation():
                            )
 
 
-@views.route('/login', methods=['GET'])
-def login():
-    return render_template('login.html')
+@views.route('/lab_login', methods=['GET'])
+def lab_login():
+    return render_template('lab_login.html')
 
+@views.route('/user_login', methods=['GET'])
+def user_login():
+    return render_template('user_login.html')
 
 
 

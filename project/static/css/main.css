@@ -5,3 +5,16 @@
     background-size: cover;
 
 }
+
+@media (min-width: 992px) {
+    .dropdown-menu {
+      margin-right: 50px;
+    }
+  }
+  
+  @media (max-width: 991px) {
+    .dropdown-menu {
+      margin-right: 100px;
+    }
+  }
+  
