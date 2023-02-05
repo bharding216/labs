@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, flash, url_for, session
+from flask_login import login_required, current_user
 from .models import tests, labs, labs_tests
 import datetime
 
@@ -17,8 +18,9 @@ def index():
     else:
         test_names = tests.query.all()
         date_choice = datetime.datetime.now().strftime("%Y-%m-%d")
-        return render_template('index.html', tests=test_names, date=date_choice)
-
+        return render_template('index.html', tests=test_names, 
+                               date=date_choice,
+                               user=current_user)
 
 @views.route('/about', methods=['GET'])
 def about():
@@ -84,13 +86,6 @@ def confirmation():
                            )
 
 
-@views.route('/lab_login', methods=['GET'])
-def lab_login():
-    return render_template('lab_login.html')
-
-@views.route('/user_login', methods=['GET'])
-def user_login():
-    return render_template('user_login.html')
 
 
 

@@ -37,7 +37,7 @@ def create_app():
 
         app.register_blueprint(views, url_prefix="/")
         app.register_blueprint(contact_bp, url_prefix="/contact")
-        app.register_blueprint(auth_bp, url_prefix="/login")
+        app.register_blueprint(auth_bp, url_prefix="/auth")
 
 
         db.create_all()

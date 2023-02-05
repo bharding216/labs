@@ -1,21 +1,21 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}Lab Login{% endblock %}
+{% block title %}User Login{% endblock %}
 
 {% block content %}
 
 <!--LOGIN-->
 <div class="container my-5">
 
-    <form action="{{ url_for('auth.lab_login') }}" method="POST">
+    <form action="{{ url_for('auth.individual_login') }}" method="POST">
 
-        <h3>Lab Login</h3>
-        <p>Returning labs login here</p>
+        <h3>Requestor Login</h3>
+        <p>Returning requestors login here</p>
 
         <div class="form-floating mb-3">
-            <input type="text" id="email" placeholder="Email"
+            <input type="text" id="email" placeholder="email"
                 class="form-control" name="email">
-            <label for="email">Lab Email</label>
+            <label for="email">Email</label>
         </div>
 
         <div class="form-floating mb-3">
@@ -31,19 +31,19 @@
 </div>
 
 
-<!--SIGNUP-->
+<!--REQUEST TEST-->
 <div class="container my-5">
 
-        <h3 class="my-3">Want to join Unified Labs?</h3>
+        <h3 class="my-3">First Time Here?</h3>
+
         <a class="btn btn-outline-primary mx-auto" 
-        href="{{ url_for('contact.contact_function') }}" role="button"
-        style="width: 20%">
+        href="{{ url_for('views.index') }}" role="button"
+        style="width: auto">
         
-        Contact Us
+        Let's Get Started
         </a>
 
 </div>
-
 
 
 {% endblock %}

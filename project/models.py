@@ -29,17 +29,17 @@ class labs_tests(db.Model):
     test_id = db.Column(db.Integer, db.ForeignKey('tests.id'), primary_key=True)
     price = db.Column(db.Numeric(10,2))
 
-class individuals_login(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    company_name = db.Column(db.String(100))
-    phone = db.Column(db.String(15))
-    email = db.Column(db.String(100), nullable=False, unique=True)
-    password = db.Column(db.String(100), nullable=False)
-
 class labs_login(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     lab_name = db.Column(db.String(100), nullable=False)
+    phone = db.Column(db.String(15))
+    email = db.Column(db.String(100), nullable=False, unique=True)
+    password = db.Column(db.String(512), nullable=False)
+
+class individuals_login(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.String(100), nullable=False)
+    last_name = db.Column(db.String(100), nullable=False)
     phone = db.Column(db.String(15))
     email = db.Column(db.String(100), nullable=False, unique=True)
     password = db.Column(db.String(100), nullable=False)
