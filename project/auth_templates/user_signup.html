@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Lab Signup{% endblock %}
+{% block title %}User Signup{% endblock %}
 
 {% block content %}
 
@@ -19,11 +19,18 @@
 
 <div class="container my-5">
 
-    <form action="{{ url_for('auth.lab_signup') }}" method="POST">
+    <form action="{{ url_for('auth.user_signup') }}" method="POST">
         <div class="form-floating mb-3 col-md-8 col-lg-6">
-            <input type="text" class="form-control" id="name" name="name"
+            <input type="text" class="form-control" name="first_name"
                 placeholder="Name">
-            <label for="name">Name</label>
+            <label for="first_name">First Name</label>
+        </div>
+
+
+        <div class="form-floating mb-3 col-md-8 col-lg-6">
+            <input type="text" class="form-control" name="last_name"
+                placeholder="Name">
+            <label for="last_name">Last Name</label>
         </div>
 
         <div class="form-floating mb-3 col-md-8 col-lg-6">
