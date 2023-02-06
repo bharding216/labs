@@ -24,7 +24,7 @@ def index():
 
 @views.route('/about', methods=['GET'])
 def about():
-    return render_template('about.html')
+    return render_template('about.html', user = current_user)
 
 
 
@@ -48,7 +48,8 @@ def lab_function():
         return render_template('labs.html', 
             lab_query=lab_query, 
             selected_test=selected_test, 
-            price_table = rows_in_labs_tests_table
+            price_table = rows_in_labs_tests_table,
+            user = current_user
             )
 
 
@@ -64,7 +65,8 @@ def booking():
     else:
         selected_lab_id = session.get('selected_lab_id')
         lab_choice = labs.query.get_or_404(selected_lab_id)
-        return render_template('booking.html', lab_choice=lab_choice)
+        return render_template('booking.html', lab_choice=lab_choice,
+                               user = current_user)
 
 
 
@@ -82,7 +84,8 @@ def confirmation():
                            selected_test=selected_test,
                            requestor_name=requestor_name,
                            lab_choice=lab_choice,
-                           turnaround_time=turnaround_time
+                           turnaround_time=turnaround_time,
+                           user = current_user
                            )
 
 
