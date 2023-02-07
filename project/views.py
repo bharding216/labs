@@ -1,7 +1,11 @@
 from flask import Blueprint, render_template, request, redirect, flash, url_for, session
 from flask_login import login_required, current_user
-from .models import tests, labs, labs_tests
+from .models import tests, labs, labs_tests, individuals_login, labs_login
 import datetime
+from . import db
+from flask_mail import Message
+from . import db, mail
+import bcrypt
 
 views = Blueprint('views', __name__)
 
@@ -91,6 +95,41 @@ def confirmation():
 
 
 
+def send_reset_password_email(user, token):
+    reset_password_url = url_for('reset_password', token=token, _external=True)
+    message = Message(subject='Reset Your Password',
+                      recipients=[user.email],
+                      body=f'Reset your password by visiting the following link: {reset_password_url}')
+    mail.send(message)
 
 
+@views.route("/reset_password", methods=["GET", "POST"])
+def reset_password_request():
+    if request.method == "POST":
+        email = request.form.get("email")
+        user = individuals_login.query.filter_by(email=email).first()
+        if user:
+            token = user.generate_reset_token()
+            send_reset_password_email(user, token)
+        return redirect(url_for("views.index"))
 
+    return render_template("reset_password_request.html")
+
+
+@views.route("/reset_password/<token>", methods=["GET", "POST"])
+def reset_password(token):
+    user = individuals_login.verify_reset_token(token)
+    if user is None:
+        # the reset token is invalid
+        return redirect(url_for("index"))
+
+    if request.method == "POST":
+        # get the new password from the form
+        new_password = request.form.get("new_password")
+        # update the password for the user
+        user.set_password(new_password)
+        db.session.commit()
+        # redirect to some page after password change is successful
+        return redirect(url_for("index"))
+
+    return render_template("reset_password.html")

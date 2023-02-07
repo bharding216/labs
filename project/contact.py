@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
+from flask_login import login_required, current_user
 from .models import tests, labs, labs_tests
 import datetime
 
@@ -16,9 +17,10 @@ def contact_function():
         return redirect(url_for('contact.success', name=name,
             email=email, phone=phone, message=message))
 
-    return render_template('contact.html')
+    return render_template('contact.html', user = current_user)
 
 @contact_bp.route('/success', methods=['GET'])
 def success():
     name = request.args.get("name")
-    return render_template('contact_success.html', name=name)
+    return render_template('contact_success.html', name=name,
+                           user = current_user)
