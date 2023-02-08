@@ -8,6 +8,9 @@ from . import db, mail
 from itsdangerous.url_safe import URLSafeSerializer
 #from itsdangerous.serializer import Serializer
 import yaml
+from werkzeug.security import generate_password_hash, check_password_hash
+from itsdangerous.exc import BadSignature, BadData
+
 
 views = Blueprint('views', __name__)
 
@@ -107,6 +110,7 @@ def confirmation():
 def reset_password_request():
     if request.method == "POST":
         email = request.form.get("email")
+        session['email'] = email
         user = individuals_login.query.filter_by(email=email).first()
         if user:
             current_time = datetime.datetime.now().time()
@@ -115,7 +119,8 @@ def reset_password_request():
                 test = yaml.load(file, Loader=yaml.FullLoader)
 
             s = URLSafeSerializer(test['secret_key'])
-            # dumps => take in variables create a "serialization" variable
+            # dumps => take in a list and create a serialize it into a string representation.
+            # returns a string representation of the data - encoded using the secret key.
             token = s.dumps([email, current_time_str])
 
             reset_password_url = url_for('views.reset_password', token=token, _external=True)
@@ -141,19 +146,31 @@ def reset_password_request():
 
 @views.route("/reset_password/<token>", methods=["GET", "POST"])
 def reset_password(token):
+    if request.method == "POST":
 
-    # loads => take in a "serialization" variable and output the original string variables
-    #print(s.loads('WyJicmFuZG9uQG91dGRvZXhjZWwuY29tIiwiMTk6Mzk6MTMiXQ.Vx-OD4CaRc1poS2_gsThD8x1yoI'))
+        with open('project/db.yaml', 'r') as file:
+            test = yaml.load(file, Loader=yaml.FullLoader)
 
-    print(token)
-    # user = individuals_login.verify_reset_token(token)
-    # if user is None:
-    #     return redirect(url_for("views.index"))
+        s = URLSafeSerializer(test['secret_key'])
+        
+        original_email = session.get('email')
 
-    # if request.method == "POST":
-    #     new_password = request.form.get("new_password")
-    #     user.set_password(new_password)
-    #     db.session.commit()
-    #     return redirect(url_for("index"))
+        try: 
+            # loads => take in a serialized string and generate the original string inputs.
+            token_email = (s.loads(token))[0]
+
+            if token_email == original_email:
+                new_password = request.form.get("new_password")
+                hashed_password = generate_password_hash(new_password)
+                user = individuals_login.query.filter_by(email=token_email).first()
+                user.password = hashed_password
+
+                #db.session.commit()
+                flash('Your password has been successfully updated!', category='success')
+                return redirect(url_for('views.reset_password', token=token))
+            
+        except BadSignature:
+            flash('You do not have permission to change the password for this email.', category='error')
+            return redirect(url_for('views.reset_password', token=token))
 
     return render_template("reset_password.html", user=current_user, token=token)
