@@ -3,9 +3,10 @@ from flask_sqlalchemy import SQLAlchemy
 import yaml
 from flask_login import LoginManager
 from flask_session import Session
-from flask_sslify import SSLify
 from flask_mail import Mail
 from datetime import timedelta
+from itsdangerous import URLSafeTimedSerializer
+
 
 db = SQLAlchemy()
 login_manager = LoginManager()
@@ -13,7 +14,6 @@ mail = Mail()
 
 def create_app():
     app = Flask(__name__)
-    sslify = SSLify(app)
 
     with open('project/db.yaml', 'r') as file:
         test = yaml.load(file, Loader=yaml.FullLoader)
@@ -28,9 +28,9 @@ def create_app():
 
 
     # Mail config settings:
-    app.config['MAIL_SERVER']='send.smtp.mailtrap.io'
-    app.config['MAIL_PORT'] = 587
-    app.config['MAIL_USERNAME'] = 'api'
+    app.config['MAIL_SERVER']='sandbox.smtp.mailtrap.io'
+    app.config['MAIL_PORT'] = 2525
+    app.config['MAIL_USERNAME'] = 'c14de80d53a0d6'
     app.config['MAIL_PASSWORD'] = test['mail_password']
     app.config['MAIL_USE_TLS'] = True
     app.config['MAIL_USE_SSL'] = False
@@ -44,7 +44,8 @@ def create_app():
 
 
     db.init_app(app)
-
+    mail.init_app(app)
+    
     with app.app_context():
 
         from .views import views

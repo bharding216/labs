@@ -5,7 +5,9 @@ import datetime
 from . import db
 from flask_mail import Message
 from . import db, mail
-import bcrypt
+from itsdangerous.url_safe import URLSafeSerializer
+#from itsdangerous.serializer import Serializer
+import yaml
 
 views = Blueprint('views', __name__)
 
@@ -95,12 +97,10 @@ def confirmation():
 
 
 
-def send_reset_password_email(user, token):
-    reset_password_url = url_for('reset_password', token=token, _external=True)
-    message = Message(subject='Reset Your Password',
-                      recipients=[user.email],
-                      body=f'Reset your password by visiting the following link: {reset_password_url}')
-    mail.send(message)
+
+
+
+
 
 
 @views.route("/reset_password", methods=["GET", "POST"])
@@ -109,27 +109,51 @@ def reset_password_request():
         email = request.form.get("email")
         user = individuals_login.query.filter_by(email=email).first()
         if user:
-            token = user.generate_reset_token()
-            send_reset_password_email(user, token)
-        return redirect(url_for("views.index"))
+            current_time = datetime.datetime.now().time()
+            current_time_str = current_time.strftime('%H:%M:%S')
+            with open('project/db.yaml', 'r') as file:
+                test = yaml.load(file, Loader=yaml.FullLoader)
 
-    return render_template("reset_password_request.html")
+            s = URLSafeSerializer(test['secret_key'])
+            # dumps => take in variables create a "serialization" variable
+            token = s.dumps([email, current_time_str])
+
+            reset_password_url = url_for('views.reset_password', token=token, _external=True)
+
+            msg = Message('New Password Request', 
+                sender = 'hello@carbonfree.dev', 
+                recipients = ['bharding@carbonfree.cc'],
+                body=f'Reset your password by visiting the following link: {reset_password_url}')
+
+            mail.send(msg) 
+            flash('Email successfully sent.', category='success')
+
+        else:
+            flash('That email does not exist in our system.', category='error')
+            return redirect(url_for('views.reset_password_request'))
+        return redirect(url_for('views.reset_password_request'))
+
+    return render_template("reset_password_form.html", user=current_user)
+
+
+
 
 
 @views.route("/reset_password/<token>", methods=["GET", "POST"])
 def reset_password(token):
-    user = individuals_login.verify_reset_token(token)
-    if user is None:
-        # the reset token is invalid
-        return redirect(url_for("index"))
 
-    if request.method == "POST":
-        # get the new password from the form
-        new_password = request.form.get("new_password")
-        # update the password for the user
-        user.set_password(new_password)
-        db.session.commit()
-        # redirect to some page after password change is successful
-        return redirect(url_for("index"))
+    # loads => take in a "serialization" variable and output the original string variables
+    #print(s.loads('WyJicmFuZG9uQG91dGRvZXhjZWwuY29tIiwiMTk6Mzk6MTMiXQ.Vx-OD4CaRc1poS2_gsThD8x1yoI'))
 
-    return render_template("reset_password.html")
+    print(token)
+    # user = individuals_login.verify_reset_token(token)
+    # if user is None:
+    #     return redirect(url_for("views.index"))
+
+    # if request.method == "POST":
+    #     new_password = request.form.get("new_password")
+    #     user.set_password(new_password)
+    #     db.session.commit()
+    #     return redirect(url_for("index"))
+
+    return render_template("reset_password.html", user=current_user, token=token)

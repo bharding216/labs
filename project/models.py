@@ -1,8 +1,13 @@
+import jwt
+import os
+from time import time
 from . import db
 from sqlalchemy.dialects.mysql import BLOB
 from flask_login import UserMixin
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from itsdangerous import URLSafeTimedSerializer as Serializer
 from flask import Flask
+import yaml
+
 
 class tests(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -45,7 +50,3 @@ class individuals_login(db.Model, UserMixin):
     phone = db.Column(db.String(15))
     email = db.Column(db.String(100), nullable=False, unique=True)
     password = db.Column(db.String(100), nullable=False)
-
-    def generate_reset_token(self, expiration=3600):
-        s = Serializer(Flask.current_app.config['SECRET_KEY'], expiration)
-        return s.dumps({'user_id': self.id}).decode('utf-8')
