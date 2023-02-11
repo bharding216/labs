@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}USL | Returning User Login{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+
+
+{% block content %}
+
+<!--LOGIN-->
+<div class="container my-5">
+
+    <form action="{{ url_for('views.returning_user_login') }}" method="POST">
+
+        <h3>Returning User Login</h3>
+
+        <div class="form-floating mb-3">
+            <input type="text" id="email" placeholder="email"
+                class="form-control" name="email" value="{{ email }}">
+            <label for="email">Email</label>
+        </div>
+
+        <div class="form-floating mb-3">
+            <input type="password" id="password" placeholder="Password"
+                class="form-control" name="password">
+            <label for="password">Password</label>
+        </div>
+
+        <button type="submit" class="btn btn-outline-primary">Login</button>
+
+    </form>
+
+</div>
+
+
+{% endblock %}

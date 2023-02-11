@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+
+{% block title %}USL | Booking{% endblock %}
+
+{% block head %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script>
+  function checkPasswordStrength() {
+    var password = document.getElementById("password").value;
+    var strength = 0;
+
+    // MINIMUM PASSWORD LENGTH
+    if (password.length < 6) {
+        document.getElementById("password_strength").innerHTML = "Must be at least 6 characters";
+        document.getElementById("submitButton").disabled = true;
+        return;
+    }
+
+    // PASSWORD CONSTRAINTS
+    // IF THE PASSWORD CONTAINS EACH OF THESE TYPES OF CHARACTERS,
+    // IT WILL GET A SCORE OF 4
+    if (password.match(/[a-z]+/)) {
+        strength += 1;
+    }
+    if (password.match(/[A-Z]+/)) {
+        strength += 1;
+    }
+    if (password.match(/[0-9]+/)) {
+        strength += 1;
+    }
+    if (password.match(/[!@#$%^&+=]+/)) {
+        strength += 1;
+    }
+
+    // DISPLAY THE STRENGTH MESSAGE
+    if (strength == 1) {
+        document.getElementById("password_strength").innerHTML = "Weak - try adding some unique characters";
+    } else if (strength == 2) {
+        document.getElementById("password_strength").innerHTML = "Moderate";
+    } else {
+        document.getElementById("password_strength").innerHTML = "Strong";
+    }
+
+    // ENABLE/DISABLE THE SUBMIT BUTTON BASED ON STRENGTH
+    if (strength < 2) {
+        document.getElementById("submitButton").disabled = true;
+        } else {
+        document.getElementById("submitButton").disabled = false;
+        }
+
+  }
+
+</script>
+{% endblock %}
+
+
+
+{% block content %}
+
+<div class="container my-5">
+    {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+            {% for category, message in messages %}
+                {% if category == 'success' %}
+                    <div class="alert alert-success mx-5" role="alert">
+                        {{ message }}
+                    </div>
+                {% else %}
+                    <div class="alert alert-danger mx-5" role="alert">
+                        {{ message }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+    {% endif %}
+    {% endwith %}
+</div>
+
+
+<div class="container my-5">
+
+    <h1>Last Step!</h1>
+
+    <p>
+        Thanks for selecting <b>{{ lab_choice.name }}</b>.
+        Please tell us a little bit about your specific testing requirements. 
+    </p>
+
+</div>
+
+
+
+<div class="container my-5">
+
+    <form action="{{ url_for('views.new_user_booking') }}" method="POST">
+
+        <div class="mb-3 col-md-8 col-lg-6">
+            <h2>Your Sample Details</h2>
+        </div>
+
+        <div class="form-floating mb-3 col-md-8 col-lg-6">
+            <input type="text" class="form-control" id="sample_name" name="sample_name"
+                placeholder="Sample Name" value="{{ sample_name }}">
+            <label for="sample_name">Sample Name</label>
+        </div>
+
+        <div class="form-floating mb-3 col-md-12 col-lg-8">
+            <textarea class="form-control" id="sample_description" name="sample_description"
+                placeholder="Sample Description" value="{{ sample_description }}"></textarea>
+            <label for="sample_description">Sample Description</label>
+        </div>
+
+        <div class="form-floating mb-3 col-sm-6 col-md-6 col-lg-3">
+            <input type="number" class="form-control" id="turnaround" name="turnaround"
+                placeholder="Turnaround Time [days]" value="{{ turnaround }}">
+            </input>
+            <label for="turnaround">Turnaround Time [days]</label>
+        </div>
+
+
+        <br>
+
+
+        <div class="mb-3 col-md-8 col-lg-6">
+            <h2>Your Contact Info</h2>
+
+            <p>
+                This information will be used to create your account. You will need
+                your <b>email and password</b> to log in once your request is approved. 
+            </p>
+        </div>
+
+
+        <div class="form-floating mb-3 col-md-8 col-lg-6">
+            <input type="text" class="form-control" name="first_name"
+                placeholder="First Name" value="{{ first_name }}">
+            <label for="first_name">First Name</label>
+        </div>
+
+        <div class="form-floating mb-3 col-md-8 col-lg-6">
+            <input type="text" class="form-control" name="last_name"
+                placeholder="Last Name" value="{{ last_name }}">
+            <label for="last_name">Last Name</label>
+        </div>
+
+        <div class="form-floating mb-3 col-md-8 col-lg-6">
+            <input type="text" class="form-control" name="company_name"
+                placeholder="Company Name" value="{{ company_name }}">
+            <label for="company_name">Company Name</label>
+        </div>
+
+        <div class="form-floating mb-3 col-md-8 col-lg-6">
+            <input type="email" class="form-control" name="email"
+                placeholder="Email" value="{{ email }}">
+            <label for="email">Email</label>
+        </div>
+
+
+        <div class="form-floating mb-3 col-md-8 col-lg-6">
+            <input type="tel" class="form-control" name="phone" value="{{ phone }}"
+                placeholder="Phone Number" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" maxlength="12"/> 
+            <label for="phone">Phone Number</label>
+            <p class="mx-1"><small>Format: 123-456-7890</small></p>
+        </div>
+
+        <div class="form-floating mb-3 col-md-8 col-lg-6">
+            <input type="text" class="form-control" id="password" name="password" value="{{ password }}"
+                placeholder="Password" onkeyup="checkPasswordStrength()" required>
+            <label for="password">Password</label>
+        </div>
+
+        <div class="form-group mb-3 col-md-8 col-lg-6">
+            <p class="mx-1"><small>Password Strength:</small></p>
+            <!--<label for="password_strength">Password Strength:</label>-->
+            <p id="password_strength" class="form-control"></p>
+          </div>
+
+        <button type="submit" class="btn btn-outline-primary"
+            id = submitButton>Submit</button>
+
+    </form>
+
+</div>
+
+
+
+
+
+
+
+{% endblock %}

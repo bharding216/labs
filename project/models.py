@@ -50,3 +50,4 @@ class individuals_login(db.Model, UserMixin):
     phone = db.Column(db.String(15))
     email = db.Column(db.String(100), nullable=False, unique=True)
     password = db.Column(db.String(100), nullable=False)
+    company_name = db.Column(db.String(100))

@@ -73,6 +73,15 @@
                     </li>
 
                     {% if user.is_authenticated %}
+
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" 
+                            href="#">
+                            Requests
+                        </a>
+                    </li>
+
+
                     <li class="nav-item">
                         <a class="nav-link" aria-current="page" 
                             href="{{ url_for('auth.logout') }}">
@@ -116,11 +125,11 @@
 
     <!--p-3 = padding
     https://getbootstrap.com/docs/4.0/utilities/spacing/-->
-    <div class="text-center p-5" style="background-color: rgba(0, 0, 0, 0.2);">
+    <div class="text-center p-5 bg-primary">
     <!--Great example for the footer: (https://mdbootstrap.com/docs/standard/navigation/footer/)-->
-        <p>
+        <p class="text-white">
         {% block footer %}
-        &copy; 2023 by Unified Science Labs + <a class="text-dark" href="https://outdoexcel.com/"
+        &copy; 2023 by Unified Science Labs + <a class="text-white" href="https://outdoexcel.com/"
             target="_blank"
             rel="noopener noreferrer">Outdo</a>.
         {% endblock %}
