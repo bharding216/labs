@@ -6,6 +6,7 @@ from flask_session import Session
 from flask_mail import Mail
 from datetime import timedelta
 from itsdangerous import URLSafeTimedSerializer
+import shippo
 
 
 db = SQLAlchemy()
@@ -34,7 +35,6 @@ def create_app():
     app.config['MAIL_PASSWORD'] = test['mail_password']
     app.config['MAIL_USE_TLS'] = True
     app.config['MAIL_USE_SSL'] = False
-
 
 
     app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://' + test['mysql_user'] + \

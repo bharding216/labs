@@ -10,6 +10,7 @@ from itsdangerous.url_safe import URLSafeSerializer
 import yaml
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous.exc import BadSignature
+import shippo
 
 
 views = Blueprint('views', __name__)
@@ -61,22 +62,6 @@ def lab_function():
             user = current_user
             )
 
-
-# @views.route('/booking', methods=['GET', 'POST'])
-# def booking():
-#     if request.method == 'POST':
-#         requestor_name = request.form['name']
-#         session['requestor_name'] = requestor_name
-#         turnaround_time = request.form['turnaround']
-#         session['turnaround_time'] = turnaround_time
-#         return redirect(url_for('views.confirmation'))
-
-#     else:
-#         selected_lab_id = session.get('selected_lab_id')
-#         lab_choice = labs.query.get_or_404(selected_lab_id)
-#         return render_template('booking.html', 
-#                                lab_choice = lab_choice,
-#                                user = current_user)
 
 
 
@@ -207,6 +192,78 @@ def confirmation():
 
 
 
+
+@views.route('/shipping', methods=['GET', 'POST'])
+def shipping():
+    if request.method == 'POST':
+        with open('project/db.yaml', 'r') as file:
+            test = yaml.load(file, Loader=yaml.FullLoader)
+
+        # Shippo API Key:
+        shippo.config.api_key = test['shippo_api_key']
+
+        address_from = {
+            "name": "John Doe",
+            "street1": "6512 Green St",
+            "city": "Philadelphia",
+            "state": "PA",
+            "zip": "19144",
+            "country": "US",
+            "phone": "555-555-5555",
+            "email": "jdoe@example.com"
+        }
+
+        address_to = {
+            "name": "Jane Doe",
+            "street1": "123 Main St",
+            "city": "San Francisco",
+            "state": "CA",
+            "zip": "94105",
+            "country": "US",
+            "phone": "555-555-5555",
+            "email": "jane.doe@example.com"
+        }
+
+        parcel = {
+            "length": "5",
+            "width": "5",
+            "height": "5",
+            "distance_unit": "in",
+            "weight": "2",
+            "mass_unit": "lb"
+        }
+
+
+        shipment = shippo.Shipment.create(
+            address_from=address_from,
+            address_to=address_to,
+            parcels=[parcel],
+            asynchronous=False
+        )
+
+        rate = shipment.rates[0]
+
+        transaction = shippo.Transaction.create(
+            rate=rate.object_id, asynchronous=False)
+
+        # print the shipping label from label_url
+        # Get the tracking number from tracking_number
+        ##### "transacation.label_url" is the url that will take the user
+        # to the shipping label.
+        if transaction.status == "SUCCESS":
+            print("Purchased label with tracking number %s" %
+                transaction.tracking_number)
+            print("The label can be downloaded at %s" % transaction.label_url)
+        else:
+            print("Failed purchasing the label due to:")
+            for message in transaction.messages:
+                print("- %s" % message['text'])
+        
+        return render_template('shipping.html', user = current_user)
+
+        #return render_template('label.html', label_url = label_url)
+
+    return render_template('shipping.html', user = current_user)
 
 
 

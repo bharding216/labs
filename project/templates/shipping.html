@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}USL | Shipping{% endblock %}
+
+{% block content %}
+
+<form method="post">
+    <label for="from_address">From Address:</label>
+    <input type="text" id="from_address" name="from_address">
+
+    <label for="to_address">To Address:</label>
+    <input type="text" id="to_address" name="to_address">
+
+    <label for="weight">Weight:</label>
+    <input type="text" id="weight" name="weight">
+
+    <label for="shipping_option">Shipping Option:</label>
+    <select id="shipping_option" name="shipping_option">
+        <option value="standard">Standard</option>
+        <option value="express">Express</option>
+    </select>
+
+    <input type="submit" value="Create Label">
+</form>
+
+
+
+{% endblock %}
