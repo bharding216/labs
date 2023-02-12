@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}USL | Shipping Rates{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+
+<div class="table-responsive mx-5 py-5">
+    <table class="table">
+        <thead>
+            <tr>
+                <th class="text-center" scope="col">Provider</th>
+                <th class="text-center" scope="col">Service Level</th>
+                <th class="text-center" scope="col">Price</th>
+                <th class="text-center" scope="col">Transit Time [days]</th>
+            </tr>
+        </thead>
+
+
+        <tbody>
+            {% for rate in rates %}
+                <tr>
+                    <td class="text-center">{{ rate.provider }}</td>
+                    <td class="text-center">{{ rate.servicelevel.name }}</td>
+                    <td class="text-center">{{ rate.amount }}</td>
+                    <td class="text-center">{{ rate.estimated_days }}</td>
+
+                    <td> 
+                        <form>
+                            <input type="submit" class="btn btn-outline-primary my-1" value="Choose Lab">
+                        </form>
+                    </td>
+                </tr>
+
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

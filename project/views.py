@@ -162,6 +162,7 @@ def returning_user_login():
 
 
 
+
 @views.route("/returning_user_booking", methods=['GET', 'POST'])
 def returning_user_booking():
     selected_lab_id = session.get('selected_lab_id')
@@ -192,6 +193,13 @@ def confirmation():
 
 
 
+@views.route("/requests", methods=['GET', 'POST'])
+def requests():
+    return render_template('requests.html', 
+                            user = current_user)
+
+
+
 
 @views.route('/shipping', methods=['GET', 'POST'])
 def shipping():
@@ -201,6 +209,8 @@ def shipping():
 
         # Shippo API Key:
         shippo.config.api_key = test['shippo_api_key']
+
+        MAX_TRANSIT_TIME_DAYS = 3
 
         address_from = {
             "name": "John Doe",
@@ -212,6 +222,11 @@ def shipping():
             "phone": "555-555-5555",
             "email": "jdoe@example.com"
         }
+
+
+
+        # from session get the selected lab
+        # get company name, street, city, state, country, zip, phone, email
 
         address_to = {
             "name": "Jane Doe",
@@ -241,25 +256,30 @@ def shipping():
             asynchronous=False
         )
 
-        rate = shipment.rates[0]
+        rates = shipment.rates
 
-        transaction = shippo.Transaction.create(
-            rate=rate.object_id, asynchronous=False)
 
-        # print the shipping label from label_url
-        # Get the tracking number from tracking_number
-        ##### "transacation.label_url" is the url that will take the user
-        # to the shipping label.
-        if transaction.status == "SUCCESS":
-            print("Purchased label with tracking number %s" %
-                transaction.tracking_number)
-            print("The label can be downloaded at %s" % transaction.label_url)
-        else:
-            print("Failed purchasing the label due to:")
-            for message in transaction.messages:
-                print("- %s" % message['text'])
+
+        # transaction = shippo.Transaction.create(
+        #     rate=selected_rate_object_id, asynchronous=False)
         
-        return render_template('shipping.html', user = current_user)
+
+        # # print the shipping label from label_url
+        # # Get the tracking number from tracking_number
+        # ##### "transacation.label_url" is the url that will take the user
+        # # to the shipping label.
+        # if transaction.status == "SUCCESS":
+        #     print("Purchased label with tracking number %s" %
+        #         transaction.tracking_number)
+        #     print("The label can be downloaded at %s" % transaction.label_url)
+        # else:
+        #     print("Failed purchasing the label due to:")
+        #     for message in transaction.messages:
+        #         print("- %s" % message['text'])
+        
+        return render_template('shipping_rates.html',
+                               user = current_user,
+                               rates = rates)
 
         #return render_template('label.html', label_url = label_url)
 
