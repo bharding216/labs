@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, flash, url_for, session
 from flask_login import login_required, current_user, login_user
-from .models import tests, labs, labs_tests, individuals_login, labs_login
+from .models import tests, labs, labs_tests, individuals_login, labs_login, test_requests
 import datetime
 from . import db
 from flask_mail import Message
@@ -87,6 +87,8 @@ def new_user_booking():
         sample_name = request.form['sample_name']
 
         session['first_name'] = first_name
+        session['sample_name'] = sample_name
+        session['sample_description'] = sample_description
         session['turnaround'] = turnaround
 
 
@@ -121,7 +123,7 @@ def new_user_booking():
             db.session.add(new_user)
             db.session.commit()
             flash('New account successfully created.', category = 'success')
-            return redirect(url_for('views.confirmation'))
+            return redirect(url_for('views.confirmation_new_user'))
 
     else:
         selected_lab_id = session.get('selected_lab_id')
@@ -173,15 +175,29 @@ def returning_user_booking():
 
 
 
-@views.route('/confirmation', methods=['GET', 'POST'])
-def confirmation():
+@views.route('/confirmation_new_user', methods=['GET', 'POST'])
+def confirmation_new_user():
     selected_test = session.get('selected_test')
     first_name = session.get('first_name', None)
     turnaround = session.get('turnaround')
+    sample_name = session.get('sample_name')
+    sample_description = session.get('sample_description')
+
 
     selected_lab_id = session.get('selected_lab_id')
     lab_choice = labs.query.get_or_404(selected_lab_id)
+    lab_id = lab_choice.id
 
+    # save the testing info to the requests table.
+    new_request = test_requests(sample_name = sample_name,
+                           sample_description = sample_description,
+                           turnaround = turnaround,
+                           test_name = selected_test,
+                           lab_id = lab_id
+                           )
+
+    db.session.add(new_request)
+    db.session.commit()
 
     return render_template('confirmation.html', 
                            selected_test = selected_test,
@@ -190,6 +206,41 @@ def confirmation():
                            turnaround = turnaround,
                            user = current_user
                            )
+
+
+@views.route('/confirmation_returning_user', methods=['GET', 'POST'])
+def confirmation_returning_user():
+    if request.method == 'POST':
+        sample_name = request.form['sample_name']
+        sample_description = request.form['sample_description']
+        turnaround = request.form['turnaround']
+
+        selected_test = session.get('selected_test')
+        first_name = session.get('first_name', None)
+
+        selected_lab_id = session.get('selected_lab_id')
+        lab_choice = labs.query.get_or_404(selected_lab_id)
+        lab_id = lab_choice.id
+
+        # save the testing info to the requests table.
+        new_request = test_requests(sample_name = sample_name,
+                            sample_description = sample_description,
+                            turnaround = turnaround,
+                            test_name = selected_test,
+                            lab_id = lab_id
+                            )
+
+        db.session.add(new_request)
+        db.session.commit()
+
+        return render_template('confirmation.html', 
+                            selected_test = selected_test,
+                            first_name = first_name,
+                            lab_choice = lab_choice,
+                            turnaround = turnaround,
+                            user = current_user
+                            )
+
 
 
 

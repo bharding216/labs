@@ -3,8 +3,29 @@
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
-
 }
+
+.top-section-with-background {
+  position: relative;
+}
+
+
+.top-section-with-background::before {
+    content: '';
+    background-repeat: no-repeat;
+      background-position: center;
+    background-size: cover;
+    background-image: url('/static/lab_photo2.png');
+    opacity: 0.3;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+  }
+  
+  
 
 @media (min-width: 992px) {
     .dropdown-menu {

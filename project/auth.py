@@ -66,7 +66,11 @@ def lab_signup():
 
         else:
             hashed_password = generate_password_hash(password1)
-            new_lab = labs_login(lab_name=lab_name, password=hashed_password, phone=lab_phone, email=lab_email)
+            new_lab = labs_login(lab_name = lab_name,
+                                 password = hashed_password,
+                                 phone = lab_phone, 
+                                 email = lab_email
+                                 )
             db.session.add(new_lab)
             db.session.commit()
             flash('Lab successfully added to database.', category='success')
