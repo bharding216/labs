@@ -24,21 +24,25 @@
 
 <div class="container my-5 py-5 top-section-with-background">
 
-    <div class="row">
-        <div class="col-md-12 pb-4 text-center d-flex flex-column justify-content-center"> 
-            <h1>Find Your Perfect Lab Partner</h1>
+    <!--INNER DIV 1-->
+    <div class="d-flex justify-content-center">
+        <div> 
+            <h1 class="text-center">Find Your Perfect Lab Partner</h1>
         </div>
     </div>
 
 
-    <div class="row">
-        <form action="{{ url_for('views.index') }}" method="POST">
+    <form action="{{ url_for('views.index') }}" method="POST">
 
-            <div class="form-group mb-3">
+        <!--INNER DIV 2-->
+        <div class="row" style="height: 100px;">
 
-                <div class="col-md-12">
+            <div class="form-group col-md-5 d-flex align-items-center justify-content-center">
 
-                    <select name="selected_test" class="form-select" style="width:auto">
+                <div>
+
+                    <select name="selected_test" class="form-select" 
+                        style="width:auto" id="test_select">
 
                         <option selected disabled="disabled">Choose a lab test</option>
                         {% for test in tests %}
@@ -52,13 +56,14 @@
             </div>
 
 
-            <div class="form-group mb-3">
+            <div class="form-group col-md-3 d-flex align-items-center justify-content-center">
 
                 <div class="form-floating">
 
                     <input type="text" pattern="[0-9]{5}" name="zipcode"
-                        class="form-control" id="zipcode"
-                        style="width:auto" placeholder="ZIP Code"/>
+                        class="form-control" 
+                        id="zipcode"
+                        placeholder="ZIP Code"/>
                     <label for="zipcode">ZIP Code</label>
 
                 </div>
@@ -66,32 +71,39 @@
             </div>
 
 
-            <div class="form-group mb-3">
+            <div class="form-group col-md-4 d-flex align-items-center justify-content-center">
 
-                <div class="col-md-6">
+                <div>
 
                     <label for="date-picker">Ready to send sample on:</label>
             
                     <input type="date" id="date-picker" class="form-control"
-                        name="date-picker" style="width:auto" value="{{ date }}">
+                        name="date-picker" value="{{ date }}">
 
                 </div>
                 
             </div>
 
+        </div>
 
-            <div class="form-group mb-3">
-                <div class="col-md-3"> 
-                    <button type="submit" 
-                        class="btn btn-outline-primary"
-                        style="width:auto">
-                        Find a Lab
-                    </button>
-                </div>
+
+        <!--INNER DIV 3-->
+        <div class="row pt-5">
+
+            <div class="form-group d-flex justify-content-center">
+
+                <button type="submit" 
+                    class="btn btn-outline-primary"
+                    style="width:auto">
+                    Find a Lab
+                </button>
+
             </div>
 
-        </form>
-    </div>
+        </div>
+
+    </form>
+
 
 
 </div>
@@ -104,13 +116,13 @@
     <div class="row" data-aos="fade-up" style="height: 350px">
 
         <div class="col-md-12 text-center d-flex flex-column justify-content-center" 
-            style="background-color: rgba(19, 17, 151, 0.2)">
+            style="background-color:#eace5f">
 
             <h1 class="pb-4">List Your Lab with Unified Labs</h1>
 
             <a class="btn btn-outline-primary mx-auto" 
             href="{{ url_for('contact.contact_function') }}" role="button"
-            style="width: 20%">
+            style="width:auto">
             
             Join Us
             </a>
@@ -134,7 +146,7 @@
 
             <a class="btn btn-outline-primary" 
             href="#" role="button"
-            style="width: 25%">
+            style="width:auto">
             
             Find Yours
             </a>
@@ -156,3 +168,4 @@
 <br><br><br><br>
 
 {% endblock %}
+

@@ -18,12 +18,18 @@ views = Blueprint('views', __name__)
 @views.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        selected_test = request.form['selected_test']
-        session['selected_test'] = selected_test
+        selected_test = request.form.get('selected_test')
+        if selected_test is None:
+            flash('Please choose a test before submitting the form.')
+            return redirect(url_for('views.index'))
+        else:
+            session['selected_test'] = selected_test
+            zipcode = request.form['zipcode']
+            session['zipcode'] = zipcode
+            date = request.form['date-picker']
+            
+            return redirect(url_for('views.lab_function'))
 
-        zipcode = request.form['zipcode']
-        date = request.form['date-picker']
-        return redirect(url_for('views.lab_function'))
 
     else:
         test_names = tests.query.all()
