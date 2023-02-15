@@ -6,12 +6,50 @@
 
 <div class="container my-5">
 
-    <h1>If the user is a lab:</h1>
-    <p>A table that displays your lab requests and the option to approve/deny a request.</p>
+    <div class="table-responsive mx-5">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="text-center" scope="col">Test Name</th>
+                    <th class="text-center" scope="col">Sample Name</th>
+                    <th class="text-center" scope="col">Sample Description</th>
+                    <th class="text-center" scope="col">Turnaround [days]</th>
+                    <th class="text-center" scope="col">Current Status</th>
+                    <th class="text-center" scope="col">Approve/Deny</th>
+                </tr>
+            </thead>
+    
+    
+            <tbody>
+                {% for lab_request in lab_requests %}
+                    <tr>
+                        <td class="text-center">{{ lab_request.test_name }}</td>
+                        <td class="text-center">{{ lab_request.sample_name }}</td>
+                        <td class="text-center">{{ lab_request.sample_description }}</td>
+                        <td class="text-center">{{ lab_request.turnaround }}</td>
+                        <td class="text-center">{{ lab_request.status }}</td>
 
-    <h1>If the user is a requestor:</h1>
-    <p>A table that displays their lab requests, the status of each request and the 
-        option to purchase a shipping label and pay for a test.</p>
+                        <td class="text-center">
+                            
+                            <form>
+                                <input type="hidden" name="approve">
+                                <input type="submit" class="btn btn-outline-success my-1" value="Approve">
+
+                                <input type="hidden" name="deny">
+                                <input type="submit" class="btn btn-outline-danger my-1" value="Deny">
+                            </form>
+
+                        </td>
+                    </tr>
+    
+                {% endfor %}
+            </tbody>
+    
+        </table>
+    
+    </div>
+
+
 
 </div>
 

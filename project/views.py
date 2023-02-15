@@ -27,7 +27,7 @@ def index():
             zipcode = request.form['zipcode']
             session['zipcode'] = zipcode
             date = request.form['date-picker']
-            
+
             return redirect(url_for('views.lab_function'))
 
 
@@ -199,7 +199,8 @@ def confirmation_new_user():
                            sample_description = sample_description,
                            turnaround = turnaround,
                            test_name = selected_test,
-                           lab_id = lab_id
+                           lab_id = lab_id,
+                           status = 'Pending'
                            )
 
     db.session.add(new_request)
@@ -233,7 +234,8 @@ def confirmation_returning_user():
                             sample_description = sample_description,
                             turnaround = turnaround,
                             test_name = selected_test,
-                            lab_id = lab_id
+                            lab_id = lab_id,
+                            status = 'Pending'
                             )
 
         db.session.add(new_request)
@@ -251,9 +253,16 @@ def confirmation_returning_user():
 
 
 @views.route("/requests", methods=['GET', 'POST'])
+@login_required
 def requests():
+
+    user_id = current_user.id
+    lab_requests = test_requests.query.filter_by(lab_id = user_id).all()
+
+
     return render_template('requests.html', 
-                            user = current_user)
+                            user = current_user,
+                            lab_requests = lab_requests)
 
 
 
@@ -266,8 +275,6 @@ def shipping():
 
         # Shippo API Key:
         shippo.config.api_key = test['shippo_api_key']
-
-        MAX_TRANSIT_TIME_DAYS = 3
 
         address_from = {
             "name": "John Doe",

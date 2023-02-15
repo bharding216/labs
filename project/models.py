@@ -53,9 +53,10 @@ class individuals_login(db.Model, UserMixin):
     company_name = db.Column(db.String(100))
 
 class test_requests(db.Model):
-    requests_id = db.Column(db.Integer, primary_key=True)
+    request_id = db.Column(db.Integer, primary_key=True)
     sample_name = db.Column(db.String(100))
     sample_description = db.Column(db.String(16000000))
     turnaround = db.Column(db.Integer)
     test_name = db.Column(db.String(100), nullable=False)
+    status = db.Column(db.String(100), nullable=False)
     lab_id = db.Column(db.Integer, db.ForeignKey('labs.id'), nullable=False)

@@ -26,30 +26,32 @@
 
     <!--INNER DIV 1-->
     <div class="d-flex justify-content-center">
-        <div> 
+
+        <div class="mb-3">
             <h1 class="text-center">Find Your Perfect Lab Partner</h1>
         </div>
+
     </div>
 
 
     <form action="{{ url_for('views.index') }}" method="POST">
 
-        <!--INNER DIV 2-->
-        <div class="row" style="height: 100px;">
+        <!--INNER DIV 2 for the form inputs-->
+        <div class="row d-flex align-items-center justify-content-center">
 
             <div class="form-group col-md-5 d-flex align-items-center justify-content-center">
 
-                <div>
+                <div class="mb-3 mb-md-0">
 
-                    <select name="selected_test" class="form-select" 
-                        style="width:auto" id="test_select">
+                        <select name="selected_test" class="form-select" 
+                            style="width:auto" id="test_select">
 
-                        <option selected disabled="disabled">Choose a lab test</option>
-                        {% for test in tests %}
-                            <option value="{{ test.name }}">{{ test.name }}</option>
-                        {% endfor %}
+                            <option selected disabled="disabled">Choose a lab test</option>
+                            {% for test in tests %}
+                                <option value="{{ test.name }}">{{ test.name }}</option>
+                            {% endfor %}
 
-                    </select>
+                        </select>
 
                 </div>
                 
@@ -58,7 +60,7 @@
 
             <div class="form-group col-md-3 d-flex align-items-center justify-content-center">
 
-                <div class="form-floating">
+                <div class="form-floating mb-3 mb-md-0">
 
                     <input type="text" pattern="[0-9]{5}" name="zipcode"
                         class="form-control" 
@@ -71,11 +73,9 @@
             </div>
 
 
-            <div class="form-group col-md-4 d-flex align-items-center justify-content-center">
+            <div class="form-group col-md-3 d-flex align-items-center justify-content-center">
 
-                <div>
-
-                    <label for="date-picker">Ready to send sample on:</label>
+                <div class="mb-3 mb-md-0">
             
                     <input type="date" id="date-picker" class="form-control"
                         name="date-picker" value="{{ date }}">
@@ -87,7 +87,7 @@
         </div>
 
 
-        <!--INNER DIV 3-->
+        <!--INNER DIV 3 for the submit button-->
         <div class="row pt-5">
 
             <div class="form-group d-flex justify-content-center">
