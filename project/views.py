@@ -2,7 +2,6 @@ from flask import Blueprint, render_template, request, redirect, flash, url_for,
 from flask_login import login_required, current_user, login_user
 from .models import tests, labs, labs_tests, individuals_login, labs_login, test_requests
 import datetime
-from . import db
 from flask_mail import Message
 from . import db, mail
 from itsdangerous.url_safe import URLSafeSerializer
@@ -34,6 +33,7 @@ def index():
     else:
         test_names = tests.query.all()
         date_choice = datetime.datetime.now().strftime("%Y-%m-%d")
+
         return render_template('index.html', tests = test_names, 
                                date = date_choice,
                                user = current_user)
@@ -252,18 +252,26 @@ def confirmation_returning_user():
 
 
 
-@views.route("/requests", methods=['GET', 'POST'])
+@views.route("/lab_requests", methods=['GET', 'POST'])
 @login_required
-def requests():
+def lab_requests():
 
     user_id = current_user.id
     lab_requests = test_requests.query.filter_by(lab_id = user_id).all()
 
 
-    return render_template('requests.html', 
+    return render_template('lab_requests.html', 
                             user = current_user,
                             lab_requests = lab_requests)
 
+
+@views.route("/user_requests", methods=['GET', 'POST'])
+@login_required
+def user_requests():
+
+    return render_template('user_requests.html', 
+                            user = current_user,
+                            )
 
 
 

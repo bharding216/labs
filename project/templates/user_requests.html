@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}USL | Requests{% endblock %}
+{% block title %}USL | User Requests{% endblock %}
 
 {% block content %}
 
@@ -13,9 +13,7 @@
                     <th class="text-center" scope="col">Test Name</th>
                     <th class="text-center" scope="col">Sample Name</th>
                     <th class="text-center" scope="col">Sample Description</th>
-                    <th class="text-center" scope="col">Turnaround [days]</th>
                     <th class="text-center" scope="col">Current Status</th>
-                    <th class="text-center" scope="col">Approve/Deny</th>
                 </tr>
             </thead>
     
@@ -31,7 +29,7 @@
 
                         <td class="text-center">
                             
-                            <form>
+                            <form action="{{ url_for('views.lab_requests') }}" method="POST">
                                 <input type="hidden" name="approve">
                                 <input type="submit" class="btn btn-outline-success my-1" value="Approve">
 

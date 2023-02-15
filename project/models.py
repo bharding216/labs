@@ -42,6 +42,7 @@ class labs_login(db.Model, UserMixin):
     phone = db.Column(db.String(15))
     email = db.Column(db.String(100), nullable=False, unique=True)
     password = db.Column(db.String(512), nullable=False)
+    type = db.Column(db.String(15), nullable=False)
 
 class individuals_login(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -51,6 +52,8 @@ class individuals_login(db.Model, UserMixin):
     email = db.Column(db.String(100), nullable=False, unique=True)
     password = db.Column(db.String(100), nullable=False)
     company_name = db.Column(db.String(100))
+    type = db.Column(db.String(15), nullable=False)
+
 
 class test_requests(db.Model):
     request_id = db.Column(db.Integer, primary_key=True)

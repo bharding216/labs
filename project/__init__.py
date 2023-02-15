@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, session
 from flask_sqlalchemy import SQLAlchemy
 import yaml
 from flask_login import LoginManager
@@ -51,7 +51,7 @@ def create_app():
         from .views import views
         from .contact import contact_bp
         from .auth import auth_bp
-        from .models import labs_login
+        from .models import labs_login, individuals_login
 
         app.register_blueprint(views, url_prefix="/")
         app.register_blueprint(contact_bp, url_prefix="/contact")
@@ -65,10 +65,24 @@ def create_app():
         login_manager.login_message_category = "error"
         login_manager.init_app(app)
 
+        # When a user logs in, their `id` is stored in a 
+        # session cookie. When a request is made to the application,
+        # Flask-Login calls the `load_user` function to load the user
+        # object associated with that `id`.  
+
+        # Once the user object is loaded, Flask-Login stores it in
+        # the `current_user` object, which can be accessed in your 
+        # views.
         @login_manager.user_loader
         def load_user(id):
-            return labs_login.query.get(int(id))
-
+            type = session.get('type')
+            if type == 'lab':
+                user = labs_login.query.filter_by(id = id).first()
+            elif type == 'requestor':
+                user = individuals_login.query.filter_by(id = id).first()
+            else:
+                user = None
+            return user
 
 
         return app

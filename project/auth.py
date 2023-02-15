@@ -14,19 +14,20 @@ def lab_login():
         email = request.form["email"]
         password = request.form["password"]
 
-        lab = labs_login.query.filter_by(email=email).first()
+        lab = labs_login.query.filter_by(email = email).first()
         if lab:
             if check_password_hash(lab.password, password):
-                login_user(lab, remember=False)
+                login_user(lab, remember = False)
                 session.permanent = True
+                session['type'] = 'lab'
                 flash('Login successful!', category='success')
                 return redirect(url_for('views.index'))
             else:
-                flash('Incorrect password. Please try again.', category='error')
+                flash('Incorrect password. Please try again.', category = 'error')
         else:
-            flash('That email is not associated with an account.', category='error')
+            flash('That email is not associated with an account.', category = 'error')
 
-    return render_template('lab_login.html', user=current_user)
+    return render_template('lab_login.html', user = current_user)
 
 
 
@@ -36,19 +37,20 @@ def individual_login():
         email = request.form["email"]
         password = request.form["password"]
 
-        individual_email = individuals_login.query.filter_by(email=email).first()
-        if individual_email:
-            if check_password_hash(individual_email.password, password):
-                login_user(individual_email, remember=False)
+        user = individuals_login.query.filter_by(email = email).first()
+        if user:
+            if check_password_hash(user.password, password):
+                login_user(user, remember = True)
                 session.permanent = True
-                flash('Login successful!', category='success')
+                session['type'] = 'requestor'
+                flash('Login successful!', category = 'success')
                 return redirect(url_for('views.index'))
             else:
-                flash('Incorrect password. Please try again.', category='error')
+                flash('Incorrect password. Please try again.', category = 'error')
         else:
-            flash('That email is not associated with an account.', category='error')
+            flash('That email is not associated with an account.', category = 'error')
 
-    return render_template('user_login.html', user=current_user)
+    return render_template('user_login.html', user = current_user)
 
 
 # New lab signup
@@ -69,7 +71,8 @@ def lab_signup():
             new_lab = labs_login(lab_name = lab_name,
                                  password = hashed_password,
                                  phone = lab_phone, 
-                                 email = lab_email
+                                 email = lab_email,
+                                 type = 'lab'
                                  )
             db.session.add(new_lab)
             db.session.commit()
@@ -87,6 +90,7 @@ def user_signup():
         last_name = request.form['last_name']
         email = request.form['email']
         phone = request.form['phone']
+        company = request.form['company_name']
         password1 = request.form['password1']
         password2 = request.form['password2']
 
@@ -95,7 +99,14 @@ def user_signup():
 
         else:
             hashed_password = generate_password_hash(password1)
-            new_user = individuals_login(first_name=first_name, last_name=last_name, password=hashed_password, phone=phone, email=email)
+            new_user = individuals_login(first_name=first_name,
+                                         last_name=last_name, 
+                                         password=hashed_password, 
+                                         phone=phone, 
+                                         email=email,
+                                         company_name = company,
+                                         type = 'requestor'
+                                         )
             db.session.add(new_user)
             db.session.commit()
             flash('User successfully added to database.', category='success')

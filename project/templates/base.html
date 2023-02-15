@@ -74,12 +74,23 @@
 
                     {% if user.is_authenticated %}
 
-                    <li class="nav-item">
-                        <a class="nav-link" aria-current="page" 
-                            href="{{ url_for('views.requests') }}">
-                            Requests
-                        </a>
-                    </li>
+                        {% if user.type == "lab" %}
+                        <li class="nav-item">
+                            <a class="nav-link" aria-current="page" 
+                                href="{{ url_for('views.lab_requests') }}">
+                                Lab Requests
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        {% if user.type == "requestor" %}
+                        <li class="nav-item">
+                            <a class="nav-link" aria-current="page" 
+                                href="{{ url_for('views.user_requests') }}">
+                                User Requests
+                            </a>
+                        </li>
+                        {% endif %}
 
 
                     <li class="nav-item">
