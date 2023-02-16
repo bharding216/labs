@@ -1,3 +1,11 @@
+/* Change the link hover color */
+.btn-primary:hover {
+  background-color: navy;
+  border-color: navy;
+}
+
+
+
 .section-with-background {
     background-image: url('/static/lab1.jpg');
     background-repeat: no-repeat;
