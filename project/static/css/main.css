@@ -5,6 +5,14 @@
 }
 
 
+.hover-link {
+  color: white;
+}
+
+.hover-link:hover {
+  color: navy;
+}
+
 
 .section-with-background {
     background-image: url('/static/lab1.jpg');
@@ -12,6 +20,10 @@
     background-position: center;
     background-size: cover;
 }
+
+
+
+
 
 .top-section-with-background {
   position: relative;
@@ -39,20 +51,6 @@
     }
   }
   
-  /*
-  @media (min-width: 992px) {
-    .top-section-with-background {
-      height: 60vh;
-    }
-  }
-  
-  @media (min-width: 1200px) {
-    .top-section-with-background {
-      height: 70vh;
-    }
-  }
-*/
-
 
 
 
@@ -72,19 +70,3 @@
     }
   }
   
- /* 
-.container {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-.content {
-  flex: 1;
-}
-
-footer {
-  background-color: #eee;
-  height: 50px;
-}
-*/
