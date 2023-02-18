@@ -189,10 +189,10 @@ def confirmation_new_user():
     sample_name = session.get('sample_name')
     sample_description = session.get('sample_description')
 
-
     selected_lab_id = session.get('selected_lab_id')
     lab_choice = labs.query.get_or_404(selected_lab_id)
     lab_id = lab_choice.id
+    current_user_id = current_user.id
 
     # save the testing info to the requests table.
     new_request = test_requests(sample_name = sample_name,
@@ -200,7 +200,8 @@ def confirmation_new_user():
                            turnaround = turnaround,
                            test_name = selected_test,
                            lab_id = lab_id,
-                           status = 'Pending'
+                           status = 'Pending',
+                           requestor_id = current_user_id
                            )
 
     db.session.add(new_request)
@@ -255,10 +256,29 @@ def confirmation_returning_user():
 @views.route("/lab_requests", methods=['GET', 'POST'])
 @login_required
 def lab_requests():
+    if request.method == 'POST':
+        request_id = request.form['id']
+        action = request.form['action']
+
+        if action == 'approve':
+            status = 'Approved'
+        elif action == 'deny':
+            status = 'Denied'
+        else:
+            status = None
+        
+        if status:
+            db.session.query(test_requests).filter_by(request_id = request_id).update({'status': status})
+            db.session.commit()
+            flash('Status updated successfully', 'success')
+        else:
+            flash('Invalid action.', 'error')
+
+        return redirect(url_for('views.lab_requests'))
+
 
     user_id = current_user.id
     lab_requests = test_requests.query.filter_by(lab_id = user_id).all()
-
 
     return render_template('lab_requests.html', 
                             user = current_user,
@@ -268,9 +288,18 @@ def lab_requests():
 @views.route("/user_requests", methods=['GET', 'POST'])
 @login_required
 def user_requests():
+    if request.method == 'POST':
+        flash('The buttons work!', 'success')
+        return redirect(url_for('views.user_requests'))
 
+    my_requests = db.session.query(test_requests, labs.name) \
+        .join(labs, test_requests.lab_id == labs.id) \
+        .filter(test_requests.requestor_id == current_user.id) \
+        .all()
+    
     return render_template('user_requests.html', 
                             user = current_user,
+                            my_requests = my_requests
                             )
 
 

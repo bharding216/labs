@@ -1,4 +1,20 @@
-/* Change the link hover color */
+.wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+}
+
+
+footer {
+  margin-top: auto;
+}
+
+
+
 .btn-primary:hover {
   background-color: navy;
   border-color: navy;
@@ -68,5 +84,11 @@
     .dropdown-menu {
       margin-right: 50px;
     }
+  }
+  
+
+
+  .table thead th {
+    background-color: #eace5f;
   }
   
