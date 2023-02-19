@@ -64,3 +64,4 @@ class test_requests(db.Model):
     test_name = db.Column(db.String(100), nullable=False)
     status = db.Column(db.String(100), nullable=False)
     lab_id = db.Column(db.Integer, db.ForeignKey('labs.id'), nullable=False)
+    results = db.Column(db.LargeBinary(length=2**32-1))

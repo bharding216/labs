@@ -30,12 +30,17 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th class="text-center" scope="col">Test Name</th>
-                    <th class="text-center" scope="col">Sample Name</th>
-                    <th class="text-center" scope="col">Sample Description</th>
-                    <th class="text-center" scope="col">Turnaround [days]</th>
-                    <th class="text-center" scope="col">Current Status</th>
-                    <th class="text-center" scope="col">Approve/Deny</th>
+                    <th class="text-center align-middle" scope="col">Test Name</th>
+                    <th class="text-center align-middle" scope="col">Sample Name</th>
+                    <th class="text-center align-middle" scope="col">Sample Description</th>
+                    <th class="text-center align-middle" scope="col">Requested Turnaround [days]</th>
+                    <th class="text-center align-middle" scope="col">Request Status</th>
+                    <th class="text-center align-middle" scope="col">Edit Status</th>
+                    <th class="text-center align-middle" scope="col">Upload Results</th>
+                    <th class="text-center align-middle" scope="col">Download Results</th>
+
+
+
                 </tr>
             </thead>
     
@@ -43,13 +48,13 @@
             <tbody>
                 {% for lab_request in lab_requests %}
                     <tr>
-                        <td class="text-center">{{ lab_request.test_name }}</td>
-                        <td class="text-center">{{ lab_request.sample_name }}</td>
-                        <td class="text-center">{{ lab_request.sample_description }}</td>
-                        <td class="text-center">{{ lab_request.turnaround }}</td>
-                        <td class="text-center">{{ lab_request.status }}</td>
+                        <td class="text-center align-middle">{{ lab_request.test_name }}</td>
+                        <td class="text-center align-middle">{{ lab_request.sample_name }}</td>
+                        <td class="text-center align-middle">{{ lab_request.sample_description }}</td>
+                        <td class="text-center align-middle">{{ lab_request.turnaround }}</td>
+                        <td class="text-center align-middle">{{ lab_request.status }}</td>
 
-                        <td class="text-center">
+                        <td class="text-center align-middle">
                             
                             <form action="{{ url_for('views.lab_requests') }}" method="POST">
                                 <!--pass extra data to the Flask route-->
@@ -61,10 +66,32 @@
                             <form action="{{ url_for('views.lab_requests') }}" method="POST">
                                 <input type="hidden" name="id" value="{{ lab_request.request_id }}">
                                 <input type="hidden" name="action" value="deny">
-                                <input type="submit" class="btn btn-outline-danger my-1" value="Deny">
+                                <input type="submit" class="btn btn-outline-danger my-1" value="Need more details">
                             </form>
 
                         </td>
+
+                        <td class="text-center align-middle">
+
+                            <form action="{{ url_for('views.upload') }}" method="POST" enctype="multipart/form-data">
+                                <input type="hidden" name="id" value="{{ lab_request.request_id }}">
+                                <input type="file" name="file">
+                                <input type="submit" class="btn btn-outline-primary my-1" value="Upload">
+                            </form>
+
+
+                        </td>
+
+                        <td class="text-center align-middle">
+                        {% if lab_request.results %}
+                            <a href="{{ url_for('views.download', request_id=lab_request.request_id) }}"
+                                class="btn btn-outline-primary my-1">Download</a>
+                      
+                        {% else %}
+                            <p>No results uploaded</p>  
+                        {% endif %}                    
+                        </td>
+
                     </tr>
     
                 {% endfor %}

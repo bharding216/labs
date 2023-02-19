@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, flash, url_for, session
+from flask import Blueprint, render_template, request, redirect, flash, url_for, session, send_file
 from flask_login import login_required, current_user, login_user
 from .models import tests, labs, labs_tests, individuals_login, labs_login, test_requests
 import datetime
@@ -10,6 +10,7 @@ import yaml
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous.exc import BadSignature
 import shippo
+from io import BytesIO
 
 
 views = Blueprint('views', __name__)
@@ -253,7 +254,7 @@ def confirmation_returning_user():
 
 
 
-@views.route("/lab_requests", methods=['GET', 'POST'])
+@views.route('/lab_requests', methods=['GET', 'POST'])
 @login_required
 def lab_requests():
     if request.method == 'POST':
@@ -263,7 +264,7 @@ def lab_requests():
         if action == 'approve':
             status = 'Approved'
         elif action == 'deny':
-            status = 'Denied'
+            status = 'Need more details'
         else:
             status = None
         
@@ -283,6 +284,37 @@ def lab_requests():
     return render_template('lab_requests.html', 
                             user = current_user,
                             lab_requests = lab_requests)
+
+
+@views.route('/upload', methods = ['GET', 'POST'])
+@login_required
+def upload():
+    if request.method == 'POST':
+        request_id = request.form['id']
+        file = request.files['file']
+        if file:
+            file_data = file.read()
+
+            db.session.query(test_requests).filter_by(request_id = request_id).update({'results': file_data})
+            db.session.commit()
+            flash('File was successfully uploaded!', 'success')
+            return redirect(url_for('views.lab_requests'))
+        else:
+            flash('There was an error handling your upload.', 'error')
+            return redirect(url_for('views.lab_requests'))
+
+
+@views.route('/download/<int:request_id>')
+def download(request_id):
+    result = db.session.query(test_requests).filter_by(request_id=request_id).first()
+    file_data = BytesIO(result.results)    
+    
+    if result:
+        return send_file(file_data, mimetype='application/pdf', as_attachment=True, download_name='results.pdf')
+    else:
+        flash("Error: Request not found or no results available.", "error")
+        return redirect(url_for("views.lab_requests"))
+
 
 
 @views.route("/user_requests", methods=['GET', 'POST'])
