@@ -25,24 +25,33 @@
 <!--LOGIN-->
 <div class="container my-5">
 
-    <form action="{{ url_for('auth.lab_login') }}" method="POST">
+    <form action="{{ url_for('auth.provider_login') }}" method="POST">
 
-        <h3>Lab Login</h3>
-        <p>Returning labs login here</p>
 
-        <div class="form-floating mb-3">
-            <input type="text" id="email" placeholder="Email"
-                class="form-control" name="email">
-            <label for="email">Lab Email</label>
+        <h3>Provider Login</h3>
+        <p>Returning providers login here</p>
+
+
+        <div class="row">
+            <div class="col-md-6 col-lg-4">
+                <div class="form-floating mb-3">
+                    <input type="text" id="email" placeholder="Email"
+                        class="form-control" name="email">
+                    <label for="email">Email</label>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="form-floating mb-3">
+                    <input type="password" id="password" placeholder="Password"
+                        class="form-control" name="password">
+                    <label for="password">Password</label>
+                </div>
+            </div>
         </div>
 
-        <div class="form-floating mb-3">
-            <input type="password" id="password" placeholder="Password"
-                class="form-control" name="password">
-            <label for="password">Password</label>
-        </div>
 
-        <button type="submit" class="btn btn-outline-primary">Login</button>
+        <button type="submit" class="btn btn-primary">Login</button>
 
     </form>
 
@@ -51,14 +60,22 @@
 
 <!--SIGNUP-->
 <div class="container my-5">
+    <div class="row" style="height: 250px">
 
-        <h3 class="my-3">Want to join Unified Labs?</h3>
-        <a class="btn btn-outline-primary mx-auto" 
-        href="{{ url_for('contact.contact_function') }}" role="button"
-        style="width: 20%">
-        
-        Contact Us
-        </a>
+        <div class="col-md-12 text-center d-flex flex-column justify-content-center" 
+            style="background-color:#eace5f">
+
+            <h3 class="pb-4">Want to join Unified Labs?</h3>
+            <a class="btn btn-primary mx-auto" 
+            href="{{ url_for('contact.contact_function') }}" role="button"
+            style="width: auto">
+            
+            Contact Us
+            </a>
+
+        </div>
+
+    </div>
 
 </div>
 

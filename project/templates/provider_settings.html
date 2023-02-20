@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}User Login{% endblock %}
+
+{% block content %}
+
+<div class="container my-5">
+    {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+        <div class="alert alert-danger mx-5" role="alert">
+                {% for category, message in messages %}
+                    {{ message }}
+                {% endfor %}
+        </div>
+    {% endif %}
+    {% endwith %}
+</div>
+
+
+<!--LOGIN-->
+<div class="container my-5">
+
+    <p>A page where the provider can update their profile settings, view the tests that they offer, 
+        add/delete/update testing details, etc.
+    </p>
+
+</div>
+
+
+{% endblock %}

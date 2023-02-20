@@ -79,7 +79,7 @@
                             <li class="nav-item">
                                 <a class="nav-link" aria-current="page" 
                                     href="{{ url_for('views.lab_requests') }}">
-                                    Lab Requests
+                                    Requests
                                 </a>
                             </li>
                             {% endif %}
@@ -88,18 +88,34 @@
                             <li class="nav-item">
                                 <a class="nav-link" aria-current="page" 
                                     href="{{ url_for('views.user_requests') }}">
-                                    User Requests
+                                    Customer Requests
                                 </a>
                             </li>
                             {% endif %}
 
 
-                        <li class="nav-item">
-                            <a class="nav-link" aria-current="page" 
-                                href="{{ url_for('auth.logout') }}">
-                                Logout
-                            </a>
-                        </li>
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" 
+                                href="#"
+                                id="navbarDropdownMenuLink"
+                                role="button"
+                                data-toggle="dropdown" 
+                                aria-haspopup="true" aria-expanded="false">
+                                Settings
+                                </a>
+    
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                    <a class="dropdown-item" href="{{ url_for('views.provider_settings') }}">Edit Profile</a>
+                                    <a class="dropdown-item" href="{{ url_for('auth.logout') }}">Logout</a>
+                                </div>
+                            </li>
+
+
+
+
+
+
 
                         {% else %}
                         <li class="nav-item dropdown">
@@ -113,8 +129,8 @@
                             </a>
 
                             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <a class="dropdown-item" href="{{ url_for('auth.individual_login') }}">Individuals</a>
-                                <a class="dropdown-item" href="{{ url_for('auth.lab_login') }}">Labs</a>
+                                <a class="dropdown-item" href="{{ url_for('auth.customer_login') }}">Customers</a>
+                                <a class="dropdown-item" href="{{ url_for('auth.provider_login') }}">Providers</a>
                             </div>
                         </li>
                         

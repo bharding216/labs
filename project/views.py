@@ -310,7 +310,10 @@ def download(request_id):
     file_data = BytesIO(result.results)    
     
     if result:
-        return send_file(file_data, mimetype='application/pdf', as_attachment=True, download_name='results.pdf')
+        return send_file(file_data, 
+                         mimetype='application/pdf', 
+                         as_attachment=True, 
+                         download_name='results.pdf')
     else:
         flash("Error: Request not found or no results available.", "error")
         return redirect(url_for("views.lab_requests"))
@@ -333,6 +336,17 @@ def user_requests():
                             user = current_user,
                             my_requests = my_requests
                             )
+
+
+
+
+@views.route("/provider_settings", methods=['GET', 'POST'])
+@login_required
+def provider_settings():
+       return render_template('provider_settings.html', 
+                               user = current_user
+                               )
+
 
 
 

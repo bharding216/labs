@@ -9,7 +9,7 @@ auth_bp = Blueprint('auth', __name__, template_folder='auth_templates', static_f
 
 
 @auth_bp.route("/lab", methods=['GET', 'POST'])
-def lab_login():
+def provider_login():
     if request.method == 'POST':
         email = request.form["email"]
         password = request.form["password"]
@@ -32,7 +32,7 @@ def lab_login():
 
 
 @auth_bp.route("/individual", methods=['GET', 'POST'])
-def individual_login():
+def customer_login():
     if request.method == 'POST':
         email = request.form["email"]
         password = request.form["password"]
