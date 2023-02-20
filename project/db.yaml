@@ -1,7 +1,7 @@
-mysql_host: 'localhost'
-mysql_user: 'root'
-mysql_password: 'Monkey216'
-mysql_db: 'labs'
+# mysql_host: 'localhost'
+# mysql_user: 'root'
+# mysql_password: 'Monkey216'
+# mysql_db: 'labs'
 secret_key: 'secret'
 salt: 'salt_key'
 mail_password: '0a8c23c803b5c3'
@@ -10,9 +10,9 @@ shippo_api_key: 'shippo_test_8b9d49afaa5a8fd4a0cf3807e858ec8676e689e0'
 
 
 # Remote db settings:
-# mysql_host: 'us-cdbr-east-06.cleardb.net'
-# mysql_user: 'b107b6d70e4893'
-# mysql_password: '59738ccb'
-# mysql_db: 'heroku_f6329cf20aff36b'
+mysql_host: 'us-cdbr-east-06.cleardb.net'
+mysql_user: 'b107b6d70e4893'
+mysql_password: '59738ccb'
+mysql_db: 'heroku_f6329cf20aff36b'
 
 #mysql://b107b6d70e4893:59738ccb@us-cdbr-east-06.cleardb.net/heroku_f6329cf20aff36b?reconnect=true
