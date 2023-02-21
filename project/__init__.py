@@ -1,4 +1,4 @@
-from flask import Flask, session
+from flask import Flask, session, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 import yaml
 from flask_login import LoginManager
@@ -91,6 +91,11 @@ def create_app():
             else:
                 user = None
             return user
+
+        @app.before_request
+        def redirect_to_https():
+            if not request.is_secure:
+                return redirect(request.url.replace('http://', 'https://'), code=301)
 
 
         return app
