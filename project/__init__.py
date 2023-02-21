@@ -68,7 +68,7 @@ def create_app():
 
         db.create_all()
 
-        login_manager.login_view = "auth_bp.lab_login"
+        login_manager.login_view = "auth.provider_login"
         login_manager.login_message = ""
         login_manager.login_message_category = "error"
         login_manager.init_app(app)

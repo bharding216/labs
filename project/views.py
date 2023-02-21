@@ -98,9 +98,7 @@ def new_user_booking():
         session['sample_description'] = sample_description
         session['turnaround'] = turnaround
 
-
         email_exists = individuals_login.query.filter_by(email = email).first()
-        print(email_exists)
         if email_exists:
             flash('That email is already in use. Please try another email or log in.', category = 'error')
             selected_lab_id = session.get('selected_lab_id')
@@ -125,10 +123,16 @@ def new_user_booking():
                 password = hashed_password, 
                 phone = phone, 
                 email = email,
-                company_name = company_name
+                company_name = company_name,
+                type = 'customer'
                 )
             db.session.add(new_user)
             db.session.commit()
+
+            login_user(email_exists, remember = True)
+            session.permanent = True
+            session['type'] = 'requestor'
+            
             flash('New account successfully created.', category = 'success')
             return redirect(url_for('views.confirmation_new_user'))
 
