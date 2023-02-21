@@ -284,9 +284,8 @@ def lab_requests():
 
         return redirect(url_for('views.lab_requests'))
 
-
-    user_id = current_user.id
-    lab_requests = test_requests.query.filter_by(lab_id = user_id).all()
+    lab_info_id = labs_login.query.filter_by(id = current_user.id).first().lab_id
+    lab_requests = test_requests.query.filter_by(lab_id = lab_info_id).all()
 
     return render_template('lab_requests.html', 
                             user = current_user,

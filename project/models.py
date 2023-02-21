@@ -30,6 +30,7 @@ class labs(db.Model):
     minor_category = db.Column(db.String(100))
     website_url = db.Column(db.String(100))
     tests = db.relationship('tests', secondary='labs_tests', back_populates='labs')
+    lab_logins = db.relationship('labs_login', backref='labs', lazy=True)
 
 class labs_tests(db.Model):
     lab_id = db.Column(db.Integer, db.ForeignKey('labs.id'), primary_key=True)
@@ -43,6 +44,7 @@ class labs_login(db.Model, UserMixin):
     email = db.Column(db.String(100), nullable=False, unique=True)
     password = db.Column(db.String(512), nullable=False)
     type = db.Column(db.String(15))
+    lab_id = db.Column(db.Integer, db.ForeignKey('labs.id'))
 
 class individuals_login(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
