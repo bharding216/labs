@@ -53,7 +53,8 @@ def create_app():
 
     db.init_app(app)
     mail.init_app(app)
-    
+
+
     with app.app_context():
 
         from .views import views
@@ -92,9 +93,10 @@ def create_app():
                 user = None
             return user
 
+        # Middleware to ensure a secure connection to the site
         @app.before_request
         def redirect_to_https():
-            if not request.is_secure:
+            if not request.is_secure and request.host != 'localhost:2000':
                 return redirect(request.url.replace('http://', 'https://'), code=301)
 
 

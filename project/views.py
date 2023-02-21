@@ -129,10 +129,11 @@ def new_user_booking():
             db.session.add(new_user)
             db.session.commit()
 
-            login_user(email_exists, remember = True)
+            user = individuals_login.query.filter_by(email = email).first()
+            login_user(user, remember = True)
             session.permanent = True
             session['type'] = 'requestor'
-            
+
             flash('New account successfully created.', category = 'success')
             return redirect(url_for('views.confirmation_new_user'))
 

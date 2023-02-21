@@ -50,7 +50,7 @@ class individuals_login(db.Model, UserMixin):
     last_name = db.Column(db.String(100), nullable=False)
     phone = db.Column(db.String(15))
     email = db.Column(db.String(100), nullable=False, unique=True)
-    password = db.Column(db.String(100), nullable=False)
+    password = db.Column(db.String(512), nullable=False)
     company_name = db.Column(db.String(100))
     type = db.Column(db.String(15))
 
