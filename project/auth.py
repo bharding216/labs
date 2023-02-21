@@ -42,7 +42,7 @@ def customer_login():
             if check_password_hash(user.password, password):
                 login_user(user, remember = True)
                 session.permanent = True
-                session['type'] = 'requestor'
+                session['type'] = 'customer'
                 flash('Login successful!', category = 'success')
                 return redirect(url_for('views.index'))
             else:
@@ -105,7 +105,7 @@ def user_signup():
                                          phone=phone, 
                                          email=email,
                                          company_name = company,
-                                         type = 'requestor'
+                                         type = 'customer'
                                          )
             db.session.add(new_user)
             db.session.commit()

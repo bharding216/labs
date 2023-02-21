@@ -264,32 +264,68 @@ def confirmation_returning_user():
 @views.route('/lab_requests', methods=['GET', 'POST'])
 @login_required
 def lab_requests():
-    if request.method == 'POST':
-        request_id = request.form['id']
-        action = request.form['action']
 
-        if action == 'approve':
-            status = 'Approved'
-        elif action == 'deny':
-            status = 'Need more details'
-        else:
-            status = None
+    try:
+        if request.method == 'POST':
+            try:
+                request_id = request.form['id']
+                action = request.form['action']
+
+                if action == 'approve':
+                    status = 'Approved'
+                elif action == 'deny':
+                    status = 'Need more details'
+                else:
+                    status = None
         
-        if status:
-            db.session.query(test_requests).filter_by(request_id = request_id).update({'status': status})
-            db.session.commit()
-            flash('Status updated successfully', 'success')
-        else:
-            flash('Invalid action.', 'error')
+                if status:
+                    db.session.query(test_requests).filter_by(request_id = request_id).update({'status': status})
+                    db.session.commit()
+                    flash('Status updated successfully', 'success')
+                else:
+                    flash('Invalid action.', 'error')
 
+                return redirect(url_for('views.lab_requests'))
+
+            # Handle any exceptions that might occur when processing the POST request. It 
+            # catches any KeyError exceptions that might occur if the 'id' or 'action' 
+            # keys are not present in the request form.
+            except KeyError:
+                flash('Invalid request.', 'error')
+                return redirect(url_for('views.lab_requests'))
+
+            except Exception as e:
+                flash('An error occurred: ' + str(e), 'error')
+                return redirect(url_for('views.lab_requests'))
+
+        # Handle any exceptions that might occur when retrieving the lab information 
+        # and test requests from the database. It catches any AttributeError exceptions 
+        # that might occur if the user information is invalid, and catches any other 
+        # exceptions that might occur.
+        try:
+            lab_info_id = labs_login.query.filter_by(id = current_user.id).first().lab_id
+            lab_requests = test_requests.query.filter_by(lab_id = lab_info_id).all()
+
+        except AttributeError:
+            flash('Invalid user information.', 'error')
+            return redirect(url_for('views.lab_requests'))
+
+        # Catch any other exceptions that might occur while running the code, 
+        # and displays an error message to the user.
+        except Exception as e:
+            flash('An error occurred: ' + str(e), 'error')
+            return redirect(url_for('views.lab_requests'))
+
+        return render_template('lab_requests.html', 
+                                user = current_user,
+                                lab_requests = lab_requests)
+
+    except Exception as e:
+        flash('An error occurred: ' + str(e), 'error')
         return redirect(url_for('views.lab_requests'))
 
-    lab_info_id = labs_login.query.filter_by(id = current_user.id).first().lab_id
-    lab_requests = test_requests.query.filter_by(lab_id = lab_info_id).all()
 
-    return render_template('lab_requests.html', 
-                            user = current_user,
-                            lab_requests = lab_requests)
+
 
 
 @views.route('/upload', methods = ['GET', 'POST'])
@@ -349,9 +385,13 @@ def user_requests():
 @views.route("/provider_settings", methods=['GET', 'POST'])
 @login_required
 def provider_settings():
-       return render_template('provider_settings.html', 
-                               user = current_user
-                               )
+    current_user_lab_id = current_user.lab_id
+    logged_in_lab = labs.query.filter_by(id = current_user_lab_id).first()
+
+    return render_template('provider_settings.html', 
+                            user = current_user,
+                            lab = logged_in_lab
+                            )
 
 
 

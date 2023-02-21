@@ -84,11 +84,11 @@
                             </li>
                             {% endif %}
 
-                            {% if user.type == "requestor" %}
+                            {% if user.type == "customer" %}
                             <li class="nav-item">
                                 <a class="nav-link" aria-current="page" 
                                     href="{{ url_for('views.user_requests') }}">
-                                    Customer Requests
+                                    Requests
                                 </a>
                             </li>
                             {% endif %}
