@@ -40,6 +40,14 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://' + test['mysql_user'] + \
         ':' + test['mysql_password'] + '@' + test['mysql_host'] + '/' + test['mysql_db']
     
+
+    app.config['SQLALCHEMY_POOL_SIZE'] = 10
+    app.config['SQLALCHEMY_POOL_RECYCLE'] = 3600
+    app.config['SQLALCHEMY_MAX_OVERFLOW'] = 5
+    app.config['SQLALCHEMY_POOL_TIMEOUT'] = 30
+
+
+
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
