@@ -183,6 +183,7 @@ def returning_user_booking():
 
 
 @views.route('/confirmation_new_user', methods=['GET', 'POST'])
+@login_required
 def confirmation_new_user():
     selected_test = session.get('selected_test')
     first_name = session.get('first_name', None)
@@ -218,6 +219,7 @@ def confirmation_new_user():
 
 
 @views.route('/confirmation_returning_user', methods=['GET', 'POST'])
+@login_required
 def confirmation_returning_user():
     if request.method == 'POST':
         sample_name = request.form['sample_name']
