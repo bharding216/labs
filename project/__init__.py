@@ -42,9 +42,9 @@ def create_app():
     
 
     app.config['SQLALCHEMY_POOL_SIZE'] = 10
-    app.config['SQLALCHEMY_POOL_RECYCLE'] = 3600
+    app.config['SQLALCHEMY_POOL_RECYCLE'] = 30
     app.config['SQLALCHEMY_MAX_OVERFLOW'] = 5
-    app.config['SQLALCHEMY_POOL_TIMEOUT'] = 30
+    app.config['SQLALCHEMY_POOL_TIMEOUT'] = 60
 
 
 
