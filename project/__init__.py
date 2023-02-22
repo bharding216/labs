@@ -7,6 +7,7 @@ from flask_mail import Mail
 from datetime import timedelta
 from itsdangerous import URLSafeTimedSerializer
 import shippo
+import os
 
 
 db = SQLAlchemy()
@@ -93,11 +94,17 @@ def create_app():
                 user = None
             return user
 
-        # Middleware to ensure a secure connection to the site
+
         @app.before_request
-        def redirect_to_https():
+        def redirect_to_www_and_https():
+            # Redirect non-www requests to www version (Heroku only)
+            if 'DYNO' in os.environ and not request.url.startswith('https://www.'):
+                return redirect(request.url.replace('https://', 'https://www.'), code=301)
+
+            # Ensure that all requests are secure (HTTPS)
             if not request.is_secure and request.host != 'localhost:2000':
                 return redirect(request.url.replace('http://', 'https://'), code=301)
+
 
 
         return app

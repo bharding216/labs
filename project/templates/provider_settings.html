@@ -110,22 +110,22 @@
     <h3>Test Offerings & Pricing</h3>
 
     <div class="table-responsive mx-5 py-5">
-        <table class="table">
+        <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th class="text-center" scope="col">Test Name</th>
-                    <th class="text-center" scope="col">Price [$]</th>
-                    <th class="text-center" scope="col">Edit</th>
+                    <th class="text-center align-middle" scope="col">Test Name</th>
+                    <th class="text-center align-middle" scope="col">Price [$]</th>
+                    <th class="text-center align-middle" scope="col">Edit</th>
                 </tr>
             </thead>
 
             <tbody>
                 {% for row in tests_and_pricing %}
                     <tr>
-                        <td class="text-center">{{ row[0] }}</td>
-                        <td class="text-center">{{ row[1] }}</td>
+                        <td class="text-center align-middle">{{ row[0] }}</td>
+                        <td class="text-center align-middle">{{ row[1] }}</td>
     
-                        <td class="text-center">
+                        <td class="text-center align-middle">
                             <form action="#" method="POST">
                                 <input type="hidden" name="lab_id">
                                 <input type="submit" class="btn btn-primary my-1" value="Edit">
