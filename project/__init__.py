@@ -106,5 +106,4 @@ def create_app():
                 return redirect(request.url.replace('http://', 'https://'), code=301)
 
 
-
         return app
