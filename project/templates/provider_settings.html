@@ -23,30 +23,123 @@
 </div>
 
 
-<!--LOGIN-->
 <div class="container my-5">
 
-    <h2 class="text-center">Profile for <u>{{ lab.name }}</u></h2>
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="text-center">Profile for <u>{{ lab.name }}</u></h2>
+        </div>
+    </div>
 
-    <br>
 
-    <h3>My Info</h3>
+    <div class="row mb-3">
+        <div class="col">
+            <h3>My Info</h3>
+        </div>
+    </div>
 
-    <p>A table that contains 3 columns:</p>
-    <li>Category (Email, Address, Phone, etc.)</li>
-    <li>Value (The actual values)</li>
-    <li>Modify Buttons (button to edit the value)</li>
+    <div class="table-responsive mx-5 pb-4">
+        <table class="table table-bordered">
+
+            <tbody>
+
+                    <tr>
+                        <td class="text-center align-middle"><b>Lab Name</b></td>
+                        <td class="text-center align-middle">{{ lab.name }}</td>
+                        <td class="text-center align-middle">
+                            <form action="{{ url_for('views.provider_settings') }}" method="POST">
+                                <input type="hidden" name="id">
+                                <input type="submit" class="btn btn-primary my-1" value="Edit">
+                            </form>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-center align-middle"><b>Email</b></td>
+                        <td class="text-center align-middle">{{ lab.email }}</td>
+                        <td class="text-center align-middle">
+                            <form action="{{ url_for('views.provider_settings') }}" method="POST">
+                                <input type="hidden" name="id">
+                                <input type="submit" class="btn btn-primary my-1" value="Edit">
+                            </form>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-center align-middle"><b>Password</b></td>
+                        <td class="text-center align-middle">*********</td>
+                        <td class="text-center align-middle">
+                            <form action="{{ url_for('views.provider_settings') }}" method="POST">
+                                <input type="hidden" name="id">
+                                <input type="submit" class="btn btn-primary my-1" value="Edit">
+                            </form>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-center align-middle"><b>City</b></td>
+                        <td class="text-center align-middle">{{ lab.city }}</td>
+                        <td class="text-center align-middle">
+                            <form action="{{ url_for('views.provider_settings') }}" method="POST">
+                                <input type="hidden" name="id">
+                                <input type="submit" class="btn btn-primary my-1" value="Edit">
+                            </form>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-center align-middle"><b>State</b></td>
+                        <td class="text-center align-middle">{{ lab.state }}</td>
+                        <td class="text-center align-middle">
+                            <form action="{{ url_for('views.provider_settings') }}" method="POST">
+                                <input type="hidden" name="id">
+                                <input type="submit" class="btn btn-primary my-1" value="Edit">
+                            </form>
+                        </td>
+                    </tr>
+    
+            </tbody>
+    
+        </table>
+    
+    </div>
 
     <br>
 
 
     <h3>Test Offerings & Pricing</h3>
 
-    <p>A table that contains 3 columns:</p>
-    <li>Test Name</li>
-    <li>Test Price</li>
-    <li>Modify Buttons (button to edit the name or price)</li>
+    <div class="table-responsive mx-5 py-5">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="text-center" scope="col">Test Name</th>
+                    <th class="text-center" scope="col">Price [$]</th>
+                    <th class="text-center" scope="col">Edit</th>
+                </tr>
+            </thead>
 
+            <tbody>
+                {% for row in tests_and_pricing %}
+                    <tr>
+                        <td class="text-center">{{ row[0] }}</td>
+                        <td class="text-center">{{ row[1] }}</td>
+    
+                        <td class="text-center">
+                            <form action="#" method="POST">
+                                <input type="hidden" name="lab_id">
+                                <input type="submit" class="btn btn-primary my-1" value="Edit">
+                            </form>
+                        </td>
+                    </tr>
+    
+                {% endfor %}
+
+            </tbody>
+    
+        </table>
+    
+    </div>
 
 </div>
 

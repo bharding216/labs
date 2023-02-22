@@ -388,9 +388,16 @@ def provider_settings():
     current_user_lab_id = current_user.lab_id
     logged_in_lab = labs.query.filter_by(id = current_user_lab_id).first()
 
+    tests_and_pricing = db.session.query(tests.name, labs_tests.price, labs_tests.lab_id).\
+                            join(tests.labs).\
+                            filter(labs_tests.lab_id == current_user_lab_id).\
+                            all()
+        
+
     return render_template('provider_settings.html', 
                             user = current_user,
-                            lab = logged_in_lab
+                            lab = logged_in_lab,
+                            tests_and_pricing = tests_and_pricing
                             )
 
 
