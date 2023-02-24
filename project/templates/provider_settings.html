@@ -48,7 +48,8 @@
                         <td class="text-center align-middle">{{ lab.name }}</td>
                         <td class="text-center align-middle">
                             <form action="{{ url_for('views.provider_settings') }}" method="POST">
-                                <input type="hidden" name="id">
+                                <input type="hidden" name="id" value="{{ lab.id }}">
+                                <input type="hidden" name="field_name" value="name">
                                 <input type="submit" class="btn btn-primary my-1" value="Edit">
                             </form>
                         </td>
@@ -59,7 +60,8 @@
                         <td class="text-center align-middle">{{ lab.email }}</td>
                         <td class="text-center align-middle">
                             <form action="{{ url_for('views.provider_settings') }}" method="POST">
-                                <input type="hidden" name="id">
+                                <input type="hidden" name="id" value="{{ lab.id }}">
+                                <input type="hidden" name="field_name" value="email">
                                 <input type="submit" class="btn btn-primary my-1" value="Edit">
                             </form>
                         </td>
@@ -70,7 +72,8 @@
                         <td class="text-center align-middle">*********</td>
                         <td class="text-center align-middle">
                             <form action="{{ url_for('views.provider_settings') }}" method="POST">
-                                <input type="hidden" name="id">
+                                <input type="hidden" name="id" value="{{ lab.id }}">
+                                <input type="hidden" name="field_name" value="password">
                                 <input type="submit" class="btn btn-primary my-1" value="Edit">
                             </form>
                         </td>
@@ -81,7 +84,8 @@
                         <td class="text-center align-middle">{{ lab.city }}</td>
                         <td class="text-center align-middle">
                             <form action="{{ url_for('views.provider_settings') }}" method="POST">
-                                <input type="hidden" name="id">
+                                <input type="hidden" name="id" value="{{ lab.id }}">
+                                <input type="hidden" name="field_name" value="city">
                                 <input type="submit" class="btn btn-primary my-1" value="Edit">
                             </form>
                         </td>
@@ -92,7 +96,8 @@
                         <td class="text-center align-middle">{{ lab.state }}</td>
                         <td class="text-center align-middle">
                             <form action="{{ url_for('views.provider_settings') }}" method="POST">
-                                <input type="hidden" name="id">
+                                <input type="hidden" name="id" value="{{ lab.id }}">
+                                <input type="hidden" name="field_name" value="state">
                                 <input type="submit" class="btn btn-primary my-1" value="Edit">
                             </form>
                         </td>
@@ -127,7 +132,7 @@
     
                         <td class="text-center align-middle">
                             <form action="#" method="POST">
-                                <input type="hidden" name="lab_id">
+                                <input type="hidden" name="id" value="{{ lab.id }}">
                                 <input type="submit" class="btn btn-primary my-1" value="Edit">
                             </form>
                         </td>

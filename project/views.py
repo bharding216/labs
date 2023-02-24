@@ -11,6 +11,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous.exc import BadSignature
 import shippo
 from io import BytesIO
+import phonenumbers
 
 
 views = Blueprint('views', __name__)
@@ -97,6 +98,20 @@ def new_user_booking():
         session['sample_name'] = sample_name
         session['sample_description'] = sample_description
         session['turnaround'] = turnaround
+
+        # Check if the phone number string has 10 characters. If it does,
+        # add +1 to make it in the correct format for `phonenumbers`.
+        # Then try to parse the phone number. If you can't parse it, then 
+        # just save the user input and move on. 
+        if len(phone) == 10:
+            phone = "+1" + phone
+        try:
+            parsed_number = phonenumbers.parse(phone, None)
+            formatted_number = phonenumbers.format_number(parsed_number, phonenumbers.PhoneNumberFormat.E164)
+            phone = formatted_number
+        except phonenumbers.NumberParseException:
+            pass
+
 
         email_exists = individuals_login.query.filter_by(email = email).first()
         if email_exists:
@@ -385,6 +400,21 @@ def user_requests():
 @views.route("/provider_settings", methods=['GET', 'POST'])
 @login_required
 def provider_settings():
+    if request.method == 'POST':
+        lab_id = request.form['id']
+        field_name = request.form['field_name']
+
+        lab_object = labs.query.get(lab_id)
+
+        if lab_object is not None:
+            return render_template('update_lab.html',
+                                user = current_user,
+                                lab_object = lab_object,
+                                field_name = field_name)
+        else:
+            flash('Lab not found', 'error')
+            return redirect(url_for('views.provider_settings'))
+
     current_user_lab_id = current_user.lab_id
     logged_in_lab = labs.query.filter_by(id = current_user_lab_id).first()
 
@@ -394,13 +424,46 @@ def provider_settings():
                             order_by(tests.name.asc()).\
                             all()
         
-
     return render_template('provider_settings.html', 
                             user = current_user,
                             lab = logged_in_lab,
                             tests_and_pricing = tests_and_pricing
                             )
 
+
+@views.route("/update_lab/<int:id>/<string:field_name>", methods=['GET', 'POST'])
+@login_required
+def update_lab(id, field_name):
+    lab_object = labs.query.get(id)
+    new_value = request.form[field_name]
+
+    if field_name == 'password':
+        password2 = request.form['password2']
+        if new_value == password2:
+            new_value = generate_password_hash(new_value)
+
+            lab_login_object = labs_login.query.filter_by(lab_id=id).first()
+            lab_login_object.password = new_value
+
+            db.session.add(lab_login_object)
+            db.session.commit()
+
+        else:
+            flash('Those password do not match, please try again', 'error')
+            return render_template('update_lab.html',
+                                   user = current_user,
+                                   lab_object = lab_object,
+                                   field_name = field_name)
+
+    # The setattr() function is a built-in Python function that takes 
+    # three arguments: an object, a string indicating the name of 
+    # an attribute, and a new value for the attribute.  
+    setattr(lab_object, field_name, new_value)
+    
+    db.session.commit()
+    flash('Your settings have been successfully updated!', 'success')
+
+    return redirect(url_for('views.provider_settings'))
 
 
 
