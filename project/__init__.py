@@ -8,6 +8,7 @@ from datetime import timedelta
 from itsdangerous import URLSafeTimedSerializer
 import shippo
 import os
+from helpers import my_enumerate
 
 
 db = SQLAlchemy()
@@ -16,6 +17,8 @@ mail = Mail()
 
 def create_app():
     app = Flask(__name__)
+    app.jinja_env.globals.update(my_enumerate = my_enumerate)
+
 
     with open('project/db.yaml', 'r') as file:
         test = yaml.load(file, Loader=yaml.FullLoader)

@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}USL | Update Tests & Pricing{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+
+<div class="container my-5">
+    {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+            {% for category, message in messages %}
+                {% if category == 'success' %}
+                    <div class="alert alert-success mx-5" role="alert">
+                        {{ message }}
+                    </div>
+                {% else %}
+                    <div class="alert alert-danger mx-5" role="alert">
+                        {{ message }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+    {% endif %}
+    {% endwith %}
+</div>
+
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col">
+            <h2>Update Pricing</h2>
+        </div>
+    </div>
+</div>
+
+
+<div class="container my-5">
+
+        <div class="row">
+            <div class="col">
+                <p><b>Test Name:</b> {{ test_name }}</p>
+            </div>
+        </div>
+
+    <!--these url_for variables were passed from the view function to the template. Adding these
+        variables here allows you to pass them back to another view function. -->
+    <form action="{{ url_for('views.update_prices', id=lab_id, test_name=test_name_encoded) }}" method="POST">
+
+        <div class="form-floating mb-3 col-md-8 col-lg-4">
+            <input type="text" 
+                class="form-control" 
+                id="test_price" 
+                name="test_price" 
+                value="{{ test_price }}"
+                placeholder="Test Price [$]">
+            <label for="test_price">Test Price [$]</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+
+    </form>
+
+</div>
+
+
+
+
+{% endblock %}

@@ -12,6 +12,7 @@ from itsdangerous.exc import BadSignature
 import shippo
 from io import BytesIO
 import phonenumbers
+from urllib.parse import quote, unquote
 
 
 views = Blueprint('views', __name__)
@@ -401,34 +402,76 @@ def user_requests():
 @login_required
 def provider_settings():
     if request.method == 'POST':
-        lab_id = request.form['id']
-        field_name = request.form['field_name']
+        if request.form['type'] == "info":
+            lab_id = request.form['id']
+            field_name = request.form['field_name']
 
-        lab_object = labs.query.get(lab_id)
+            lab_object = labs.query.get(lab_id)
 
-        if lab_object is not None:
-            return render_template('update_lab.html',
-                                user = current_user,
-                                lab_object = lab_object,
-                                field_name = field_name)
-        else:
-            flash('Lab not found', 'error')
-            return redirect(url_for('views.provider_settings'))
+            if lab_object is not None:
+                return render_template('update_lab.html',
+                                    user = current_user,
+                                    lab_object = lab_object,
+                                    field_name = field_name)
+            else:
+                flash('Lab not found.', 'error')
+                return redirect(url_for('views.provider_settings'))
+
+        if request.form['type'] == "tests_prices":
+            lab_id = request.form['id']
+            test_name = request.form['test_name']
+            test_name_encoded = quote(test_name)
+            test_price = request.form['test_price']
+            return render_template('update_prices.html',
+                                   test_name_encoded = test_name_encoded,
+                                   test_price = test_price,
+                                   user = current_user,
+                                   lab_id = lab_id)
 
     current_user_lab_id = current_user.lab_id
     logged_in_lab = labs.query.filter_by(id = current_user_lab_id).first()
 
+    # Create a list of tuples, where each typle is a test name and price pair 
+    # where the logged in user id is equal to the lab_id in the labs_tests table. 
     tests_and_pricing = db.session.query(tests.name, labs_tests.price).\
                             join(labs_tests, tests.id == labs_tests.test_id).\
                             filter(labs_tests.lab_id == current_user_lab_id).\
                             order_by(tests.name.asc()).\
                             all()
-        
+
     return render_template('provider_settings.html', 
                             user = current_user,
                             lab = logged_in_lab,
                             tests_and_pricing = tests_and_pricing
                             )
+
+
+
+
+@views.route("/update_prices/<int:id>/<path:test_name>", methods=['GET', 'POST'])
+@login_required
+def update_prices(id, test_name):
+
+    new_price = request.form.get('test_price')
+    test_name = unquote(test_name)
+    test_object = tests.query.filter_by(name = test_name).first()
+    lab_object = labs.query.get(id)
+
+    labs_tests_object = labs_tests.query.\
+        filter_by(lab_id = lab_object.id, test_id = test_object.id).\
+        first()
+    
+    labs_tests_object.price = new_price
+
+    db.session.add(labs_tests_object)
+    db.session.commit()
+
+    flash('New price updated for ' + test_name +'.', 'success')
+
+    return redirect(url_for('views.provider_settings'))
+
+
+
 
 
 @views.route("/update_lab/<int:id>/<string:field_name>", methods=['GET', 'POST'])
