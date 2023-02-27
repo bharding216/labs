@@ -38,9 +38,6 @@
                     <th class="text-center align-middle" scope="col">Edit Status</th>
                     <th class="text-center align-middle" scope="col">Upload Results</th>
                     <th class="text-center align-middle" scope="col">Download Results</th>
-
-
-
                 </tr>
             </thead>
     
@@ -56,18 +53,34 @@
 
                         <td class="text-center align-middle">
                             
-                            <form action="{{ url_for('views.lab_requests') }}" method="POST">
-                                <!--pass extra data to the Flask route-->
-                                <input type="hidden" name="id" value="{{ lab_request.request_id }}">
-                                <input type="hidden" name="action" value="approve">
-                                <input type="submit" class="btn btn-outline-success my-1" value="Approve">
-                            </form>
 
-                            <form action="{{ url_for('views.lab_requests') }}" method="POST">
-                                <input type="hidden" name="id" value="{{ lab_request.request_id }}">
-                                <input type="hidden" name="action" value="deny">
-                                <input type="submit" class="btn btn-outline-danger my-1" value="Need more details">
-                            </form>
+                            {% if lab_request.status|lower != "approved" %}
+
+                                <!--Note that the "return" keyword is important. It ensures that the form
+                                    is only submitted if the function returns true.-->
+                                <form action="{{ url_for('views.lab_requests') }}" 
+                                    method="POST"
+                                    onsubmit="return confirmApproval()">
+
+                                    <!--pass extra data to the Flask route-->
+                                    <input type="hidden" name="id" value="{{ lab_request.request_id }}">
+                                    <input type="hidden" name="action" value="approve">
+
+                                    <input type="submit" class="btn btn-outline-success my-1" value="Approve">
+                                </form>
+
+                            {% endif %}
+
+
+                            {% if "need more details" not in lab_request.status|lower %}
+
+                                <form action="{{ url_for('views.lab_requests') }}" method="POST">
+                                    <input type="hidden" name="id" value="{{ lab_request.request_id }}">
+                                    <input type="hidden" name="action" value="deny">
+                                    <input type="submit" class="btn btn-outline-danger my-1" value="Need more details">
+                                </form>
+
+                            {% endif %}
 
                         </td>
 
@@ -106,4 +119,18 @@
 </div>
 
 
+<script>
+    function confirmApproval() {
+        var result = confirm("Are you sure you want to change the status to 'Approved'?");
+    
+        if (result) {
+        return true;
+        } else {
+        return false;
+        }
+    }
+
+</script>
+
 {% endblock %}
+

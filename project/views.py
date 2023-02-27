@@ -342,6 +342,12 @@ def lab_requests():
 
 
 
+@views.route('/submit_details', methods = ['GET', 'POST'])
+@login_required
+def submit_details():
+    flash('It works!', 'success')
+    return redirect(url_for('views.lab_requests'))
+
 
 
 @views.route('/upload', methods = ['GET', 'POST'])
