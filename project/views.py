@@ -13,6 +13,7 @@ import shippo
 from io import BytesIO
 import phonenumbers
 from urllib.parse import quote, unquote
+import os
 
 
 views = Blueprint('views', __name__)
@@ -580,7 +581,7 @@ def shipping():
             test = yaml.load(file, Loader=yaml.FullLoader)
 
         # Shippo API Key:
-        shippo.config.api_key = test['shippo_api_key']
+        shippo.config.api_key = os.getenv('shippo_api_key')
 
         address_from = {
             "name": "John Doe",

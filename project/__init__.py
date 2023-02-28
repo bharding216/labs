@@ -9,6 +9,8 @@ from itsdangerous import URLSafeTimedSerializer
 import shippo
 import os
 from helpers import my_enumerate
+from dotenv import load_dotenv
+
 
 
 db = SQLAlchemy()
@@ -17,16 +19,18 @@ mail = Mail()
 
 def create_app():
     app = Flask(__name__)
+    load_dotenv()
+    # Create my_enumerate function and make it available globally.
     app.jinja_env.globals.update(my_enumerate = my_enumerate)
 
 
     with open('project/db.yaml', 'r') as file:
         test = yaml.load(file, Loader=yaml.FullLoader)
-    app.config['MYSQL_HOST'] = test['mysql_host']
-    app.config['MYSQL_USER'] = test['mysql_user']
-    app.config['MYSQL_PASSWORD'] = test['mysql_password']
-    app.config['MYSQL_DB'] = test['mysql_db']
-    app.config['SECRET_KEY'] = test['secret_key']
+    app.config['MYSQL_HOST'] = os.getenv('mysql_host')
+    app.config['MYSQL_USER'] = os.getenv('mysql_user')
+    app.config['MYSQL_PASSWORD'] = os.getenv('mysql_password')
+    app.config['MYSQL_DB'] = os.getenv('mysql_db')
+    app.config['SECRET_KEY'] = os.getenv('secret_key')
     app.config['SESSION_TYPE'] = 'filesystem'
     app.config['SESSION_COOKIE_SECURE'] = True
     Session(app)
@@ -36,7 +40,7 @@ def create_app():
     app.config['MAIL_SERVER']='sandbox.smtp.mailtrap.io'
     app.config['MAIL_PORT'] = 2525
     app.config['MAIL_USERNAME'] = 'c14de80d53a0d6'
-    app.config['MAIL_PASSWORD'] = test['mail_password']
+    app.config['MAIL_PASSWORD'] = os.getenv('mail_password')
     app.config['MAIL_USE_TLS'] = True
     app.config['MAIL_USE_SSL'] = False
 
