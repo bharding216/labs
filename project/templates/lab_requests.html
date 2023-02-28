@@ -222,7 +222,8 @@
                 console.log(result);
                 var id = result[0].id;
                 alert("Successfully updated record for ID #: " + id +
-                    ". An email has been sent to the customer.")
+                    ". An email has been sent to the customer.");
+                location.reload();
             },
             error: function(xhr, textStatus, errorThrown) {
                 alert("Error: " + xhr.responseText);
@@ -231,7 +232,6 @@
 
         // $('#exampleModal').modal('hide'); // Close the modal
 
-        location.reload();
 
         });
 
