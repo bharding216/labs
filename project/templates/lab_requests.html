@@ -27,7 +27,7 @@
 <div class="container my-5">
 
     <div class="table-responsive mx-5">
-        <table class="table table-bordered">
+        <table class="table table-bordered" id="lab_requests_table">
             <thead>
                 <tr>
                     <th class="text-center align-middle" scope="col">Test Name</th>
@@ -53,7 +53,7 @@
 
                         <td class="text-center align-middle">
                             
-
+                            <!-- Approved button -->
                             {% if lab_request.status|lower != "approved" %}
 
                                 <!--Note that the "return" keyword is important. It ensures that the form
@@ -71,14 +71,16 @@
 
                             {% endif %}
 
-
+                            <!-- Need More Details button -->
                             {% if "need more details" not in lab_request.status|lower %}
 
-                                <form action="{{ url_for('views.lab_requests') }}" method="POST">
-                                    <input type="hidden" name="id" value="{{ lab_request.request_id }}">
-                                    <input type="hidden" name="action" value="deny">
-                                    <input type="submit" class="btn btn-outline-danger my-1" value="Need more details">
-                                </form>
+                                <button type="button" class="btn btn-outline-danger btn-sm" 
+                                    data-bs-toggle="modal" data-bs-target="#exampleModal" 
+                                    data-myvar="{{ lab_request.request_id }}">
+
+                                    Need more details
+
+                                </button>
 
                             {% endif %}
 
@@ -111,15 +113,58 @@
             </tbody>
     
         </table>
-    
-    </div>
+
+        <!-- Modal -->
+        <div class="modal fade" 
+             id="exampleModal" 
+             tabindex="-1" 
+             aria-labelledby="exampleModalLabel" 
+             aria-hidden="true">
+
+            <div class="modal-dialog">
+
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Additional Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <p>Request ID #: <span id="myvar-value"></span></p>
+                        <textarea id="additional-details" name="additional-details" 
+                            class="form-control" rows="3" placeholder="Please enter additional details">
+
+                        </textarea>
+                    </div>
+
+
+                    <div class="modal-footer">
+
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Close
+                        </button>
+
+                        <button type="button" class="btn btn-primary" id="save-button">
+                            Save changes
+                        </button>
+
+                    </div>
+                
+                </div>
+            </div>
+        </div>
 
 
 
 </div>
 
 
+
+
+
 <script>
+
     function confirmApproval() {
         var result = confirm("Are you sure you want to change the status to 'Approved'?");
     
@@ -128,7 +173,69 @@
         } else {
         return false;
         }
-    }
+    };
+
+
+
+
+
+
+    var myModal = document.getElementById('exampleModal')
+    myModal.addEventListener('show.bs.modal', function (event) { // When the modal appears, run this function.
+
+        var button = event.relatedTarget // Button that triggered the modal
+        var myvar = button.getAttribute('data-myvar') // Extract info from data-* attributes        
+        var modalBody = myModal.querySelector('.modal-body') // Find the 'modal-body'.
+        var myvarValue = modalBody.querySelector('#myvar-value') // Find the id=myvar-value in the modal-body.
+        myvarValue.textContent = myvar // Set this element equal to the value passed from the original button
+        localStorage.setItem("request_id", myvar)
+        
+        var additionalDetails = modalBody.querySelector('#additional-details') // Find the additional-details id
+        additionalDetails.value = '' // Set the textarea to blank each time the modal appears
+
+    });
+
+
+    var modalFooter = myModal.querySelector('.modal-footer') // Find the modal-footer
+    var saveButton = modalFooter.querySelector('#save-button') // Find the save button in the modal-footer
+    saveButton.addEventListener('click', function() { // Add an event listener to the save button
+        
+        selected_request_id = localStorage.getItem("request_id")
+        var modalBody = myModal.querySelector('.modal-body') // Find the 'modal-body'.
+        var additionalDetails = modalBody.querySelector('#additional-details') // Find the additional-details id
+    
+        var new_data = [
+            {"id": selected_request_id},
+            {"action": 'deny'},
+            {"additional_details": additionalDetails.value}
+        ];
+
+        $.ajax({
+            url: "{{ url_for('views.submit_details') }}",
+            type: 'POST',
+            data: JSON.stringify(new_data),
+            contentType: "application/json",
+            dataType: 'json',
+
+            success: function(result) {
+                console.log("Result:");
+                console.log(result);
+                var id = result[0].id;
+                alert("Successfully updated record for ID #: " + id +
+                    ". An email has been sent to the customer.")
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                alert("Error: " + xhr.responseText);
+            }
+        });
+
+        $('#exampleModal').modal('hide'); // Close the modal
+
+        location.reload();
+
+        });
+
+
 
 </script>
 

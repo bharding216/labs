@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, flash, url_for, session, send_file
+from flask import Blueprint, render_template, request, redirect, flash, url_for, session, send_file, jsonify
 from flask_login import login_required, current_user, login_user
 from .models import tests, labs, labs_tests, individuals_login, labs_login, test_requests
 import datetime
@@ -280,7 +280,6 @@ def confirmation_returning_user():
 @views.route('/lab_requests', methods=['GET', 'POST'])
 @login_required
 def lab_requests():
-
     try:
         if request.method == 'POST':
             try:
@@ -319,8 +318,8 @@ def lab_requests():
         # that might occur if the user information is invalid, and catches any other 
         # exceptions that might occur.
         try:
-            lab_info_id = labs_login.query.filter_by(id = current_user.id).first().lab_id
-            lab_requests = test_requests.query.filter_by(lab_id = lab_info_id).all()
+            lab_info_id = labs_login.query.filter_by(id = current_user.id).first().lab_id # this is an integer type
+            lab_requests = test_requests.query.filter_by(lab_id = lab_info_id).all() # this is a list type
 
         except AttributeError:
             flash('Invalid user information.', 'error')
@@ -342,11 +341,52 @@ def lab_requests():
 
 
 
+
+
 @views.route('/submit_details', methods = ['GET', 'POST'])
 @login_required
 def submit_details():
-    flash('It works!', 'success')
-    return redirect(url_for('views.lab_requests'))
+    if request.method == 'POST':
+        data = request.get_json()
+        print(data)
+
+        # This code accesses the first item in the list (my_list[0]), 
+        # which is a dictionary with a single key-value pair ({'id': '7'}). 
+        # Then, it calls the values() method on this dictionary to retrieve 
+        # a list of its values, which in this case is ['7']. Finally, it 
+        # uses indexing to access the first (and only) value in this list 
+        # (list(my_list[0].values())[0]), which is the string "7". This 
+        # value is then assigned to the variable value and printed out.
+        request_id = list(data[0].values())[0]
+        new_details = list(data[2].values())[0]
+        status = 'Need more details'
+
+        db.session.query(test_requests).filter_by(request_id = request_id).update({'status': status})
+        db.session.commit()
+
+        return data
+    
+    # Handle GET requests
+    else:
+        lab_info_id = labs_login.query.filter_by(id = current_user.id).first().lab_id # this is an integer type
+        lab_requests = test_requests.query.filter_by(lab_id = lab_info_id).all() # this is a list type
+
+        request_dicts = []
+        for each in lab_requests:
+            request_dict = {
+                'test_name': each.test_name,
+                'sample_name': each.sample_name,
+                'sample_description': each.sample_description,
+                'turnaround': each.turnaround,
+                'status': each.status
+            }
+            request_dicts.append(request_dict)
+
+        json_data = jsonify(request_dicts)
+        return json_data
+
+
+
 
 
 
