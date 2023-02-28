@@ -29,7 +29,7 @@
 <div class="container my-5">
     <div class="row">
         <div class="col">
-            <h2>Update Pricing</h2>
+            <h2>Update Test Settings</h2>
         </div>
     </div>
 </div>
@@ -55,6 +55,16 @@
                 value="{{ test_price }}"
                 placeholder="Test Price [$]">
             <label for="test_price">Test Price [$]</label>
+        </div>
+
+        <div class="form-floating mb-3 col-md-8 col-lg-4">
+            <input type="text" 
+                class="form-control" 
+                id="test_turnaround" 
+                name="test_turnaround" 
+                value="{{ test_turnaround }}"
+                placeholder="Turnaround [days]">
+            <label for="test_turnaround">Turnaround [days]</label>
         </div>
 
         <button type="submit" class="btn btn-primary">Save Changes</button>

@@ -38,6 +38,7 @@ class labs_tests(db.Model):
     lab_id = db.Column(db.Integer, db.ForeignKey('labs.id'), primary_key=True)
     test_id = db.Column(db.Integer, db.ForeignKey('tests.id'), primary_key=True)
     price = db.Column(db.Numeric(10,2))
+    turnaround = db.Column(db.Integer)
 
 class labs_login(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
