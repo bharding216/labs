@@ -364,26 +364,29 @@ def submit_details():
         db.session.query(test_requests).filter_by(request_id = request_id).update({'status': status})
         db.session.commit()
 
+        # SEND AN EMAIL TO THE CUSTOMER
+
         return data
     
+    # THIS CAN PROBABLY BE REMOVED
     # Handle GET requests
-    else:
-        lab_info_id = labs_login.query.filter_by(id = current_user.id).first().lab_id # this is an integer type
-        lab_requests = test_requests.query.filter_by(lab_id = lab_info_id).all() # this is a list type
+    # else:
+    #     lab_info_id = labs_login.query.filter_by(id = current_user.id).first().lab_id # this is an integer type
+    #     lab_requests = test_requests.query.filter_by(lab_id = lab_info_id).all() # this is a list type
 
-        request_dicts = []
-        for each in lab_requests:
-            request_dict = {
-                'test_name': each.test_name,
-                'sample_name': each.sample_name,
-                'sample_description': each.sample_description,
-                'turnaround': each.turnaround,
-                'status': each.status
-            }
-            request_dicts.append(request_dict)
+    #     request_dicts = []
+    #     for each in lab_requests:
+    #         request_dict = {
+    #             'test_name': each.test_name,
+    #             'sample_name': each.sample_name,
+    #             'sample_description': each.sample_description,
+    #             'turnaround': each.turnaround,
+    #             'status': each.status
+    #         }
+    #         request_dicts.append(request_dict)
 
-        json_data = jsonify(request_dicts)
-        return json_data
+    #     json_data = jsonify(request_dicts)
+    #     return json_data
 
 
 
@@ -448,6 +451,7 @@ def user_requests():
 @login_required
 def provider_settings():
     if request.method == 'POST':
+        # Check if the user is updating their profile info.
         if request.form['type'] == "info":
             lab_id = request.form['id']
             field_name = request.form['field_name']
@@ -462,28 +466,39 @@ def provider_settings():
             else:
                 flash('Lab not found.', 'error')
                 return redirect(url_for('views.provider_settings'))
-
+        
+        # Check if the user is updating their test offering info.
         if request.form['type'] == "tests_prices":
             lab_id = request.form['id']
             test_name = request.form['test_name']
             test_name_encoded = quote(test_name)
             test_price = request.form['test_price']
+            test_turnaround = request.form['test_turnaround']
             return render_template('update_prices.html',
                                    test_name_encoded = test_name_encoded,
+                                   test_name = test_name,
                                    test_price = test_price,
                                    user = current_user,
-                                   lab_id = lab_id)
+                                   lab_id = lab_id,
+                                   test_turnaround = test_turnaround)
 
     current_user_lab_id = current_user.lab_id
     logged_in_lab = labs.query.filter_by(id = current_user_lab_id).first()
 
     # Create a list of tuples, where each typle is a test name and price pair 
     # where the logged in user id is equal to the lab_id in the labs_tests table. 
-    tests_and_pricing = db.session.query(tests.name, labs_tests.price).\
+    # tests_and_pricing = db.session.query(tests.name, labs_tests.price).\
+    #                         join(labs_tests, tests.id == labs_tests.test_id).\
+    #                         filter(labs_tests.lab_id == current_user_lab_id).\
+    #                         order_by(tests.name.asc()).\
+    #                         all()
+
+    tests_and_pricing = db.session.query(tests.name, labs_tests.price, labs_tests.turnaround).\
                             join(labs_tests, tests.id == labs_tests.test_id).\
                             filter(labs_tests.lab_id == current_user_lab_id).\
                             order_by(tests.name.asc()).\
                             all()
+
 
     return render_template('provider_settings.html', 
                             user = current_user,
@@ -499,6 +514,7 @@ def provider_settings():
 def update_prices(id, test_name):
 
     new_price = request.form.get('test_price')
+    new_turnaround = request.form.get('test_turnaround')
     test_name = unquote(test_name)
     test_object = tests.query.filter_by(name = test_name).first()
     lab_object = labs.query.get(id)
@@ -508,11 +524,12 @@ def update_prices(id, test_name):
         first()
     
     labs_tests_object.price = new_price
+    labs_tests_object.turnaround = new_turnaround
 
     db.session.add(labs_tests_object)
     db.session.commit()
 
-    flash('New price updated for ' + test_name +'.', 'success')
+    flash('Settings updated for ' + test_name +'.', 'success')
 
     return redirect(url_for('views.provider_settings'))
 
