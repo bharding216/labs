@@ -24,8 +24,6 @@ def create_app():
     app.jinja_env.globals.update(my_enumerate = my_enumerate)
 
 
-    with open('project/db.yaml', 'r') as file:
-        test = yaml.load(file, Loader=yaml.FullLoader)
     app.config['MYSQL_HOST'] = os.getenv('mysql_host')
     app.config['MYSQL_USER'] = os.getenv('mysql_user')
     app.config['MYSQL_PASSWORD'] = os.getenv('mysql_password')
@@ -45,8 +43,8 @@ def create_app():
     app.config['MAIL_USE_SSL'] = False
 
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://' + test['mysql_user'] + \
-        ':' + test['mysql_password'] + '@' + test['mysql_host'] + '/' + test['mysql_db']
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://' + os.getenv('mysql_user') + \
+        ':' + os.getenv('mysql_password') + '@' + os.getenv('mysql_host') + '/' + os.getenv('mysql_db')
     
 
     app.config['SQLALCHEMY_POOL_SIZE'] = 10

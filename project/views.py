@@ -349,7 +349,6 @@ def lab_requests():
 def submit_details():
     if request.method == 'POST':
         data = request.get_json()
-        print(data)
 
         # This code accesses the first item in the list (my_list[0]), 
         # which is a dictionary with a single key-value pair ({'id': '7'}). 
