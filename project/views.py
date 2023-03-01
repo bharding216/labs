@@ -657,7 +657,11 @@ def shipping():
 
 
 
-
+@views.route("/privacy_policy", methods=['GET', 'POST'])
+def privacy_policy():
+    return render_template('privacy_policy.html', 
+                            user = current_user
+                            )
 
 
 
