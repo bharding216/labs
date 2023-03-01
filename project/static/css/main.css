@@ -1,3 +1,11 @@
+/*  BRAND COLORS:
+NAVY: #11296B
+ROYAL BLUE: #1E96FC
+GRAY-WHITE: #EDEDED
+LIGHTER YELLOW: #FFDB57
+DARKER YELLOW: #FFCB05
+*/
+
 .wrapper {
   min-height: 100vh;
   display: flex;
@@ -26,19 +34,45 @@ p {
   font-weight: 300;
 }
 
-
-.btn-primary:hover {
-  background-color: navy;
-  border-color: navy;
+.navbar-custom {
+  background-color: #1E96FC;
 }
 
+.nav-link {
+  color: white;
+}
+
+.nav-link:hover {
+  color: #11296B;
+}
+
+.navbar-toggler {
+  border: 1px solid #ededed;
+}
+
+
+.btn-primary {
+  background-color: #eace5f;
+  border-color: black;
+  color: black;
+}
+
+.btn-primary:hover {
+  background-color: #11296B;
+  border-color: #eace5f;
+  color:white;
+}
+
+.footer {
+  background-color: #1E96FC;
+}
 
 .hover-link {
   color: white;
 }
 
 .hover-link:hover {
-  color: navy;
+  color: #11296B;
 }
 
 
@@ -53,51 +87,41 @@ p {
 
 
 
-.top-section-with-background {
-  position: relative;
+
+/*small screen*/
+@media (max-width: 767px) {
+  #lab_techs {
+    width: 225px;
+    height: auto;
+  }
 }
 
 
-.top-section-with-background::before {
-    content: '';
-    background-repeat: no-repeat;
-      background-position: center;
-    background-size: cover;
-    background-image: url('/static/lab_photo2.png');
-    opacity: 0.3;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
+/*medium screen*/
+@media (min-width: 768px) {
+  .dropdown-menu {
+    margin-right: 50px;
   }
-  
-  @media (min-width: 768px) {
-    .top-section-with-background {
-      height: 50vh;
-    }
+
+  #lab_techs {
+    width: 350px;
+    height: auto;
   }
-  
-
-
-
+}
 
 
 /*large screen*/
-@media (min-width: 992px) {
-    .dropdown-menu {
-      margin-right: 100px;
-    }
+@media (min-width: 1024px) {
+  .dropdown-menu {
+    margin-right: 100px;
   }
-  
-  /*small screen*/
-  @media (max-width: 991px) {
-    .dropdown-menu {
-      margin-right: 50px;
-    }
+
+  #lab_techs {
+    width: 450px;
+    height: auto;
   }
-  
+}
+    
 
 
   .table thead th {

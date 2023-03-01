@@ -4,108 +4,119 @@
 
 {% block content %}
 
-<div class="container my-5">
-    {% with messages = get_flashed_messages(with_categories=True) %}
-    {% if messages %}
-            {% for category, message in messages %}
-                {% if category == 'success' %}
-                    <div class="alert alert-success mx-5" role="alert">
-                        {{ message }}
-                    </div>
-                {% else %}
-                    <div class="alert alert-danger mx-5" role="alert">
-                        {{ message }}
-                    </div>
-                {% endif %}
-            {% endfor %}
-    {% endif %}
-    {% endwith %}
-</div>
+
+{% with messages = get_flashed_messages(with_categories=True) %}
+{% if messages %}
+    <div class="container my-5">
+        {% for category, message in messages %}
+            {% if category == 'success' %}
+                <div class="alert alert-success mx-5" role="alert">
+                    {{ message }}
+                </div>
+            {% else %}
+                <div class="alert alert-danger mx-5" role="alert">
+                    {{ message }}
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
+{% endwith %}
 
 
-<div class="container my-5 py-5 top-section-with-background">
+
+<div class="py-5" style="background-color:#1e96fc;">
 
     <!--INNER DIV 1-->
-    <div class="d-flex justify-content-center">
+    <div class="container">
+        <div class="row mb-3">   
+            <div class="col-6 align-items-center d-flex">
+                <div class="text-center">
+                    <h1 style="color:#ededed">Find Your Perfect Lab Partner</h1>
+                    <p style="color:#ededed">Bringing Engineers and Lab Service Providers Together 
+                        - The Ultimate Platform for Collaborative Innovation.</p>
+                </div>
+            </div>
 
-        <div class="mb-3">
-            <h1 class="text-center">Find Your Perfect Lab Partner</h1>
+            <div class="col-6">
+                <img src='/static/lab_techs1.png' id="lab_techs">
+            </div>
         </div>
-
     </div>
 
 
-    <form action="{{ url_for('views.index') }}" method="POST">
+    <div class="row">
+        <form action="{{ url_for('views.index') }}" method="POST">
 
-        <!--INNER DIV 2 for the form inputs-->
-        <div class="row d-flex align-items-center justify-content-center">
+            <!--INNER DIV 2 for the form inputs-->
+            <div class="row d-flex align-items-center justify-content-center">
 
-            <div class="form-group col-md-5 d-flex align-items-center justify-content-center">
+                <div class="form-group col-md-5 d-flex align-items-center justify-content-center">
 
-                <div class="mb-3 mb-md-0">
+                    <div class="mb-3 mb-md-0">
 
-                        <select name="selected_test" class="form-select" 
-                            style="width:auto" id="test_select">
+                            <select name="selected_test" class="form-select" 
+                                style="width:auto" id="test_select">
 
-                            <option selected disabled="disabled">Choose a lab test</option>
-                            {% for test in tests %}
-                                <option value="{{ test.name }}">{{ test.name }}</option>
-                            {% endfor %}
+                                <option selected disabled="disabled">Choose a lab test</option>
+                                {% for test in tests %}
+                                    <option value="{{ test.name }}">{{ test.name }}</option>
+                                {% endfor %}
 
-                        </select>
+                            </select>
+
+                    </div>
+                    
+                </div>
+
+
+                <div class="form-group col-md-3 d-flex align-items-center justify-content-center">
+
+                    <div class="form-floating mb-3 mb-md-0">
+
+                        <input type="text" pattern="[0-9]{5}" name="zipcode"
+                            class="form-control" 
+                            id="zipcode"
+                            placeholder="ZIP Code"/>
+                        <label for="zipcode">ZIP Code</label>
+
+                    </div>
+                    
+                </div>
+
+
+                <div class="form-group col-md-3 d-flex align-items-center justify-content-center">
+
+                    <div class="mb-3 mb-md-0">
+                
+                        <input type="date" id="date-picker" class="form-control"
+                            name="date-picker" value="{{ date }}">
+
+                    </div>
+                    
+                </div>
+
+            </div>
+
+
+            <!--INNER DIV 3 for the submit button-->
+            <div class="row pt-5">
+
+                <div class="form-group d-flex justify-content-center">
+
+                    <button type="submit" 
+                        class="btn btn-primary"
+                        style="width:auto">
+                        Find a Lab
+                    </button>
 
                 </div>
-                
-            </div>
-
-
-            <div class="form-group col-md-3 d-flex align-items-center justify-content-center">
-
-                <div class="form-floating mb-3 mb-md-0">
-
-                    <input type="text" pattern="[0-9]{5}" name="zipcode"
-                        class="form-control" 
-                        id="zipcode"
-                        placeholder="ZIP Code"/>
-                    <label for="zipcode">ZIP Code</label>
-
-                </div>
-                
-            </div>
-
-
-            <div class="form-group col-md-3 d-flex align-items-center justify-content-center">
-
-                <div class="mb-3 mb-md-0">
-            
-                    <input type="date" id="date-picker" class="form-control"
-                        name="date-picker" value="{{ date }}">
-
-                </div>
-                
-            </div>
-
-        </div>
-
-
-        <!--INNER DIV 3 for the submit button-->
-        <div class="row pt-5">
-
-            <div class="form-group d-flex justify-content-center">
-
-                <button type="submit" 
-                    class="btn btn-primary"
-                    style="width:auto">
-                    Find a Lab
-                </button>
 
             </div>
 
-        </div>
+        </form>
 
-    </form>
-
-
+    </div>
 
 </div>
 
