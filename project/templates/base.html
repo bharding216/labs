@@ -16,8 +16,9 @@
     <!-- Animate on Scroll -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
-    <!-- Custom CSS -->
+    <!-- Custom CSS + Fonts -->
     <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto|Nunito" rel="stylesheet">
 
     <!-- Set Favicon -->
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
@@ -25,8 +26,9 @@
     <!-- Custom JS -->
     <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 
+    <!-- Cookie Consent Plugin -->
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css" />
-        
+
     <title>{% block title %}{% endblock %}</title>
 
     {% block head %}
