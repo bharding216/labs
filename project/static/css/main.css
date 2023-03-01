@@ -89,13 +89,25 @@ p {
 
 
 /*small screen*/
-@media (max-width: 767px) {
+@media (max-width: 499px) {
   #lab_techs {
-    width: 225px;
+    width: 100px;
     height: auto;
   }
 }
 
+
+/*medium-small screen*/
+@media (min-width: 500px) {
+  .dropdown-menu {
+    margin-right: 50px;
+  }
+
+  #lab_techs {
+    width: 250px;
+    height: auto;
+  }
+}
 
 /*medium screen*/
 @media (min-width: 768px) {
