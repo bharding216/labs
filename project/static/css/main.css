@@ -22,13 +22,18 @@ footer {
 }
 
 
-h1 {
+h1, h2, h3, h4, h5, h6 {
   /* sans-serif is the fallback font */
   font-family: 'Montserrat', sans-serif;
 }
 
-p, .nav-link, .btn-primary, .footer {
+p, .nav-link, .btn-primary, .footer,
+  select {
   /* sans-serif is the fallback font */
+  font-family: 'Nunito', sans-serif;
+}
+
+#zipcode, label {
   font-family: 'Nunito', sans-serif;
 }
 
@@ -74,6 +79,8 @@ p, .nav-link, .btn-primary, .footer {
 }
 
 
+
+
 .section-with-background {
     background-image: url('/static/lab1.jpg');
     background-repeat: no-repeat;
@@ -82,7 +89,10 @@ p, .nav-link, .btn-primary, .footer {
 }
 
 
-
+.section_icon {
+  height: 100px;
+  width: auto;
+}
 
 
 
