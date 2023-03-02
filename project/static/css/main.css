@@ -79,6 +79,13 @@ p, .nav-link, .btn-primary, .footer,
 }
 
 
+.spaced {
+  margin-bottom: 30px;
+}
+
+.padded {
+  padding: 0 80px;
+}
 
 
 .section-with-background {

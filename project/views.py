@@ -35,10 +35,13 @@ def index():
 
 
     else:
-        test_names = tests.query.all()
+        with db.session() as session:
+            test_names = session.query(tests).all()
+
         date_choice = datetime.datetime.now().strftime("%Y-%m-%d")
 
-        return render_template('index.html', tests = test_names, 
+        return render_template('index.html', 
+                               tests = test_names, 
                                date = date_choice,
                                user = current_user)
 
