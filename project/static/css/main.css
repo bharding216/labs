@@ -4,6 +4,10 @@ ROYAL BLUE: #1E96FC
 GRAY-WHITE: #EDEDED
 LIGHTER YELLOW: #FFDB57
 DARKER YELLOW: #FFCB05
+
+SWAP YELLOW FOR PEACH:
+MELON: #F6A192
+PEACH: #FFCBA4
 */
 
 .wrapper {
@@ -55,14 +59,14 @@ p, .nav-link, .btn-primary, .footer,
 
 
 .btn-primary {
-  background-color: #eace5f;
+  background-color: #ffcba4;
   border-color: black;
   color: black;
 }
 
 .btn-primary:hover {
-  background-color: #11296B;
-  border-color: #eace5f;
+  background-color: #11296b;
+  border-color: #ffcba4;
   color:white;
 }
 
@@ -109,6 +113,11 @@ p, .nav-link, .btn-primary, .footer,
     max-width: 100%;
     max-height: 100%;
   }
+
+  #build_website {
+    width: 100px;
+    height: auto;
+  }
 }
 
 
@@ -122,6 +131,11 @@ p, .nav-link, .btn-primary, .footer,
     max-width: 100%;
     max-height: 100%;
   }
+
+  #build_website {
+    width: 200px;
+    height: auto;
+  }
 }
 
 /*medium screen*/
@@ -134,6 +148,11 @@ p, .nav-link, .btn-primary, .footer,
     max-width: 100%;
     max-height: 100%;
   }
+
+  #build_website {
+    width: 300px;
+    height: auto;
+  }
 }
 
 
@@ -145,6 +164,11 @@ p, .nav-link, .btn-primary, .footer,
 
   #lab_techs {
     width: 500px;
+    height: auto;
+  }
+
+  #build_website {
+    width: 400px;
     height: auto;
   }
 }

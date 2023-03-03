@@ -35,8 +35,8 @@ def index():
 
 
     else:
-        with db.session() as session:
-            test_names = session.query(tests).all()
+        with db.session() as db_session:
+            test_names = db_session.query(tests).all()
 
         date_choice = datetime.datetime.now().strftime("%Y-%m-%d")
 
@@ -61,12 +61,18 @@ def lab_function():
 
     else:
         selected_test = session.get('selected_test')
-        row_in_tests_table = tests.query.filter(tests.name == selected_test).first()
-        id_in_tests_table = row_in_tests_table.id
-        rows_in_labs_tests_table = labs_tests.query.filter(labs_tests.test_id == id_in_tests_table).all()
+        
+        with db.session() as db_session:
+            row_in_tests_table = db_session.query(tests) \
+                .filter(tests.name == selected_test) \
+                .first()
+            id_in_tests_table = row_in_tests_table.id
+            rows_in_labs_tests_table = db_session.query(labs_tests) \
+                .filter(labs_tests.test_id == id_in_tests_table) \
+                .all()
 
-        #change this to only query labs that can perform that test
-        lab_query = labs.query.all()
+            # Change this to only query labs that can perform that test
+            lab_query = db_session.query(labs).all()
 
         return render_template('labs.html', 
             lab_query = lab_query, 
