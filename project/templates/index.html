@@ -108,8 +108,7 @@
 
                     <button type="submit" 
                         class="btn btn-primary"
-                        style="width:auto"
-                        data-aos="fade-up">
+                        style="width:auto">
                         Find a Lab
                     </button>
 
@@ -177,31 +176,41 @@
 <div style="background-image:linear-gradient(#1e96fc, #11296b);">
     <div class="container py-5">
         <div class="row mb-3 py-4">   
-            <div class="col-6 align-items-center d-flex">
+            <div class="col-5 align-items-center d-flex">
                 <div class="text-center">
                     <img src='/static/build_website.png' id="build_website">
                 </div>
             </div>
 
+            <div class="col-7 d-flex flex-column justify-content-center">
+                <div class="row align-items-center">
+                    <div class="col-12 mb-4">
+                        <h1 style="color:#ededed;">The Most Comprehensive Lab Service Marketplace</h1>
+                    </div>
+                </div>
 
-            <div class="col-6 align-items-center d-flex">
-                <div class="row">
-                    <div class="col align-items-center d-flex">
-                        <div class="text-center">
-                            <h1 class="mb-4" style="color:#ededed">The Most Comprehensive Lab Service Marketplace</h1>
-                            <p class="mb-4" style="color:#ededed">Our website is dedicated to providing a user-friendly 
-                                platform for customers to conveniently search for and book lab services from 
-                                reputable providers nationwide.</p>
-                            <a href="{{ url_for('views.about') }}">
-                                <button type="button" class="btn btn-primary" data-aos="fade-up">Learn More</button>
-                            </a>                        
-                        </div>
+                <div class="row align-items-center">
+                    <div class="col-12 mb-4">
+                        <p style="color:#ededed;">Our website is dedicated to providing a user-friendly 
+                            platform for customers to conveniently search for and book lab services from 
+                            reputable providers nationwide.</p>
+                    </div>
+                </div>
+
+                <div class="row align-items-center">
+                    <div class="col-12">
+                        <a href="{{ url_for('views.about') }}">
+                            <button type="button" class="btn btn-primary" data-aos="fade-up">Learn More</button>
+                        </a>                        
                     </div>
                 </div>
             </div>
+
+
         </div>
     </div>
 </div>
+
 
 
 

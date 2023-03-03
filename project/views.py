@@ -38,7 +38,7 @@ def index():
         with db.session() as db_session:
             test_names = db_session.query(tests).all()
 
-        date_choice = datetime.datetime.now().strftime("%Y-%m-%d")
+            date_choice = datetime.datetime.now().strftime("%Y-%m-%d")
 
         return render_template('index.html', 
                                tests = test_names, 
@@ -128,7 +128,9 @@ def new_user_booking():
         if email_exists:
             flash('That email is already in use. Please try another email or log in.', category = 'error')
             selected_lab_id = session.get('selected_lab_id')
-            lab_choice = labs.query.get_or_404(selected_lab_id)
+            with db.session() as db_session:
+                lab_choice = db_session.query(labs).get_or_404(selected_lab_id)
+            
             return render_template('new_user_booking.html', 
                                    user = current_user,
                                    lab_choice = lab_choice,
@@ -152,20 +154,23 @@ def new_user_booking():
                 company_name = company_name,
                 type = 'customer'
                 )
+            
             db.session.add(new_user)
             db.session.commit()
 
-            user = individuals_login.query.filter_by(email = email).first()
-            login_user(user, remember = True)
-            session.permanent = True
-            session['type'] = 'requestor'
+            with db.session() as db_session:
+                user = db_session.query(individuals_login).filter_by(email = email).first()
+                login_user(user, remember = True)
+                session.permanent = True
+                session['type'] = 'requestor'
 
             flash('New account successfully created.', category = 'success')
             return redirect(url_for('views.confirmation_new_user'))
 
     else:
         selected_lab_id = session.get('selected_lab_id')
-        lab_choice = labs.query.get_or_404(selected_lab_id)
+        with db.session() as db_session:
+            lab_choice = db_session.query(labs).get_or_404(selected_lab_id)
 
         return render_template('new_user_booking.html', 
                                user = current_user,
@@ -179,7 +184,9 @@ def returning_user_login():
         email = request.form['email']
         password = request.form['password']
 
-        individual_email = individuals_login.query.filter_by(email = email).first()
+        with db.session() as db_session:
+            individual_email = db_session.query(individuals_login).filter_by(email = email).first()
+        
         if individual_email:
             if check_password_hash(individual_email.password, password):
                 login_user(individual_email, remember=False)
@@ -206,7 +213,8 @@ def returning_user_login():
 @views.route("/returning_user_booking", methods=['GET', 'POST'])
 def returning_user_booking():
     selected_lab_id = session.get('selected_lab_id')
-    lab_choice = labs.query.get_or_404(selected_lab_id)
+    with db.session() as db_session:
+        lab_choice = db_session.query(labs).get_or_404(selected_lab_id)
     return render_template('returning_user_booking.html', 
                             user = current_user,
                             lab_choice = lab_choice)
@@ -261,20 +269,22 @@ def confirmation_returning_user():
         first_name = session.get('first_name', None)
 
         selected_lab_id = session.get('selected_lab_id')
-        lab_choice = labs.query.get_or_404(selected_lab_id)
-        lab_id = lab_choice.id
+        
+        with db.session() as db_session:
+            lab_choice = db_session.query(labs).get_or_404(selected_lab_id)
+            lab_id = lab_choice.id
 
-        # save the testing info to the requests table.
-        new_request = test_requests(sample_name = sample_name,
-                            sample_description = sample_description,
-                            turnaround = turnaround,
-                            test_name = selected_test,
-                            lab_id = lab_id,
-                            status = 'Pending'
-                            )
+            # Save the testing info to the requests table.
+            new_request = test_requests(sample_name = sample_name,
+                                        sample_description = sample_description,
+                                        turnaround = turnaround,
+                                        test_name = selected_test,
+                                        lab_id = lab_id,
+                                        status = 'Pending'
+                                        )
 
-        db.session.add(new_request)
-        db.session.commit()
+            db.session.add(new_request)
+            db.session.commit()
 
         return render_template('confirmation.html', 
                             selected_test = selected_test,
@@ -465,16 +475,17 @@ def provider_settings():
             lab_id = request.form['id']
             field_name = request.form['field_name']
 
-            lab_object = labs.query.get(lab_id)
+            with db.session() as db_session:
+                lab_object = db_session.query(labs).get(lab_id)
 
-            if lab_object is not None:
-                return render_template('update_lab.html',
-                                    user = current_user,
-                                    lab_object = lab_object,
-                                    field_name = field_name)
-            else:
-                flash('Lab not found.', 'error')
-                return redirect(url_for('views.provider_settings'))
+                if lab_object is not None:
+                    return render_template('update_lab.html',
+                                        user = current_user,
+                                        lab_object = lab_object,
+                                        field_name = field_name)
+                else:
+                    flash('Lab not found.', 'error')
+                    return redirect(url_for('views.provider_settings'))
         
         # Check if the user is updating their test offering info.
         if request.form['type'] == "tests_prices":
@@ -492,21 +503,23 @@ def provider_settings():
                                    test_turnaround = test_turnaround)
 
     current_user_lab_id = current_user.lab_id
-    logged_in_lab = labs.query.filter_by(id = current_user_lab_id).first()
 
-    # Create a list of tuples, where each typle is a test name and price pair 
-    # where the logged in user id is equal to the lab_id in the labs_tests table. 
-    # tests_and_pricing = db.session.query(tests.name, labs_tests.price).\
-    #                         join(labs_tests, tests.id == labs_tests.test_id).\
-    #                         filter(labs_tests.lab_id == current_user_lab_id).\
-    #                         order_by(tests.name.asc()).\
-    #                         all()
+    with db.session() as db_session:
+        logged_in_lab = db_session.query(labs).filter_by(id = current_user_lab_id).first()
 
-    tests_and_pricing = db.session.query(tests.name, labs_tests.price, labs_tests.turnaround).\
-                            join(labs_tests, tests.id == labs_tests.test_id).\
-                            filter(labs_tests.lab_id == current_user_lab_id).\
-                            order_by(tests.name.asc()).\
-                            all()
+        # Create a list of tuples, where each typle is a test name and price pair 
+        # where the logged in user id is equal to the lab_id in the labs_tests table. 
+        # tests_and_pricing = db.session.query(tests.name, labs_tests.price).\
+        #                         join(labs_tests, tests.id == labs_tests.test_id).\
+        #                         filter(labs_tests.lab_id == current_user_lab_id).\
+        #                         order_by(tests.name.asc()).\
+        #                         all()
+
+        tests_and_pricing = db_session.query(tests.name, labs_tests.price, labs_tests.turnaround).\
+                                join(labs_tests, tests.id == labs_tests.test_id).\
+                                filter(labs_tests.lab_id == current_user_lab_id).\
+                                order_by(tests.name.asc()).\
+                                all()
 
 
     return render_template('provider_settings.html', 
@@ -525,18 +538,20 @@ def update_prices(id, test_name):
     new_price = request.form.get('test_price')
     new_turnaround = request.form.get('test_turnaround')
     test_name = unquote(test_name)
-    test_object = tests.query.filter_by(name = test_name).first()
-    lab_object = labs.query.get(id)
-
-    labs_tests_object = labs_tests.query.\
-        filter_by(lab_id = lab_object.id, test_id = test_object.id).\
-        first()
     
-    labs_tests_object.price = new_price
-    labs_tests_object.turnaround = new_turnaround
+    with db.session() as db_session:
+        test_object = db_session.query(tests).filter_by(name = test_name).first()
+        lab_object = db_session.query(labs).get(id)
 
-    db.session.add(labs_tests_object)
-    db.session.commit()
+        labs_tests_object = db_session.query(labs_tests) \
+            .filter_by(lab_id = lab_object.id, test_id = test_object.id) \
+            .first()
+        
+        labs_tests_object.price = new_price
+        labs_tests_object.turnaround = new_turnaround
+
+        db.session.add(labs_tests_object)
+        db.session.commit()
 
     flash('Settings updated for ' + test_name +'.', 'success')
 
@@ -549,26 +564,27 @@ def update_prices(id, test_name):
 @views.route("/update_lab/<int:id>/<string:field_name>", methods=['GET', 'POST'])
 @login_required
 def update_lab(id, field_name):
-    lab_object = labs.query.get(id)
-    new_value = request.form[field_name]
+    with db.session() as db_session:
+        lab_object = db_session.query(labs).get(id)
+        new_value = request.form[field_name]
 
-    if field_name == 'password':
-        password2 = request.form['password2']
-        if new_value == password2:
-            new_value = generate_password_hash(new_value)
+        if field_name == 'password':
+            password2 = request.form['password2']
+            if new_value == password2:
+                new_value = generate_password_hash(new_value)
 
-            lab_login_object = labs_login.query.filter_by(lab_id=id).first()
-            lab_login_object.password = new_value
+                lab_login_object = db_session.query(labs_login).filter_by(lab_id=id).first()
+                lab_login_object.password = new_value
 
-            db.session.add(lab_login_object)
-            db.session.commit()
+                db.session.add(lab_login_object)
+                db.session.commit()
 
-        else:
-            flash('Those password do not match, please try again', 'error')
-            return render_template('update_lab.html',
-                                   user = current_user,
-                                   lab_object = lab_object,
-                                   field_name = field_name)
+            else:
+                flash('Those password do not match, please try again', 'error')
+                return render_template('update_lab.html',
+                                    user = current_user,
+                                    lab_object = lab_object,
+                                    field_name = field_name)
 
     # The setattr() function is a built-in Python function that takes 
     # three arguments: an object, a string indicating the name of 

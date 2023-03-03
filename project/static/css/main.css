@@ -115,8 +115,8 @@ p, .nav-link, .btn-primary, .footer,
   }
 
   #build_website {
-    width: 100px;
-    height: auto;
+    max-width: 100%;
+    max-height: 100%;
   }
 }
 
@@ -133,8 +133,8 @@ p, .nav-link, .btn-primary, .footer,
   }
 
   #build_website {
-    width: 200px;
-    height: auto;
+    max-width: 100%;
+    max-height: 100%;
   }
 }
 
@@ -150,8 +150,8 @@ p, .nav-link, .btn-primary, .footer,
   }
 
   #build_website {
-    width: 300px;
-    height: auto;
+    max-width: 100%;
+    max-height: 100%;
   }
 }
 
