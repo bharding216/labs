@@ -10,6 +10,11 @@ MELON: #F6A192
 PEACH: #FFCBA4
 */
 
+.modal-backdrop {
+  position: unset !important;
+}
+
+
 .wrapper {
   min-height: 100vh;
   display: flex;
