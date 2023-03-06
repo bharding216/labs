@@ -127,10 +127,14 @@ def create_app():
 
         @app.before_request
         def redirect_to_www_and_https():
+            print(f"Received request: {request.url}")
+
+
             # Redirect non-www requests to www version (Heroku only)
             if 'DYNO' in os.environ:
                 if not request.headers.get('Host').startswith('www.'):
                     url = request.url.replace("://", "://www.", 1)
+                    print(url)
                     return redirect(url, code=301)
 
 
