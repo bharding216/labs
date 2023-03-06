@@ -46,15 +46,40 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://' + os.getenv('mysql_user') + \
         ':' + os.getenv('mysql_password') + '@' + os.getenv('mysql_host') + '/' + os.getenv('mysql_db')
     
+    # SQLALCHEMY_POOL_SIZE: This setting determines the maximum 
+    # number of connections that can be created in the pool. 
+    # A good rule of thumb is to set this value to the maximum 
+    # number of concurrent requests your application is expected 
+    # to handle, plus a few extra connections for overhead.
+    app.config['SQLALCHEMY_POOL_SIZE'] = 70
 
-    app.config['SQLALCHEMY_POOL_SIZE'] = 10
-    app.config['SQLALCHEMY_POOL_RECYCLE'] = 30
+    # SQLALCHEMY_POOL_RECYCLE: This setting determines how long a 
+    # connection can remain in the pool before it is recycled and 
+    # replaced with a new connection. A good starting value for this 
+    # setting is around 5-10 minutes (300-600 seconds). However, you 
+    # should adjust this value based on the expected duration of your 
+    # requests and the resources available on your database server. If 
+    # your requests are short-lived, you may be able to increase this 
+    # value to reduce the overhead of creating and closing connections.
+    app.config['SQLALCHEMY_POOL_RECYCLE'] = 450
+
     app.config['SQLALCHEMY_MAX_OVERFLOW'] = 5
-    app.config['SQLALCHEMY_POOL_TIMEOUT'] = 60
 
-
+    # SQLALCHEMY_POOL_TIMEOUT: This setting determines how long 
+    # a connection can remain idle before it is closed and removed 
+    # from the pool. A good starting value for this setting is 
+    # around 30 seconds. However, you should adjust this value based 
+    # on the expected duration of your requests and the resources 
+    # available on your database server. If your requests are short-lived, 
+    # you may be able to increase this value to reduce the overhead 
+    # of creating and closing connections.
+    app.config['SQLALCHEMY_POOL_TIMEOUT'] = 30
 
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        'pool_pre_ping': True,  # enable connection pool pre-ping
+    }
 
 
     db.init_app(app)
@@ -103,8 +128,14 @@ def create_app():
         @app.before_request
         def redirect_to_www_and_https():
             # Redirect non-www requests to www version (Heroku only)
-            if 'DYNO' in os.environ and not request.url.startswith('https://www.'):
-                return redirect(request.url.replace('https://', 'https://www.'), code=301)
+            if 'DYNO' in os.environ:
+                if request.headers.get('Host') == 'unifiedsl.com':
+                    return redirect('https://www.unifiedsl.com' + request.full_path, code=301)
+
+
+                # if not request.url.startswith('https://www.') and not request.url.startswith('https://unifiedsl.'):
+                #     new_url = request.url.replace('https://', 'https://www.')
+                #     return redirect(new_url, code=301)
 
             # Ensure that all requests are secure (HTTPS)
             if not request.is_secure and request.host != 'localhost:2000':

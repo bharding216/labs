@@ -70,3 +70,5 @@ class test_requests(db.Model):
     status = db.Column(db.String(100), nullable=False)
     lab_id = db.Column(db.Integer, db.ForeignKey('labs.id'), nullable=False)
     results = db.Column(db.LargeBinary(length=2**32-1))
+    payment_status = db.Column(db.String(10))
+    transit_status = db.Column(db.String(100))

@@ -242,7 +242,8 @@ def confirmation_new_user():
                            test_name = selected_test,
                            lab_id = lab_id,
                            status = 'Pending',
-                           requestor_id = current_user_id
+                           requestor_id = current_user_id,
+                           payment_status = 'Not Paid'
                            )
 
     db.session.add(new_request)
@@ -280,7 +281,8 @@ def confirmation_returning_user():
                                         turnaround = turnaround,
                                         test_name = selected_test,
                                         lab_id = lab_id,
-                                        status = 'Pending'
+                                        status = 'Pending',
+                                        payment_status = 'Not Paid'
                                         )
 
             db.session.add(new_request)
@@ -314,8 +316,10 @@ def lab_requests():
                     status = None
         
                 if status:
-                    db.session.query(test_requests).filter_by(request_id = request_id).update({'status': status})
-                    db.session.commit()
+                    with db.session() as db_session:
+                        db_session.query(test_requests).filter_by(request_id = request_id).update({'status': status})
+                        db.session.commit()
+                    
                     flash('Status updated successfully', 'success')
                 else:
                     flash('Invalid action.', 'error')
@@ -338,8 +342,9 @@ def lab_requests():
         # that might occur if the user information is invalid, and catches any other 
         # exceptions that might occur.
         try:
-            lab_info_id = labs_login.query.filter_by(id = current_user.id).first().lab_id # this is an integer type
-            lab_requests = test_requests.query.filter_by(lab_id = lab_info_id).all() # this is a list type
+            with db.session() as db_session:
+                lab_info_id = db_session.query(labs_login).filter_by(id = current_user.id).first().lab_id # this is an integer type
+                lab_requests = db_session.query(test_requests).filter_by(lab_id = lab_info_id).all() # this is a list type
 
         except AttributeError:
             flash('Invalid user information.', 'error')
@@ -380,8 +385,11 @@ def submit_details():
         new_details = list(data[2].values())[0]
         status = 'Need more details'
 
-        db.session.query(test_requests).filter_by(request_id = request_id).update({'status': status})
-        db.session.commit()
+        with db.session() as db_session:
+            db_session.query(test_requests) \
+                .filter_by(request_id = request_id) \
+                .update({'status': status})
+            db_session.commit()
 
         # SEND AN EMAIL TO THE CUSTOMER
 
@@ -423,6 +431,7 @@ def upload():
 
             db.session.query(test_requests).filter_by(request_id = request_id).update({'results': file_data})
             db.session.commit()
+            db.session.close()
             flash('File was successfully uploaded!', 'success')
             return redirect(url_for('views.lab_requests'))
         else:
@@ -458,6 +467,8 @@ def user_requests():
         .filter(test_requests.requestor_id == current_user.id) \
         .all()
     
+    db.session.close()
+
     return render_template('user_requests.html', 
                             user = current_user,
                             my_requests = my_requests
