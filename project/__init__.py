@@ -129,7 +129,7 @@ def create_app():
         def redirect_to_www_and_https():
             # Redirect non-www requests to www version (Heroku only)
             if 'DYNO' in os.environ:
-                if request.headers.get('Host') == 'unifiedsl.com':
+                if not request.headers.get('Host').startswith('www.'):
                     return redirect('https://www.unifiedsl.com' + request.full_path, code=301)
 
 
