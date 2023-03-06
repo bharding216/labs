@@ -125,26 +125,21 @@ def create_app():
             return user
 
 
-        @app.before_request
-        def redirect_to_www_and_https():
-            print(f"Received request: {request.url}")
+        # @app.before_request
+        # def redirect_to_www_and_https():
+        #     print(f"Received request: {request.url}")
 
 
-            # Redirect non-www requests to www version (Heroku only)
-            if 'DYNO' in os.environ:
-                if not request.headers.get('Host').startswith('www.'):
-                    url = request.url.replace("://", "://www.", 1)
-                    print(url)
-                    return redirect(url, code=301)
+        #     # Redirect non-www requests to www version (Heroku only)
+        #     if 'DYNO' in os.environ:
+        #         if not request.headers.get('Host').startswith('www.'):
+        #             url = request.url.replace("://", "://www.", 1)
+        #             print(url)
+        #             return redirect(url, code=301)
 
-
-                # if not request.url.startswith('https://www.') and not request.url.startswith('https://unifiedsl.'):
-                #     new_url = request.url.replace('https://', 'https://www.')
-                #     return redirect(new_url, code=301)
-
-            # Ensure that all requests are secure (HTTPS)
-            if not request.is_secure and request.host != 'localhost:2000':
-                return redirect(request.url.replace('http://', 'https://'), code=301)
+        #     # Ensure that all requests are secure (HTTPS)
+        #     if not request.is_secure and request.host != 'localhost:2000':
+        #         return redirect(request.url.replace('http://', 'https://'), code=301)
 
 
         return app
