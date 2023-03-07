@@ -51,7 +51,7 @@ def create_app():
     # A good rule of thumb is to set this value to the maximum 
     # number of concurrent requests your application is expected 
     # to handle, plus a few extra connections for overhead.
-    app.config['SQLALCHEMY_POOL_SIZE'] = 70
+    app.config['SQLALCHEMY_POOL_SIZE'] = 5
 
     # SQLALCHEMY_POOL_RECYCLE: This setting determines how long a 
     # connection can remain in the pool before it is recycled and 
@@ -125,21 +125,10 @@ def create_app():
             return user
 
 
-        # @app.before_request
-        # def redirect_to_www_and_https():
-        #     print(f"Received request: {request.url}")
-
-
-        #     # Redirect non-www requests to www version (Heroku only)
-        #     if 'DYNO' in os.environ:
-        #         if not request.headers.get('Host').startswith('www.'):
-        #             url = request.url.replace("://", "://www.", 1)
-        #             print(url)
-        #             return redirect(url, code=301)
-
-        #     # Ensure that all requests are secure (HTTPS)
-        #     if not request.is_secure and request.host != 'localhost:2000':
-        #         return redirect(request.url.replace('http://', 'https://'), code=301)
-
+        @app.before_request
+        def redirect_to_https():
+            # Ensure that all requests are secure (HTTPS)
+            if not request.is_secure and request.host != 'localhost:2000':
+                return redirect(request.url.replace('http://', 'https://'), code=301)
 
         return app
