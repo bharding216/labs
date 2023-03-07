@@ -63,7 +63,7 @@ def create_app():
     # value to reduce the overhead of creating and closing connections.
     app.config['SQLALCHEMY_POOL_RECYCLE'] = 450
 
-    app.config['SQLALCHEMY_MAX_OVERFLOW'] = 5
+    app.config['SQLALCHEMY_MAX_OVERFLOW'] = 2
 
     # SQLALCHEMY_POOL_TIMEOUT: This setting determines how long 
     # a connection can remain idle before it is closed and removed 
@@ -73,7 +73,7 @@ def create_app():
     # available on your database server. If your requests are short-lived, 
     # you may be able to increase this value to reduce the overhead 
     # of creating and closing connections.
-    app.config['SQLALCHEMY_POOL_TIMEOUT'] = 30
+    app.config['SQLALCHEMY_POOL_TIMEOUT'] = 20
 
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
