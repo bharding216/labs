@@ -7,6 +7,7 @@ from flask_login import UserMixin
 from itsdangerous import URLSafeTimedSerializer as Serializer
 from flask import Flask
 import yaml
+from sqlalchemy import DateTime
 
 
 class tests(db.Model):
@@ -67,8 +68,10 @@ class test_requests(db.Model):
     sample_description = db.Column(db.String(16000000))
     turnaround = db.Column(db.Integer)
     test_name = db.Column(db.String(100), nullable=False)
-    status = db.Column(db.String(100), nullable=False)
+    # This is approval status:
+    approval_status = db.Column(db.String(100), nullable=False)
     lab_id = db.Column(db.Integer, db.ForeignKey('labs.id'), nullable=False)
     results = db.Column(db.LargeBinary(length=2**32-1))
     payment_status = db.Column(db.String(10))
     transit_status = db.Column(db.String(100))
+    datetime_submitted = db.Column(DateTime)

@@ -29,7 +29,6 @@ def index():
             session['selected_test'] = selected_test
             zipcode = request.form['zipcode']
             session['zipcode'] = zipcode
-            date = request.form['date-picker']
 
             return redirect(url_for('views.lab_function'))
 
@@ -48,6 +47,12 @@ def index():
 @views.route('/about', methods=['GET'])
 def about():
     return render_template('about.html', user = current_user)
+
+
+
+@views.route('/labs_about', methods=['GET'])
+def labs_about():
+    return render_template('labs_about.html', user = current_user)
 
 
 
@@ -191,6 +196,7 @@ def returning_user_login():
             if check_password_hash(individual_email.password, password):
                 login_user(individual_email, remember=False)
                 session.permanent = True
+                session['type'] = 'requestor'
                 flash('Login successful!', category = 'success')
                 return redirect(url_for('views.returning_user_booking'))
             
@@ -211,6 +217,7 @@ def returning_user_login():
 
 
 @views.route("/returning_user_booking", methods=['GET', 'POST'])
+@login_required
 def returning_user_booking():
     selected_lab_id = session.get('selected_lab_id')
     with db.session() as db_session:
@@ -234,16 +241,22 @@ def confirmation_new_user():
     lab_choice = labs.query.get_or_404(selected_lab_id)
     lab_id = lab_choice.id
     current_user_id = current_user.id
+    submitted_datetime = datetime.datetime.now()
+    formatted_date = submitted_datetime.strftime("%Y-%m-%d %H:%M:%S")
+    date_to_string = str(formatted_date)
+    print(datetime)
 
-    # save the testing info to the requests table.
+    # Save the testing info to the requests table.
     new_request = test_requests(sample_name = sample_name,
                            sample_description = sample_description,
                            turnaround = turnaround,
                            test_name = selected_test,
                            lab_id = lab_id,
-                           status = 'Pending',
+                           approval_status = 'Pending',
                            requestor_id = current_user_id,
-                           payment_status = 'Not Paid'
+                           payment_status = 'Not Paid',
+                           transit_status = 'Not Shippied',
+                           datetime_submitted = date_to_string
                            )
 
     db.session.add(new_request)
@@ -267,13 +280,17 @@ def confirmation_returning_user():
         turnaround = request.form['turnaround']
 
         selected_test = session.get('selected_test')
-        first_name = session.get('first_name', None)
-
         selected_lab_id = session.get('selected_lab_id')
         
         with db.session() as db_session:
             lab_choice = db_session.query(labs).get_or_404(selected_lab_id)
             lab_id = lab_choice.id
+            current_user_id = current_user.id
+            logged_in_user = db_session.query(individuals_login).filter_by(id = current_user_id).first()
+            name = logged_in_user.first_name
+            submitted_datetime = datetime.datetime.now()
+            formatted_date = submitted_datetime.strftime("%Y-%m-%d %H:%M:%S")
+            date_to_string = str(formatted_date)
 
             # Save the testing info to the requests table.
             new_request = test_requests(sample_name = sample_name,
@@ -281,20 +298,24 @@ def confirmation_returning_user():
                                         turnaround = turnaround,
                                         test_name = selected_test,
                                         lab_id = lab_id,
-                                        status = 'Pending',
-                                        payment_status = 'Not Paid'
+                                        approval_status = 'Pending',
+                                        requestor_id = current_user_id,
+                                        payment_status = 'Not Paid',
+                                        transit_status = 'Not Shippied',
+                                        datetime_submitted = date_to_string
                                         )
+
 
             db.session.add(new_request)
             db.session.commit()
 
-        return render_template('confirmation.html', 
-                            selected_test = selected_test,
-                            first_name = first_name,
-                            lab_choice = lab_choice,
-                            turnaround = turnaround,
-                            user = current_user
-                            )
+            return render_template('confirmation.html', 
+                                selected_test = selected_test,
+                                first_name = name,
+                                lab_choice = lab_choice,
+                                turnaround = turnaround,
+                                user = current_user
+                                )
 
 
 
@@ -317,7 +338,7 @@ def lab_requests():
         
                 if status:
                     with db.session() as db_session:
-                        db_session.query(test_requests).filter_by(request_id = request_id).update({'status': status})
+                        db_session.query(test_requests).filter_by(request_id = request_id).update({'approval_status': status})
                         db.session.commit()
                     
                     flash('Status updated successfully', 'success')
@@ -388,7 +409,7 @@ def submit_details():
         with db.session() as db_session:
             db_session.query(test_requests) \
                 .filter_by(request_id = request_id) \
-                .update({'status': status})
+                .update({'approval_status': status})
             db_session.commit()
 
         # SEND AN EMAIL TO THE CUSTOMER

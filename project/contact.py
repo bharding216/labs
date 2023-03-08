@@ -25,3 +25,9 @@ def success():
     name = request.args.get("name")
     return render_template('contact_success.html', name=name,
                            user = current_user)
+
+
+
+@contact_bp.route('/lab_contact', methods=['GET'])
+def lab_contact():
+    return render_template('lab_contact.html', user = current_user)

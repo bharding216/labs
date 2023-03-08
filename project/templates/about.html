@@ -4,76 +4,65 @@
 
 {% block content %}
 
-<div class="container my-5 pb-5">
-    <div class="row" style="height: 150px">
-        <div class="col-md-12 text-center d-flex flex-column justify-content-center"> 
-            <h1>Our Mission is to <i>Accelerate</i> Scientific Discovery</h1>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-12 text-center d-flex flex-column justify-content-center"> 
-            <p>
-                We are a group of chemical and bioengineers that had 
-                a hard time finding an analytical service provider 
-                that could satisfy our professional needs. This network 
-                was developed so your scientific research - or your weekend
-                side project - does not stop at just a thought. 
-            </p>
-        </div>
-    </div>
-</div>
-
-
-<div class="container my-5 pb-5">
-    <div class="row">
-        <div class="p-5 col-md-6 text-center d-flex flex-column justify-content-center" 
-            style="background-color: #eace5f">
-
-            <img src='/static/lab2.jpg'>
-
+<div class="py-5" style="background-image:linear-gradient(#ffcba4, white);">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 align-items-center d-flex">
+                <div class="text-center mx-auto">
+                    <h1 class="mb-5">Our Mission is to <i>Accelerate</i> Scientific Discovery</h1>
+                </div>
+            </div>
         </div>
 
-        <div class="p-5 col-md-6 text-center d-flex flex-column justify-content-center" 
-        style="background-color: #eace5f; text-align: center;">
 
-            <h1 class="mb-3">A Modern Approach</h1>
+        <div class="row">
+            <div class="col-6 align-items-center d-flex">
+                <div class="text-center">
+                    <img src='/static/scientists.png' id="scientists">
+                </div>
+            </div>
 
-            <p class="mb-4"> 
-                It’s essential for us that our clients get personalized 
-                suggestions on who from our team is the best match. 
-                Rather than do things the typical way, we’ve created a 
-                system designed around our patients’ needs. 
-            </p>
+            <div class="col-6 align-items-center d-flex">
+                <div class="text-center">
+                    <p class="about-us-text"> 
+                        We are a group of chemical engineers that had a hard time quickly 
+                        finding analytical labs that could provide effective testing support. 
+                    </p>
 
-            <a class="btn btn-primary mx-auto" 
-                href="#" role="button"
-                style="width: 50%">
-                
-                Learn More
-            </a>
+                    <p class="mb-4 about-us-text">
+                        We developed this platform so your scientific research 
+                        - or your weekend side project - does not stop at just a thought. 
+                    </p>
 
-
-
+                    <a class="btn btn-reversed mx-auto" 
+                        href="{{ url_for('views.index') }}" role="button"
+                        style="width: auto">
+                        Let's Get Started
+                    </a>
+                </div>
+            </div>
         </div>
+
+
     </div>
 </div>
+
 
 
 
 
 <div class="container my-5">
-    <div class="row">
+    <div class="row pb-5">
         <div class="col-md-12 text-center d-flex flex-column justify-content-center"> 
             <h1>How It Works</h1>
         </div>
     </div>
 
-    <div class="row" data-aos="fade-up">
-        <div class="p-5 col-md-6 text-center d-flex flex-column justify-content-center"> 
+    <div class="row pb-5" data-aos="fade-up">
+        <div class="col-md-6 text-center d-flex flex-column justify-content-center"> 
             <h1>Choose a Laboratory Service</h1>
         </div>
-        <div class="p-5 col-md-6 text-center d-flex flex-column justify-content-center"> 
+        <div class="col-md-6 text-center d-flex flex-column justify-content-center"> 
             <p>
                 Search and select from our extensive database of services for the exact 
                 the laboratory service that you need to get done.
@@ -81,11 +70,11 @@
         </div>
     </div>
 
-    <div class="row" data-aos="fade-up">
-        <div class="p-5 col-md-6 text-center d-flex flex-column justify-content-center"> 
+    <div class="row pb-5" data-aos="fade-up">
+        <div class="col-md-6 text-center d-flex flex-column justify-content-center"> 
             <h1>Plan The Service</h1>
         </div>
-        <div class="p-5 col-md-6 text-center d-flex flex-column justify-content-center"> 
+        <div class="col-md-6 text-center d-flex flex-column justify-content-center"> 
             <p>
                 Once you select a service you will be prompted to select 
                 the timeframe, location and availability of the services. 
@@ -97,11 +86,11 @@
         </div>
     </div>
 
-    <div class="row" data-aos="fade-up">
-        <div class="p-5 col-md-6 text-center d-flex flex-column justify-content-center"> 
+    <div class="row pb-5" data-aos="fade-up">
+        <div class="col-md-6 text-center d-flex flex-column justify-content-center"> 
             <h1>Send Your Sample</h1>
         </div>
-        <div class="p-5 col-md-6 text-center d-flex flex-column justify-content-center"> 
+        <div class="col-md-6 text-center d-flex flex-column justify-content-center"> 
             <p>
                 Print your shipping label and use any of our 
                 approved mail service providers to send your sample.
@@ -109,11 +98,11 @@
         </div>
     </div>
 
-    <div class="row" data-aos="fade-up">
-        <div class="p-5 col-md-6 text-center d-flex flex-column justify-content-center"> 
+    <div class="row pb-5" data-aos="fade-up">
+        <div class="col-md-6 text-center d-flex flex-column justify-content-center"> 
             <h1>Receive Results</h1>
         </div>
-        <div class="p-5 col-md-6 text-center d-flex flex-column justify-content-center"> 
+        <div class="col-md-6 text-center d-flex flex-column justify-content-center"> 
             <p>
                 You will be able to track the status of your sample 
                 through the website portal and then receive results 
@@ -122,23 +111,31 @@
         </div>
     </div>
 
-
 </div>
 
-<div class="container my-5" data-aos="fade-up">
-    <div class="row" style="height: 300px">
-        <div class="col-md-12 p-5 text-center d-flex flex-column justify-content-center"
-            style="background-color: #eace5f"> 
-            <a class="btn btn-primary mx-auto" 
-            href="{{ url_for('views.index') }}" role="button"
-            style="width:auto">
-            
-            Let's Get Started!
-        </a>
+
+
+
+
+
+
+<div style="background-image:linear-gradient(#11296b, #1e96fc);">
+    <div class="container py-5">
+        <div class="row" style="height: 300px">
+            <div class="col-md-12 text-center d-flex flex-column justify-content-center"> 
+                
+                <h1 class="mb-5" style="color: white;">Realize Your Innovative Vision</h1>
+
+                <a class="btn btn-primary mx-auto" 
+                href="{{ url_for('views.index') }}" role="button"
+                style="width:auto">
+                Let's Get Started
+                </a>
+
+            </div>
         </div>
     </div>
 </div>
 
-<br><br><br>
 
 {% endblock %}

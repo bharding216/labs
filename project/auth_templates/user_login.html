@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}User Login{% endblock %}
+{% block title %}USL | Customer Login{% endblock %}
 
 {% block content %}
 
@@ -22,8 +22,8 @@
 
     <form action="{{ url_for('auth.customer_login') }}" method="POST">
 
-        <h3>Requestor Login</h3>
-        <p>Returning requestors login here</p>
+        <h3>Customer Login</h3>
+        <p>Returning customers login here</p>
 
         <div class="form-floating mb-3">
             <input type="text" id="email" placeholder="email"
@@ -37,7 +37,7 @@
             <label for="password">Password</label>
         </div>
 
-        <button type="submit" class="btn btn-outline-primary">Login</button>
+        <button type="submit" class="btn btn-primary">Login</button>
 
     </form>
 
@@ -49,10 +49,9 @@
 
         <h3 class="my-3">First Time Here?</h3>
 
-        <a class="btn btn-outline-primary mx-auto" 
+        <a class="btn btn-primary mx-auto" 
         href="{{ url_for('views.index') }}" role="button"
         style="width: auto">
-        
         Let's Get Started
         </a>
 

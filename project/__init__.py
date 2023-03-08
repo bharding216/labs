@@ -51,6 +51,7 @@ def create_app():
     # A good rule of thumb is to set this value to the maximum 
     # number of concurrent requests your application is expected 
     # to handle, plus a few extra connections for overhead.
+    # The ClearDB (MySQL) max connections for the free plan is 10.
     app.config['SQLALCHEMY_POOL_SIZE'] = 5
 
     # SQLALCHEMY_POOL_RECYCLE: This setting determines how long a 
@@ -100,7 +101,7 @@ def create_app():
 
         db.create_all()
 
-        login_manager.login_view = "auth.provider_login"
+        login_manager.login_view = "auth.returning_user_login"
         login_manager.login_message = ""
         login_manager.login_message_category = "error"
         login_manager.init_app(app)

@@ -25,9 +25,11 @@
 
 
 
+
+<!-- TOP BLUE SECTION -->
 <div class="py-5" style="background-image:linear-gradient(#1e96fc, #11296b);">
 
-    <!--INNER DIV 1-->
+    <!-- TOP ROW -->
     <div class="container">
         <div class="row mb-3">   
             <div class="col-6 align-items-center d-flex">
@@ -47,13 +49,18 @@
     </div>
 
 
-    <div class="row">
+
+    <!-- SECOND ROW CONTAINING THE FORM-->
+    <div class="container">
+
         <form action="{{ url_for('views.index') }}" method="POST">
 
-            <!--INNER DIV 2 for the form inputs-->
-            <div class="row d-flex align-items-center justify-content-center">
+            <!-- A ROW FOR THE FORM INPUTS -->
+            <div class="row d-flex align-items-center justify-content-center homepage-input-padding">
 
-                <div class="form-group col-md-5 d-flex align-items-center justify-content-center">
+                <!-- align-items-center is to vertically center elements within a container -->
+                <!-- justify-content-center is to horizontally center elements within a container -->
+                <div class="form-group col-md-6 d-flex align-items-center justify-content-center">
 
                     <div class="mb-3 mb-md-0">
 
@@ -72,7 +79,7 @@
                 </div>
 
 
-                <div class="form-group col-md-3 d-flex align-items-center justify-content-center">
+                <div class="form-group col-md-6 d-flex align-items-center justify-content-center">
 
                     <div class="form-floating mb-3 mb-md-0">
 
@@ -86,22 +93,10 @@
                     
                 </div>
 
-
-                <div class="form-group col-md-3 d-flex align-items-center justify-content-center">
-
-                    <div class="mb-3 mb-md-0">
-                
-                        <input type="date" id="date-picker" class="form-control"
-                            name="date-picker" value="{{ date }}">
-
-                    </div>
-                    
-                </div>
-
             </div>
 
 
-            <!--INNER DIV 3 for the submit button-->
+            <!-- A ROW FOR THE SUBMIT BUTTON -->
             <div class="row p-5">
 
                 <div class="form-group d-flex justify-content-center">
@@ -124,45 +119,47 @@
 
 
 
+
+<!-- SECOND SECTION (YELLOW) -->
 <div style="background-image:linear-gradient(white, #ffcba4);">
 
     <div class="container py-5">
         <div class="row text-center pt-4">
-            <h1 style="color: #11296b">How It Works</h1>
+            <h1>How It Works</h1>
         </div>
     </div>
 
     <div class="container pb-4">
         <div class="row pb-5 padded" data-aos="fade-up" style="display: flex;">
             <div class="col-sm-6 col-md-3 text-center spaced" data-aos="fade-up">
-                <div class="section section_head mb-3"><h3 style="color: #11296b">Select a Test</h3></div>
-                <div class="section section_icon"><i class="fa-solid fa-flask-vial" style="font-size: 75px; color: #11296b;"></i></div>
+                <div class="section section_head mb-3"><h3>Select a Test</h3></div>
+                <div class="section section_icon"><i class="fa-solid fa-flask-vial" style="font-size: 75px;"></i></div>
                 <div class="section section_text">
-                    <p style="color: #11296b">Choose from our library of lab tests.</p>
+                    <p>Choose from our library of lab tests.</p>
                 </div>
             </div>
 
             <div class="col-sm-6 col-md-3 text-center spaced" data-aos="fade-up">
-                <div class="section section_head mb-3"><h3 style="color: #11296b">Choose a Lab</h3></div>
-                <div class="section section_icon"><i class="fa-solid fa-glasses" style="font-size: 75px; color: #11296b;"></i></div>
+                <div class="section section_head mb-3"><h3>Choose a Lab</h3></div>
+                <div class="section section_icon"><i class="fa-solid fa-glasses" style="font-size: 75px;"></i></div>
                 <div class="section section_text">
-                    <p style="color: #11296b">Filter lab providers by location, services, and turnaround time.</p>
+                    <p>Filter lab providers by location, services, and turnaround time.</p>
                 </div>
             </div>
             
             <div class="col-sm-6 col-md-3 text-center spaced" data-aos="fade-up">
-                <div class="section section_head mb-3"><h3 style="color: #11296b">Ship your Sample</h3></div>
-                <div class="section section_icon"><i class="fa fa-box" style="font-size: 75px; color: #11296b;"></i></div>
+                <div class="section section_head mb-3"><h3>Ship your Sample</h3></div>
+                <div class="section section_icon"><i class="fa fa-box" style="font-size: 75px;"></i></div>
                 <div class="section section_text">
-                    <p style="color: #11296b">We'll provide a shipping label so you can mail your sample.</p>
+                    <p>We'll provide a shipping label so you can mail your sample.</p>
                 </div>
             </div>
 
             <div class="col-sm-6 col-md-3 text-center spaced" data-aos="fade-up">
-                <div class="section section_head mb-3"><h3 style="color: #11296b">Get your Results</h3></div>
-                <div class="section section_icon"><i class="fa-solid fa-chart-line" style="font-size: 75px; color: #11296b;"></i></div>
+                <div class="section section_head mb-3"><h3>Get your Results</h3></div>
+                <div class="section section_icon"><i class="fa-solid fa-chart-line" style="font-size: 75px;"></i></div>
                 <div class="section section_text">
-                    <p style="color: #11296b">View your results in your secure dashboard.</p>
+                    <p>View your results in your secure dashboard.</p>
                 </div>
             </div>
         </div>
@@ -212,6 +209,59 @@
 </div>
 
 
+
+
+<div style="background-image:linear-gradient(white, #ffcba4);">
+    <div class="container py-5">
+        <div class="row mb-3 py-4">  
+            
+            <div class="col-7 d-flex flex-column justify-content-center mx-auto mx-sm-0">
+                <div class="row align-items-center">
+                    <div class="col-12 mb-4 text-center">
+                        <h1>USL For Private Labs</h1>
+                    </div>
+                </div>
+
+                <div class="row align-items-center">
+                    <div class="col-12 mb-4">
+                        <p>
+                            Interested in reaching 
+                            a larger audience for your lab services?
+                        </p>
+                        <li>Increase equipment utilization</li>
+                        <li>Strengthen online reputation</li>
+                        <li>Acquire new customers</li>
+                    </div>
+                </div>
+
+                <div class="row align-items-center">
+                    <div class="col-6 text-center">
+                        <a href="{{ url_for('contact.lab_contact') }}">
+                            <button type="button" class="btn btn-reversed" data-aos="fade-up">Reach Out</button>
+                        </a>                        
+                    </div>
+                    <div class="col-6 text-center">
+                        <a href="{{ url_for('views.labs_about') }}">
+                            <button type="button" class="btn btn-reversed" data-aos="fade-up">Learn More</button>
+                        </a>                        
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="col-5 align-items-center d-flex">
+                <div class="text-center">
+                    <img src='/static/lab_techs2.png' id="build_website">
+                </div>
+            </div>
+
+
+
+
+        </div>
+    </div>
+</div>
 
 
 

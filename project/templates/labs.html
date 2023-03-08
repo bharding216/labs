@@ -7,7 +7,7 @@
 
 {% block content %}
 
-<div class="container my-5">
+<div class="container mt-5">
     <h1>Choose your lab</h1>
     <br>
     <p>Here is a list of labs in your area that can perform this test: 
@@ -18,16 +18,16 @@
 
 
 
-<div class="table-responsive mx-5 py-5">
-    <table class="table">
+<div class="container py-5" style="overflow-x: auto;">
+    <table class="mx-auto">
         <thead>
             <tr>
-                <th class="text-center" scope="col">Lab Name</th>
-                <th class="text-center" scope="col">Specialty</th>
-                <th class="text-center" scope="col">City</th>
-                <th class="text-center" scope="col">State</th>
-                <th class="text-center" scope="col">Price [$USD]</th>
-                <th class="text-center" scope="col">Select</th>
+                <th class="text-center" scope="col" style="width: 40%;">Lab Name</th>
+                <th class="text-center" scope="col" style="width: 15%;">Specialty</th>
+                <th class="text-center" scope="col" style="width: 15%;">City</th>
+                <th class="text-center" scope="col" style="width: 10%;">State</th>
+                <th class="text-center" scope="col" style="width: 10%;">Price [$USD]</th>
+                <th class="text-center" scope="col" style="width: 10%;">Select</th>
             </tr>
         </thead>
 
@@ -53,7 +53,7 @@
                         
                         <form action="{{ url_for('views.lab_function') }}" method="POST">
                             <input type="hidden" name="lab_id" value="{{ lab.id }}">
-                            <input type="submit" class="btn btn-outline-primary my-1" value="Choose Lab">
+                            <input type="submit" class="btn btn-primary m-1" value="Choose Lab">
                         </form>
 
                     </td>

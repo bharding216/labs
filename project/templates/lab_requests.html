@@ -2,6 +2,11 @@
 
 {% block title %}USL | Provider Requests{% endblock %}
 
+
+{% block head %}
+{% endblock %}
+
+
 {% block content %}
 
 <div class="container my-5">
@@ -31,11 +36,12 @@
             <thead>
                 <tr>
                     <th class="text-center align-middle" scope="col">Test Name</th>
-                    <th class="text-center align-middle" scope="col">Sample Name</th>
-                    <th class="text-center align-middle" scope="col">Sample Description</th>
-                    <th class="text-center align-middle" scope="col">Requested Turnaround [days]</th>
-                    <th class="text-center align-middle" scope="col">Request Status</th>
-                    <th class="text-center align-middle" scope="col">Edit Status</th>
+                    <th class="text-center align-middle" scope="col">Date/Time Submitted</th>
+                    <th class="text-center align-middle" scope="col">Customer Notes</th>
+                    <th class="text-center align-middle" scope="col">Approval Status</th>
+                    <th class="text-center align-middle" scope="col">Edit Approval Status</th>
+                    <th class="text-center align-middle" scope="col">Payment Status</th>
+                    <th class="text-center align-middle" scope="col">Transit Status</th>
                     <th class="text-center align-middle" scope="col">Upload Results</th>
                     <th class="text-center align-middle" scope="col">Download Results</th>
                 </tr>
@@ -46,15 +52,14 @@
                 {% for lab_request in lab_requests %}
                     <tr>
                         <td class="text-center align-middle">{{ lab_request.test_name }}</td>
-                        <td class="text-center align-middle">{{ lab_request.sample_name }}</td>
+                        <td class="text-center align-middle">{{ lab_request.datetime_submitted }}</td>
                         <td class="text-center align-middle">{{ lab_request.sample_description }}</td>
-                        <td class="text-center align-middle">{{ lab_request.turnaround }}</td>
-                        <td class="text-center align-middle">{{ lab_request.status }}</td>
+                        <td class="text-center align-middle">{{ lab_request.approval_status }}</td>
 
                         <td class="text-center align-middle">
                             
                             <!-- Approved button -->
-                            {% if lab_request.status|lower != "approved" %}
+                            {% if lab_request.approval_status|lower != "approved" %}
 
                                 <!--Note that the "return" keyword is important. It ensures that the form
                                     is only submitted if the function returns true.-->
@@ -72,7 +77,7 @@
                             {% endif %}
 
                             <!-- Need More Details button -->
-                            {% if "need more details" not in lab_request.status|lower %}
+                            {% if "need more details" not in lab_request.approval_status|lower %}
 
                                 <button type="button" class="btn btn-outline-danger btn-sm" 
                                     data-bs-toggle="modal" data-bs-target="#exampleModal" 
@@ -86,6 +91,11 @@
 
                         </td>
 
+                        <td class="text-center align-middle">{{ lab_request.payment_status }}</td>
+                        <td class="text-center align-middle">{{ lab_request.transit_status }}</td>
+
+
+                        <!-- Upload test results -->
                         <td class="text-center align-middle">
 
                             <form action="{{ url_for('views.upload') }}" method="POST" enctype="multipart/form-data">
@@ -157,7 +167,7 @@
             </div>
         </div>
 
-
+    </div>
 
 </div>
 
@@ -212,6 +222,7 @@
             {"additional_details": additionalDetails.value}
         ];
 
+        // Using JQuery (AJAX) to send a post request. 
         $.ajax({
             url: "{{ url_for('views.submit_details') }}",
             type: 'POST',
@@ -231,9 +242,6 @@
                 alert("Error: " + xhr.responseText);
             }
         });
-
-        // $('#exampleModal').modal('hide'); // Close the modal
-
 
         });
 
