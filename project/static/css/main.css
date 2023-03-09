@@ -206,6 +206,11 @@ p, .nav-link, .btn-primary, .footer,
   table {
     width: 700px;
   }
+
+  #lab_process_container {
+    max-width: 1000px; /* Set the maximum width as needed */
+    margin: 0 auto; /* Center the container */
+  }
 }
 
 

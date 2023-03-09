@@ -1,24 +1,135 @@
 {% extends 'base.html' %}
 
-{% block title %}USL | Become a Provider{% endblock %}
+{% block title %}USL | Our Labs{% endblock %}
 
 {% block head %}
 {% endblock %}
 
 {% block content %}
 
-<p>A page showing the process from the lab's perspective.</p>
 
-<p>
-    A welcome section (top section)
-</p>
 
-<p>
-    The process (middle section)
-</p>
+<div class="py-5" style="background-image:linear-gradient(white, #ffcba4);">
 
-<p>
-    CTA, take them to the contact form. (third section)
-</p>
+    <div class="container">
+        <div class="row mb-3">   
+            <div class="col-6 align-items-center d-flex">
+                <div class="text-center">
+                    <h1 class="pb-3">Interested in Joining Unified Labs?</h1>
+                    <p>We're on a mission to revolutionize the way analytical 
+                        laboratory services reach customers. 
+                    </p>
+                    <p>
+                        We're introducing 
+                        a new platform to enhance your customer reach and 
+                        engagement.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-6 align-items-center d-flex">
+                <div class="text-center">
+                    <img src='/static/lab_partners.png' id="lab_techs">
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+<div class="container py-5" id="lab_process_container">
+    <div class="row m-3">   
+        <div class="col-12 align-items-center d-flex">
+            <div class="text-center">
+                <h1 class="mb-3">How It Works</h1>
+                <img id="lab_process" src='/static/lab_process.png' style="object-fit: cover; width: 100%; height: 100%;">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div style="background-image:linear-gradient(#1e96fc, #11296b);">
+    <div class="container py-5">
+
+        <div class="row mb-3 py-4 text-center">   
+            <h1 style="color: white">
+                We Use The Latest Technologies to Ensure Data Protection
+            </h1>
+        </div>
+
+
+        <div class="row py-4 text-center">  
+
+            <div class="col-sm-12 col-md-4 text-center spaced" data-aos="fade-up">
+                <div class="section section_head mb-3"><h3 style="color: white">Encrypted Session Storage</h3></div>
+                <div class="section section_icon"><i class="fa fa-regular fa-server" style="font-size: 75px; color: white;"></i></div>
+                <div class="section section_text">
+                    <p style="color: white;">Any information you provide is securely stored on our servers, using 
+                        industry-standard encryption techniques to protect against unauthorized access.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-sm-12 col-md-4 text-center spaced" data-aos="fade-up">
+                <div class="section section_head mb-3"><h3 style="color: white">Hashing of Sensitive Data</h3></div>
+                <div class="section section_icon"><i class="fa-solid fa-lock" style="font-size: 75px; color: white;"></i></div>
+                <div class="section section_text">
+                    <p style="color: white;">Hashing is a process that converts your sensitive information into a unique 
+                        and irreversible code that cannot be easily deciphered by unauthorized users.
+                    </p>
+                </div>
+            </div>
+
+
+            <div class="col-sm-12 col-md-4 text-center spaced" data-aos="fade-up">
+                <div class="section section_head mb-3"><h3 style="color: white">Secure Shell (SSH) Tunneling</h3></div>
+                <div class="section section_icon"><i class="fa-solid fa-database" style="font-size: 75px; color: white;"></i></div>
+                <div class="section section_text">
+                    <p style="color: white;">Our database is protected by Secure Shell (SSH) tunneling, 
+                        which allows for secure database access over the internet.
+                    </p>
+                </div>
+            </div>
+
+
+
+
+
+
+
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+<div style="background-image:linear-gradient(white, #ffcba4);">
+    <div class="container py-5">
+        <div class="row mb-3 py-4 text-center">  
+            <h1>
+                Ready to Get Started?
+            </h1>
+        </div>
+
+        <div class="row align-items-center pb-5">
+            <div class="col-12 text-center">
+                <a href="{{ url_for('contact.lab_contact') }}">
+                    <button type="button" class="btn btn-reversed" data-aos="fade-up">Join Our Network</button>
+                </a>                        
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 
 {% endblock %}
