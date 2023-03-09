@@ -7,9 +7,66 @@
 
 {% block content %}
 
-<p>A contact form where labs can contact us.</p>
+<div class="py-5" style="background-image:linear-gradient(#1e96fc, #11296b);">
+    <div class="container">
+        <div class="row mb-3 text-center">   
+            <h1 class="mb-3" style="color: white;">Let's Partner Up!</h1>
+            <h3 style="color: white;">Contact Form for Analytical Lab Providers</h3>
+        </div>
+    </div>
+</div>
 
 
+<div class="container my-5">
 
+    <form action="{{ url_for('contact.lab_contact') }}" method="post">
+
+        <div class="form-floating mb-3 col-md-8 col-lg-6">
+            <input type="text" class="form-control" id="first_name" name="first_name"
+                placeholder="First Name">
+            <label for="first_name">First Name</label>
+        </div>
+
+        <div class="form-floating mb-3 col-md-8 col-lg-6">
+            <input type="text" class="form-control" id="last_name" name="last_name"
+                placeholder="Last Name">
+            <label for="last_name">Last Name</label>
+        </div>
+
+        <div class="form-floating mb-3 col-md-8 col-lg-6">
+            <input type="text" class="form-control" id="lab_name" name="lab_name"
+                placeholder="Lab Name">
+            <label for="lab_name">Lab Name</label>
+        </div>
+
+        <div class="form-floating mb-3 col-md-8 col-lg-6">
+            <input type="text" class="form-control" id="title" name="title"
+                placeholder="Your Title">
+            <label for="title">Your Title</label>
+        </div>
+
+        <div class="form-floating mb-3 col-md-8 col-lg-6">
+            <input type="email" class="form-control" id="email" name="email"
+                placeholder="Email">
+            <label for="email">Email</label>
+        </div>
+
+        <div class="form-floating mb-3 col-md-8 col-lg-6">
+            <input type="tel" class="form-control" name="phone" id="phone" 
+                placeholder="Phone Number" maxlength="15"/> 
+            <label for="phone">Phone Number</label>
+        </div>
+
+        <div class="form-floating mb-3 col-md-12 col-lg-8">
+            <textarea class="form-control" id="message" name="message"
+                placeholder="Message" style="height: 100px;"></textarea>
+            <label for="message">Message</label>
+        </div>        
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+
+    </form>
+
+</div>
 
 {% endblock %}

@@ -4,13 +4,18 @@
 
 {% block content %}
 
-<div class="container my-5">
-    <h1>Get in touch with us</h1>
-    <p>We can answer any questions you might have about the collection 
-        process, the lab analysis, and what to expect after you receive your 
-        lab results.</p>
-    <p>We promise to get back to you within one business day!</p>
+
+<div class="py-5" style="background-image:linear-gradient(#1e96fc, #11296b);">
+    <div class="container">
+        <div class="row mb-3 text-center">   
+            <h1 class="mb-3" style="color: white;">Get In Touch</h1>
+            <p style="color: white;">We can answer any questions you might have about the collection 
+                process, the lab analysis, and what to expect after you receive your 
+                lab results.</p>
+        </div>
+    </div>
 </div>
+
 
 
 <div class="container my-5">
@@ -18,9 +23,15 @@
     <form action="{{ url_for('contact.contact_function') }}" method="post">
 
         <div class="form-floating mb-3 col-md-8 col-lg-6">
-            <input type="text" class="form-control" id="name" name="name"
-                placeholder="Name">
-            <label for="name">Name</label>
+            <input type="text" class="form-control" id="first_name" name="first_name"
+                placeholder="First Name">
+            <label for="first_name">First Name</label>
+        </div>
+
+        <div class="form-floating mb-3 col-md-8 col-lg-6">
+            <input type="text" class="form-control" id="last_name" name="last_name"
+                placeholder="Last Name">
+            <label for="last_name">Last Name</label>
         </div>
 
         <div class="form-floating mb-3 col-md-8 col-lg-6">
@@ -33,14 +44,6 @@
             <input type="tel" class="form-control" name="phone" id="phone" 
                 placeholder="Phone Number" maxlength="15"/> 
             <label for="phone">Phone Number</label>
-            <p class="mx-1"><small>Format: 123-456-7890</small></p>
-        </div>
-
-
-        <div class="form-floating mb-3 col-md-8 col-lg-6">
-            <input type="text" class="form-control" id="specialty" name="specialty"
-                placeholder="Specialty">
-            <label for="specialty">Specialty</label>
         </div>
 
         <div class="form-floating mb-3 col-md-12 col-lg-8">

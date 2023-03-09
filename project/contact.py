@@ -7,27 +7,40 @@ import phonenumbers
 contact_bp = Blueprint('contact', __name__, 
     template_folder='contact_templates', static_folder='contact_static')
 
+
+
 @contact_bp.route('/', methods=['GET', 'POST'])
 def contact_function():
     if request.method == 'POST':
-        name = request.form['name']
+        first_name = request.form['first_name']
         email = request.form['email']
         phone = request.form['phone']
         message = request.form['message']
 
-        return redirect(url_for('contact.success', name=name,
-            email=email, phone=phone, message=message))
+        return render_template('contact_success.html', 
+                                first_name = first_name,
+                                email = email, 
+                                phone = phone, 
+                                message = message,
+                                user = current_user)
 
     return render_template('contact.html', user = current_user)
 
-@contact_bp.route('/success', methods=['GET'])
-def success():
-    name = request.args.get("name")
-    return render_template('contact_success.html', name=name,
-                           user = current_user)
 
 
 
-@contact_bp.route('/lab_contact', methods=['GET'])
+
+@contact_bp.route('/lab_contact', methods=['GET', 'POST'])
 def lab_contact():
-    return render_template('lab_contact.html', user = current_user)
+    if request.method == 'POST':
+        first_name = request.form['first_name']
+        lab_name = request.form['lab_name']
+
+        return render_template('lab_contact_success.html',
+                               user = current_user,
+                               first_name = first_name,
+                               lab_name = lab_name
+                               )
+
+    return render_template('lab_contact.html', 
+                           user = current_user)
