@@ -28,146 +28,164 @@
 </div>
 
 
+<div class="container mt-5">
+    <h1>Provider Requests</h1>
+    <br>
+    <p>Showing test requests for: <b>{{ user.lab_name }}</b>
 
-<div class="container my-5">
+    </p>
+</div>
 
-    <div class="table-responsive mx-5">
-        <table class="table table-bordered" id="lab_requests_table">
-            <thead>
+
+
+<div class="container py-5" style="overflow-x: auto;">
+
+    <table class="mx-auto" id="lab_requests_table">
+        <thead>
+            <tr>
+                <th class="text-center" scope="col" style="width: 15%;">Test Name</th>
+                <th class="text-center" scope="col" style="width: 15%;">Date/Time Submitted</th>
+                <th class="text-center" scope="col" style="width: 22%;">Customer Notes</th>
+                <th class="text-center" scope="col" style="width: 4%;">Approval Status</th>
+                <th class="text-center" scope="col" style="width: 5%;">Edit Approval Status</th>
+                <th class="text-center" scope="col" style="width: 5%;">Payment Status</th>
+                <th class="text-center" scope="col" style="width: 4%;">Transit Status</th>
+                <th class="text-center" scope="col" style="width: 25%;">Upload Results (PDF)</th>
+                <th class="text-center" scope="col" style="width: 5%;">Download Results</th>
+            </tr>
+        </thead>
+
+
+        <tbody>
+            {% for lab_request in lab_requests %}
                 <tr>
-                    <th class="text-center align-middle" scope="col">Test Name</th>
-                    <th class="text-center align-middle" scope="col">Date/Time Submitted</th>
-                    <th class="text-center align-middle" scope="col">Customer Notes</th>
-                    <th class="text-center align-middle" scope="col">Approval Status</th>
-                    <th class="text-center align-middle" scope="col">Edit Approval Status</th>
-                    <th class="text-center align-middle" scope="col">Payment Status</th>
-                    <th class="text-center align-middle" scope="col">Transit Status</th>
-                    <th class="text-center align-middle" scope="col">Upload Results</th>
-                    <th class="text-center align-middle" scope="col">Download Results</th>
-                </tr>
-            </thead>
-    
-    
-            <tbody>
-                {% for lab_request in lab_requests %}
-                    <tr>
-                        <td class="text-center align-middle">{{ lab_request.test_name }}</td>
-                        <td class="text-center align-middle">{{ lab_request.datetime_submitted }}</td>
-                        <td class="text-center align-middle">{{ lab_request.sample_description }}</td>
-                        <td class="text-center align-middle">{{ lab_request.approval_status }}</td>
+                    <td class="text-center">{{ lab_request.test_name }}</td>
+                    <td class="text-center">{{ lab_request.datetime_submitted }}</td>
+                    <td class="text-center">{{ lab_request.sample_description }}</td>
+                    <td class="text-center">{{ lab_request.approval_status }}</td>
 
-                        <td class="text-center align-middle">
-                            
-                            <!-- Approved button -->
-                            {% if lab_request.approval_status|lower != "approved" %}
+                    <td class="text-center">
+                        
+                        <!-- Approved button -->
+                        {% if lab_request.approval_status|lower != "approved" %}
 
-                                <!--Note that the "return" keyword is important. It ensures that the form
-                                    is only submitted if the function returns true.-->
-                                <form action="{{ url_for('views.lab_requests') }}" 
-                                    method="POST"
-                                    onsubmit="return confirmApproval()">
+                            <!--Note that the "return" keyword is important. It ensures that the form
+                                is only submitted if the function returns true.-->
+                            <form action="{{ url_for('views.lab_requests') }}" 
+                                method="POST"
+                                onsubmit="return confirmApproval()">
 
-                                    <!--pass extra data to the Flask route-->
-                                    <input type="hidden" name="id" value="{{ lab_request.request_id }}">
-                                    <input type="hidden" name="action" value="approve">
-
-                                    <input type="submit" class="btn btn-outline-success my-1" value="Approve">
-                                </form>
-
-                            {% endif %}
-
-                            <!-- Need More Details button -->
-                            {% if "need more details" not in lab_request.approval_status|lower %}
-
-                                <button type="button" class="btn btn-outline-danger btn-sm" 
-                                    data-bs-toggle="modal" data-bs-target="#exampleModal" 
-                                    data-myvar="{{ lab_request.request_id }}">
-
-                                    Need more details
-
-                                </button>
-
-                            {% endif %}
-
-                        </td>
-
-                        <td class="text-center align-middle">{{ lab_request.payment_status }}</td>
-                        <td class="text-center align-middle">{{ lab_request.transit_status }}</td>
-
-
-                        <!-- Upload test results -->
-                        <td class="text-center align-middle">
-
-                            <form action="{{ url_for('views.upload') }}" method="POST" enctype="multipart/form-data">
+                                <!--pass extra data to the Flask route-->
                                 <input type="hidden" name="id" value="{{ lab_request.request_id }}">
-                                <input type="file" name="file">
-                                <input type="submit" class="btn btn-outline-primary my-1" value="Upload">
+                                <input type="hidden" name="action" value="approve">
+
+                                <input type="submit" class="btn btn-outline-success mt-2 mb-1 btn-sm" value="Approve">
                             </form>
 
+                        {% endif %}
 
-                        </td>
+                        <!-- Need More Details button -->
+                        {% if "need more details" not in lab_request.approval_status|lower %}
 
-                        <td class="text-center align-middle">
-                        {% if lab_request.results %}
-                            <a href="{{ url_for('views.download', request_id=lab_request.request_id) }}"
-                                class="btn btn-outline-primary my-1">Download</a>
-                      
-                        {% else %}
-                            <p>No results uploaded</p>  
-                        {% endif %}                    
-                        </td>
+                            <button type="button" class="btn btn-outline-danger mt-1 mb-2 btn-sm" 
+                                data-bs-toggle="modal" data-bs-target="#exampleModal" 
+                                data-myvar="{{ lab_request.request_id }}"
+                                data-testname-var="{{ lab_request.test_name }}">
 
-                    </tr>
-    
-                {% endfor %}
-            </tbody>
-    
-        </table>
+                                Need more details
 
-        <!-- Modal -->
-        <div class="modal fade" 
-             id="exampleModal" 
-             tabindex="-1" 
-             aria-labelledby="exampleModalLabel" 
-             aria-hidden="true"
-             data-backdrop="static"
-             data-bs-focus-backdrop="false">
+                            </button>
 
-            <div class="modal-dialog">
+                        {% endif %}
 
-                <div class="modal-content">
+                    </td>
 
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Additional Details</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-
-                    <div class="modal-body">
-                        <p>Request ID #: <span id="myvar-value"></span></p>
-                        <textarea id="additional-details" name="additional-details" 
-                            class="form-control" rows="3" placeholder="Please enter additional details">
-
-                        </textarea>
-                    </div>
+                    <td class="text-center">{{ lab_request.payment_status }}</td>
+                    <td class="text-center">{{ lab_request.transit_status }}</td>
 
 
-                    <div class="modal-footer">
+                    <!-- Upload test results -->
+                    <td class="text-center">
 
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                            Close
-                        </button>
+                        <form action="{{ url_for('views.upload') }}" method="POST" enctype="multipart/form-data">
+                            <div>
+                                <input type="hidden" name="id" value="{{ lab_request.request_id }}">
+                                <input class="form-control form-control-sm" id="formFileSm" type="file" name="file">
+                                <input type="submit" class="btn btn-reversed my-1" value="Upload">
+                            </div>
+                        </form>
 
-                        <button type="button" class="btn btn-primary" id="save-button">
-                            Save changes
-                        </button>
 
-                    </div>
-                
+                    </td>
+
+                    <td class="text-center">
+                    {% if lab_request.results %}
+                        <a href="{{ url_for('views.download', request_id=lab_request.request_id) }}"
+                            class="btn btn-primary my-1">Download</a>
+                    
+                    {% else %}
+                        <p>No results uploaded</p>  
+                    {% endif %}                    
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+
+
+
+
+    <!-- Modal -->
+    <div class="modal fade" 
+            id="exampleModal" 
+            tabindex="-1" 
+            aria-labelledby="exampleModalLabel" 
+            aria-hidden="true"
+            data-backdrop="static"
+            data-bs-focus-backdrop="false">
+
+        <div class="modal-dialog">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Additional Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+
+                <div class="modal-body">
+                    <p>Test requested: <span id="myvar-value"></span></p>
+                    <textarea id="additional-details" name="additional-details" 
+                        class="form-control" rows="3" placeholder="What questions do you have for the customer?">
+
+                    </textarea>
+                </div>
+
+
+                <div class="modal-footer">
+
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Close
+                    </button>
+
+                    <button type="button" class="btn btn-primary" id="save-button">
+                        Save changes
+                    </button>
+
+                </div>
+            
             </div>
         </div>
 
+    <!-- END OF MODAL -->
     </div>
+
+
+
 
 </div>
 
@@ -196,7 +214,7 @@
     myModal.addEventListener('show.bs.modal', function (event) { // When the modal appears, run this function.
 
         var button = event.relatedTarget // Button that triggered the modal
-        var myvar = button.getAttribute('data-myvar') // Extract info from data-* attributes        
+        var myvar = button.getAttribute('data-testname-var') // Extract info from data-* attributes        
         var modalBody = myModal.querySelector('.modal-body') // Find the 'modal-body'.
         var myvarValue = modalBody.querySelector('#myvar-value') // Find the id=myvar-value in the modal-body.
         myvarValue.textContent = myvar // Set this element equal to the value passed from the original button
@@ -206,6 +224,8 @@
         additionalDetails.value = '' // Set the textarea to blank each time the modal appears
 
     });
+
+
 
 
     var modalFooter = myModal.querySelector('.modal-footer') // Find the modal-footer

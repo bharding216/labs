@@ -143,8 +143,12 @@ p, .nav-link, .btn-primary, .footer,
     max-height: 100%;
   }
 
-  table {
+  #lab_choice_table {
     width: 600px;
+  }
+
+  #lab_requests_table {
+    width: 1000px;
   }
 
 }
@@ -171,8 +175,12 @@ p, .nav-link, .btn-primary, .footer,
     max-height: 100%;
   }
 
-  table {
+  #lab_choice_table {
     width: 600px;
+  }
+
+  #lab_requests_table {
+    width: 1000px;
   }
 
 }
@@ -203,8 +211,12 @@ p, .nav-link, .btn-primary, .footer,
     padding-right: 6rem;
   }
 
-  table {
+  #lab_choice_table {
     width: 700px;
+  }
+
+  #lab_requests_table {
+    width: 1000px;
   }
 
   #lab_process_container {
@@ -244,11 +256,18 @@ p, .nav-link, .btn-primary, .footer,
     padding-right: 10rem;
   }
 
-  table {
+  #lab_choice_table {
     width: 1000px;
   }
+
+  #lab_requests_table {
+    width: 1200px;
+  }
 }
-    
+
+
+
+
 .table thead th {
   background-color: #ffcba4;
 }

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, flash, url_for, session, send_file, jsonify
+from flask import Blueprint, render_template, request, redirect, flash, url_for, session, send_file, jsonify, Response
 from flask_login import login_required, current_user, login_user
 from .models import tests, labs, labs_tests, individuals_login, labs_login, test_requests
 import datetime
@@ -14,6 +14,8 @@ from io import BytesIO
 import phonenumbers
 from urllib.parse import quote, unquote
 import os
+import mimetypes
+import io
 
 
 views = Blueprint('views', __name__)
@@ -460,19 +462,25 @@ def upload():
             return redirect(url_for('views.lab_requests'))
 
 
+
+
 @views.route('/download/<int:request_id>')
 def download(request_id):
     result = db.session.query(test_requests).filter_by(request_id=request_id).first()
-    file_data = BytesIO(result.results)    
-    
+
     if result:
-        return send_file(file_data, 
-                         mimetype='application/pdf', 
-                         as_attachment=True, 
-                         download_name='results.pdf')
+        file_data = result.results
+
+        response = Response(file_data, mimetype='application/octet-stream')
+        response.headers.set('Content-Disposition', 'attachment', filename='results.pdf')
+        return response
+    
     else:
         flash("Error: Request not found or no results available.", "error")
         return redirect(url_for("views.lab_requests"))
+
+
+
 
 
 
