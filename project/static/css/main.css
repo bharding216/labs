@@ -27,10 +27,13 @@ PEACH: #FFCBA4
 }
 
 
-footer {
+.footer {
   margin-top: auto;
 }
 
+.footer-links {
+  font-size: 14px;
+}
 
 h1, h2, h3, h4, h5, h6 {
   /* sans-serif is the fallback font */
@@ -223,6 +226,11 @@ p, .nav-link, .btn-primary, .footer,
     max-width: 1000px; /* Set the maximum width as needed */
     margin: 0 auto; /* Center the container */
   }
+
+  .footer-row {
+    width: 75%;
+    margin: 0 auto;
+}
 }
 
 
@@ -263,6 +271,11 @@ p, .nav-link, .btn-primary, .footer,
   #lab_requests_table {
     width: 1200px;
   }
+
+  .footer-row {
+    width: 60%;
+    margin: 0 auto;
+}
 }
 
 
