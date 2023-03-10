@@ -804,3 +804,12 @@ def reset_password(token):
                                user = current_user, 
                                token = token
                                )
+
+
+
+
+
+@views.route('/terms')
+def terms():
+    return render_template('terms.html',
+                           user = current_user)
