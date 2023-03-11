@@ -827,4 +827,4 @@ def sitemap():
         'https://www.unifiedsl.com/auth/lab',
         'https://www.unifiedsl.com/labs_about',
     ]
-    return sitemap.render_template('sitemap_template.xml', pages = pages)
+    return render_template('sitemap_template.xml', pages = pages)
