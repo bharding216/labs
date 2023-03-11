@@ -1,4 +1,4 @@
-from flask import Flask, session, request, redirect
+from flask import Flask, session, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 import yaml
 from flask_login import LoginManager
@@ -8,9 +8,9 @@ from datetime import timedelta
 from itsdangerous import URLSafeTimedSerializer
 import shippo
 import os
-from helpers import my_enumerate
+from helpers import my_enumerate, generate_sitemap
 from dotenv import load_dotenv
-from flask_sitemap import Sitemap
+import datetime
 
 
 
@@ -18,14 +18,15 @@ db = SQLAlchemy()
 login_manager = LoginManager()
 mail = Mail()
 
+
 def create_app():
     app = Flask(__name__)
+
+
     load_dotenv()
     # Create my_enumerate function and make it available globally.
     app.jinja_env.globals.update(my_enumerate = my_enumerate)
-
-    app.config['SERVER_NAME'] = 'www.unifiedsl.com'
-    sitemap = Sitemap(app = app)
+    app.jinja_env.globals.update(generate_sitemap = generate_sitemap)
 
     app.config['MYSQL_HOST'] = os.getenv('mysql_host')
     app.config['MYSQL_USER'] = os.getenv('mysql_user')

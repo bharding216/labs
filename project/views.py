@@ -1,11 +1,11 @@
-from flask import Blueprint, render_template, request, redirect, flash, url_for, session, send_file, jsonify, Response
+from flask import Blueprint, render_template, request, redirect, flash, url_for, session, send_file, jsonify, make_response, Response, send_from_directory
 from flask_login import login_required, current_user, login_user
 from .models import tests, labs, labs_tests, individuals_login, labs_login, test_requests
 import datetime
 from flask_mail import Message
 from . import db, mail
+from helpers import generate_sitemap
 from itsdangerous.url_safe import URLSafeSerializer
-#from itsdangerous.serializer import Serializer
 import yaml
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous.exc import BadSignature
@@ -16,6 +16,7 @@ from urllib.parse import quote, unquote
 import os
 import mimetypes
 import io
+
 
 
 views = Blueprint('views', __name__)
@@ -818,13 +819,13 @@ def terms():
 
 @views.route('/sitemap.xml', methods=['GET'])
 def sitemap():
-    pages = [
-        'https://www.unifiedsl.com/',
-        'https://www.unifiedsl.com/about',
-        'https://www.unifiedsl.com/contact',
-        'https://www.unifiedsl.com/lab_contact',
-        'https://www.unifiedsl.com/auth/individual',
-        'https://www.unifiedsl.com/auth/lab',
-        'https://www.unifiedsl.com/labs_about',
-    ]
-    return render_template('sitemap_template.xml', pages = pages)
+    sitemap_xml = generate_sitemap()
+    response = make_response(sitemap_xml)
+    response.headers["Content-Type"] = "application/xml"
+    return response
+
+
+@views.route("/robots.txt")
+def static_from_root():
+    views.static_folder = 'static'
+    return send_from_directory(views.static_folder, request.path[1:])
