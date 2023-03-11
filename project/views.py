@@ -813,3 +813,18 @@ def reset_password(token):
 def terms():
     return render_template('terms.html',
                            user = current_user)
+
+
+
+@views.route('/sitemap.xml', methods=['GET'])
+def sitemap():
+    pages = [
+        'https://www.unifiedsl.com/',
+        'https://www.unifiedsl.com/about',
+        'https://www.unifiedsl.com/contact',
+        'https://www.unifiedsl.com/lab_contact',
+        'https://www.unifiedsl.com/auth/individual',
+        'https://www.unifiedsl.com/auth/lab',
+        'https://www.unifiedsl.com/labs_about',
+    ]
+    return sitemap.render_template('sitemap_template.xml', pages = pages)

@@ -10,6 +10,7 @@ import shippo
 import os
 from helpers import my_enumerate
 from dotenv import load_dotenv
+from flask_sitemap import Sitemap
 
 
 
@@ -23,6 +24,8 @@ def create_app():
     # Create my_enumerate function and make it available globally.
     app.jinja_env.globals.update(my_enumerate = my_enumerate)
 
+    app.config['SERVER_NAME'] = 'www.unifiedsl.com'
+    sitemap = Sitemap(app = app)
 
     app.config['MYSQL_HOST'] = os.getenv('mysql_host')
     app.config['MYSQL_USER'] = os.getenv('mysql_user')
