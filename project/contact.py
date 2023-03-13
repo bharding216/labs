@@ -21,7 +21,7 @@ def contact_function():
         user_message = request.form['message']
 
         msg = Message('New Contact Form Submission',
-                        sender = 'hello@unifiedsl.com',
+                        sender = ("Brandon from USL", 'hello@unifiedsl.com'),
                         recipients = ['team@unifiedsl.com'
                                       ]
                         )
@@ -62,7 +62,7 @@ def lab_contact():
         user_message = request.form['message']
 
         msg = Message('New Contact Form Submission',
-                        sender = 'hello@unifiedsl.com',
+                        sender = ("Brandon from USL", 'hello@unifiedsl.com'),
                         recipients = ['team@unifiedsl.com'
                                       ]
                         )
