@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Exploring the Latest Trends and Technologies | Unified Labs{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+
+<div class="py-5" style="background-image:linear-gradient(#1e96fc, #11296b);">
+    <div class="container">
+        <div class="row mb-3 text-center">   
+            <h1 class="mb-3" style="color: white;">Unified Labs Blog Home</h1>
+            <h3 style="color: white;">Advancing Analytical Science: Exploring the Latest Trends and Technologies</h3>
+        </div>
+    </div>
+</div>
+
+
+<div class="container my-5">
+    <div class="text-center">
+        <p>A grid with images and content intros showing our top blog articles</p>
+        <p><a href="{{ url_for('blog.psd') }}">Particle Size Distribution</a></p>
+    </div>
+</div>
+
+{% endblock %}
