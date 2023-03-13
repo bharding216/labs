@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" 
+        rel="stylesheet" 
+        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" 
+        crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+    <!-- Custom CSS + Fonts -->
+    <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat|Nunito" rel="stylesheet">
+
+    <!-- Set Favicon -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+
+</head>
+
+<body>
+    <h1>You have received a new message!</h1>
+
+    <hr>
+
+    <h2>Contact Info</h2>
+
+        {% if customer_type == 'Customer' %}
+        <ul>
+            <li><strong>User Type:</strong> Customer</li>
+            <li><strong>First Name:</strong> {{ first_name }}</li>
+            <li><strong>Last Name:</strong> {{ last_name }}</li>
+            <li><strong>Email:</strong> {{ user_email }}</li>
+            <li><strong>Phone:</strong> {{ phone }}</li>
+        </ul>
+
+        {% else %}
+        <ul>
+            <li><strong>User Type:</strong> Provider</li>
+            <li><strong>First Name:</strong> {{ first_name }}</li>
+            <li><strong>Last Name:</strong> {{ last_name }}</li>
+            <li><strong>Lab Name:</strong> {{ lab_name }}</li>
+            <li><strong>Title:</strong> {{ title }}</li>
+            <li><strong>Email:</strong> {{ user_email }}</li>
+            <li><strong>Phone:</strong> {{ phone }}</li>
+        </ul>
+        {% endif %}
+    <hr>
+
+    <h2>Message</h2>
+    <p>{{ user_message }}</p>
+
+    <hr>
+
+    <p>Sent from Unified Science Labs</p>
+</body>
+</html>

@@ -5,3 +5,26 @@
     background-size: cover;
 
 }
+
+.header {
+    background-color: #1E96FC; 
+    padding: 20px;
+    text-align: center;
+}
+  
+.logo {
+    max-width: 200px; 
+    display: block;
+    margin: 0 auto;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    /* sans-serif is the fallback font */
+    font-family: 'Montserrat', sans-serif;
+}
+  
+p, .nav-link, .btn-primary, .footer,
+select, th, td, li {
+    /* sans-serif is the fallback font */
+    font-family: 'Nunito', sans-serif;
+}
