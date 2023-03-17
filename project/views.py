@@ -570,6 +570,12 @@ def provider_settings():
                             )
 
 
+@views.route("/add_new_test", methods=['GET', 'POST'])
+@login_required
+def add_new_test():
+    return render_template('add_new_test.html', 
+                            user = current_user
+                            )
 
 
 @views.route("/update_prices/<int:id>/<path:test_name>", methods=['GET', 'POST'])
