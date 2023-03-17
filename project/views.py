@@ -573,9 +573,30 @@ def provider_settings():
 @views.route("/add_new_test", methods=['GET', 'POST'])
 @login_required
 def add_new_test():
-    # for POST request:
-        # get the id of the logged in lab (logged_in_lab)
-        # add the new test where the lab id matches. 
+    if request.method == 'POST':
+        current_user_lab_id = current_user.lab_id
+        test_name = request.form['test_name']
+        test_price = request.form['test_price']
+        turnaround = request.form['turnaround']
+
+        with db.session() as db_session:
+
+            new_test = tests(name = test_name)
+            db_session.add(new_test)
+            db_session.commit()
+
+            current_user_lab_id = current_user.lab_id
+
+            new_lab_test = labs_tests(lab_id = current_user_lab_id, 
+                                      test_id = new_test.id,
+                                      price = test_price,
+                                      turnaround = turnaround)
+
+            db_session.add(new_lab_test)
+            db_session.commit()
+        
+        flash('New test successfully added!', 'success')
+        return redirect(url_for('views.provider_settings'))
 
     return render_template('add_new_test.html', 
                             user = current_user
