@@ -578,12 +578,16 @@ def add_new_test():
         test_name = request.form['test_name']
         test_price = request.form['test_price']
         turnaround = request.form['turnaround']
+        test_input_source = request.form['test_input_source']
 
         with db.session() as db_session:
 
-            new_test = tests(name = test_name)
-            db_session.add(new_test)
-            db_session.commit()
+            if test_input_source == 'text_input':
+                # If the user typed in a new test name, then add
+                # it to the 'tests' table. 
+                new_test = tests(name = test_name)
+                db_session.add(new_test)
+                db_session.commit()
 
             current_user_lab_id = current_user.lab_id
 
@@ -598,8 +602,14 @@ def add_new_test():
         flash('New test successfully added!', 'success')
         return redirect(url_for('views.provider_settings'))
 
+    with db.session() as db_session:
+        test_names = db_session.query(tests.name).order_by(tests.name).all()
+        # Convert list of tuples to list of strings:
+        test_names = [name[0] for name in test_names]
+
     return render_template('add_new_test.html', 
-                            user = current_user
+                            user = current_user,
+                            test_names = test_names
                             )
 
 
