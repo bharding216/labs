@@ -4,16 +4,57 @@
 
 {% block content %}
 
-<p>A page where the lab provider can add a new test</p>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col">
+            <h2>Add a New Test</h2>
+        </div>
+    </div>
+</div>
 
-<p>A form</p>
-<ul>
-    <li>text input of new test name</li>
-    <li>number input of pricing</li>
-    <li>number input of turnaround time</li>
-    <li>a button to submit the form and save data to db</li>
-</ul>
 
-<p>Then redirect back to the provider "edit settings" page to see the updated offerings list</p>
+<div class="container my-5">
+
+    <div>
+        <form action="{{ url_for('views.add_new_test') }}" 
+                method="POST">
+
+                <div class="form-floating mb-3 col-md-8 col-lg-6">
+                    <input type="text" 
+                           class="form-control"
+                           name="test_name" 
+                           placeholder="Test Name">
+                    <label for="test_name">Test Name</label>
+                </div>
+            
+
+                <div class="form-floating mb-3 col-6 col-md-4 col-lg-3">
+                    <input type="number" 
+                           class="form-control"
+                           name="test_price" 
+                           placeholder="Test Price [$USD]">
+                    <label for="test_name">Test Price [$USD]</label>
+                </div>
+
+                <div class="form-floating mb-3 col-6 col-md-4 col-lg-3">
+                    <input type="number" 
+                           class="form-control"
+                           name="turnaround" 
+                           placeholder="Turnaround [days]">
+                    <label for="test_name">Turnaround [days]</label>
+                </div>
+
+            <input type="submit" class="btn btn-primary" value="Save Changes">
+
+        </form>
+    </div>
+
+
+</div>
+
+
+<li>a button to submit the form and save data to db</li>
+
+<li>Then redirect back to the provider "edit settings" page to see the updated offerings list</li>
 
 {% endblock %}

@@ -573,6 +573,10 @@ def provider_settings():
 @views.route("/add_new_test", methods=['GET', 'POST'])
 @login_required
 def add_new_test():
+    # for POST request:
+        # get the id of the logged in lab (logged_in_lab)
+        # add the new test where the lab id matches. 
+
     return render_template('add_new_test.html', 
                             user = current_user
                             )
