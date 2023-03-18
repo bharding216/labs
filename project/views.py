@@ -16,6 +16,8 @@ from urllib.parse import quote, unquote
 import os
 import mimetypes
 import io
+from markupsafe import Markup
+
 
 
 
@@ -591,10 +593,33 @@ def add_new_test():
 
             current_user_lab_id = current_user.lab_id
 
+            # Join 'labs_tests' and 'tests' tables on 'test_id' column
+            joined_data = db_session.query(labs_tests, tests).join(tests, labs_tests.test_id == tests.id)
+
+            # Filter the joined data by the given lab_id
+            tests_for_lab = joined_data.filter(labs_tests.lab_id == current_user_lab_id)
+
+            # Extract the test names from the joined data
+            test_names = [test.name for _, test in tests_for_lab]
+
+            if test_name in test_names:
+                prev_page_url = url_for('views.provider_settings')
+                flash(Markup(f'That test is already in your offerings. Please edit the \
+                      test parameters on the <a href="{prev_page_url}">previous page</a>.'), 'error')
+                
+                test_names = db_session.query(tests.name).order_by(tests.name).all()
+                # Convert list of tuples to list of strings:
+                test_names = [name[0] for name in test_names]
+
+                return render_template('add_new_test.html',
+                                       user = current_user,
+                                       test_names = test_names
+                                       )
+
             new_lab_test = labs_tests(lab_id = current_user_lab_id, 
-                                      test_id = new_test.id,
-                                      price = test_price,
-                                      turnaround = turnaround)
+                                    test_id = new_test.id,
+                                    price = test_price,
+                                    turnaround = turnaround)
 
             db_session.add(new_lab_test)
             db_session.commit()
