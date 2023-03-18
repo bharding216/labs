@@ -550,14 +550,6 @@ def provider_settings():
     with db.session() as db_session:
         logged_in_lab = db_session.query(labs).filter_by(id = current_user_lab_id).first()
 
-        # Create a list of tuples, where each typle is a test name and price pair 
-        # where the logged in user id is equal to the lab_id in the labs_tests table. 
-        # tests_and_pricing = db.session.query(tests.name, labs_tests.price).\
-        #                         join(labs_tests, tests.id == labs_tests.test_id).\
-        #                         filter(labs_tests.lab_id == current_user_lab_id).\
-        #                         order_by(tests.name.asc()).\
-        #                         all()
-
         tests_and_pricing = db_session.query(tests.name, labs_tests.price, labs_tests.turnaround).\
                                 join(labs_tests, tests.id == labs_tests.test_id).\
                                 filter(labs_tests.lab_id == current_user_lab_id).\
@@ -683,8 +675,8 @@ def update_lab(id, field_name):
                 lab_login_object = db_session.query(labs_login).filter_by(lab_id=id).first()
                 lab_login_object.password = new_value
 
-                db.session.add(lab_login_object)
-                db.session.commit()
+                db_session.add(lab_login_object)
+                db_session.commit()
 
             else:
                 flash('Those password do not match, please try again', 'error')
@@ -693,15 +685,15 @@ def update_lab(id, field_name):
                                     lab_object = lab_object,
                                     field_name = field_name)
 
-    # The setattr() function is a built-in Python function that takes 
-    # three arguments: an object, a string indicating the name of 
-    # an attribute, and a new value for the attribute.  
-    setattr(lab_object, field_name, new_value)
-    
-    db.session.commit()
-    flash('Your settings have been successfully updated!', 'success')
+        # The setattr() function is a built-in Python function that takes 
+        # three arguments: an object, a string indicating the name of 
+        # an attribute, and a new value for the attribute.  
+        setattr(lab_object, field_name, new_value)
+        
+        db_session.commit()
+        flash('Your settings have been successfully updated!', 'success')
 
-    return redirect(url_for('views.provider_settings'))
+        return redirect(url_for('views.provider_settings'))
 
 
 

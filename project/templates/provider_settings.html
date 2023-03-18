@@ -83,6 +83,19 @@
                     </tr>
 
                     <tr>
+                        <td class="text-center align-middle"><b>Address</b></td>
+                        <td class="text-center align-middle">{{ lab.street_address_1 }}</td>
+                        <td class="text-center align-middle">
+                            <form action="{{ url_for('views.provider_settings') }}" method="POST">
+                                <input type="hidden" name="type" value="info">
+                                <input type="hidden" name="id" value="{{ lab.id }}">
+                                <input type="hidden" name="field_name" value="street_address_1">
+                                <input type="submit" class="btn btn-primary my-1" value="Edit">
+                            </form>
+                        </td>
+                    </tr>
+
+                    <tr>
                         <td class="text-center align-middle"><b>City</b></td>
                         <td class="text-center align-middle">{{ lab.city }}</td>
                         <td class="text-center align-middle">
@@ -108,6 +121,33 @@
                         </td>
                     </tr>
     
+                    <tr>
+                        <td class="text-center align-middle"><b>Zip Code</b></td>
+                        <td class="text-center align-middle">{{ lab.zip_code }}</td>
+                        <td class="text-center align-middle">
+                            <form action="{{ url_for('views.provider_settings') }}" method="POST">
+                                <input type="hidden" name="type" value="info">
+                                <input type="hidden" name="id" value="{{ lab.id }}">
+                                <input type="hidden" name="field_name" value="zip_code">
+                                <input type="submit" class="btn btn-primary my-1" value="Edit">
+                            </form>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-center align-middle"><b>Country</b></td>
+                        <td class="text-center align-middle">{{ lab.country }}</td>
+                        <td class="text-center align-middle">
+                            <form action="{{ url_for('views.provider_settings') }}" method="POST">
+                                <input type="hidden" name="type" value="info">
+                                <input type="hidden" name="id" value="{{ lab.id }}">
+                                <input type="hidden" name="field_name" value="country">
+                                <input type="submit" class="btn btn-primary my-1" value="Edit">
+                            </form>
+                        </td>
+                    </tr>
+
+
             </tbody>
     
         </table>

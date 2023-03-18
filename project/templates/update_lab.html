@@ -33,63 +33,60 @@
 
 <div class="container my-5">
 
-    <div>
-        <form action="{{ url_for('views.update_lab', id=lab_object.id, field_name=field_name) }}" 
-                method="POST">
-            <input type="hidden" name="id" value="{{ lab_object.id }}">
-            <input type="hidden" name="field_name" value="{{ field_name }}">
-
-                
-                {% if field_name == 'password' %}
-
-                <div class="form-floating mb-3 col-md-8 col-lg-6">
-
-                    <input type="text" 
-                           name="{{ field_name }}" 
-                           id="{{ field_name }}"
-                           class="form-control"
-                           placeholder="Enter Password">
-                    <label for="{{ field_name }}">Enter Password</label>
-
-                </div>
-
-                <div class="form-floating mb-3 col-md-8 col-lg-6">
-
-                    <input type="text" 
-                           name="password2" 
-                           id="password2"
-                           class="form-control"
-                           placeholder="Confirm Password">
-                    <label for="password2">Confirm Password</label>
-
-                </div>
-
-                {% else %}
-
-                <div class="form-floating mb-3 col-md-8 col-lg-6">
-
-                    <input type="text" 
-                           class="form-control"
-                           name="{{ field_name }}" 
-                           value="{{ lab_object[field_name] }}"
-                           placeholder="{{ field_name|title }}">
-
-                    <!--returns a title-cased string-->
-                    <label for="{{ field_name }}">{{ field_name|title }}</label>
-
-                </div>
-
-                {% endif %}
+    <!-- 'lab_object' and 'field_name' are received from 'provider_settings' view function by 
+        the template. Then, the form action passes the parameters to the 'update_lab' view function
+        through the URL. -->
+    <form action="{{ url_for('views.update_lab', id=lab_object.id, field_name=field_name) }}" 
+            method="POST">
             
+            {% if field_name == 'password' %}
 
+            <div class="form-floating mb-3 col-md-8 col-lg-6">
+
+                <input type="text" 
+                        name="{{ field_name }}" 
+                        id="{{ field_name }}"
+                        class="form-control"
+                        placeholder="Enter Password">
+                <label for="{{ field_name }}">Enter New Password</label>
 
             </div>
-            
+
+            <div class="form-floating mb-3 col-md-8 col-lg-6">
+
+                <input type="text" 
+                        name="password2" 
+                        id="password2"
+                        class="form-control"
+                        placeholder="Confirm Password">
+                <label for="password2">Confirm New Password</label>
+
+            </div>
+
+            {% else %}
+
+            <div class="form-floating mb-4 col-md-8 col-lg-6">
+
+                <input type="text" 
+                        class="form-control"
+                        name="{{ field_name }}" 
+                        value="{{ lab_object[field_name] }}"
+                        placeholder="{{ field_name|replace('_',' ')|title }}">
+
+                <!--returns a title-cased string-->
+                <label for="{{ field_name }}">{{ field_name|replace('_',' ')|title }}</label>
+
+            </div>
+
+            {% endif %}
+        
             <input type="submit" class="btn btn-primary" value="Save Changes">
 
         </form>
-    </div>
-
 
 </div>
+            
+
+
+
 {% endblock %}
