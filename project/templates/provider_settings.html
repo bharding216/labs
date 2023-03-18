@@ -83,6 +83,32 @@
                     </tr>
 
                     <tr>
+                        <td class="text-center align-middle"><b>Point of Contact</b></td>
+                        <td class="text-center align-middle">{{ lab.point_of_contact }}</td>
+                        <td class="text-center align-middle">
+                            <form action="{{ url_for('views.provider_settings') }}" method="POST">
+                                <input type="hidden" name="type" value="info">
+                                <input type="hidden" name="id" value="{{ lab.id }}">
+                                <input type="hidden" name="field_name" value="point_of_contact">
+                                <input type="submit" class="btn btn-primary my-1" value="Edit">
+                            </form>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-center align-middle"><b>Phone</b></td>
+                        <td class="text-center align-middle">{{ lab.phone }}</td>
+                        <td class="text-center align-middle">
+                            <form action="{{ url_for('views.provider_settings') }}" method="POST">
+                                <input type="hidden" name="type" value="info">
+                                <input type="hidden" name="id" value="{{ lab.id }}">
+                                <input type="hidden" name="field_name" value="phone">
+                                <input type="submit" class="btn btn-primary my-1" value="Edit">
+                            </form>
+                        </td>
+                    </tr>
+
+                    <tr>
                         <td class="text-center align-middle"><b>Address</b></td>
                         <td class="text-center align-middle">{{ lab.street_address_1 }}</td>
                         <td class="text-center align-middle">

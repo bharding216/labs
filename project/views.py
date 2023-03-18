@@ -678,6 +678,12 @@ def update_lab(id, field_name):
                 db_session.add(lab_login_object)
                 db_session.commit()
 
+                #current_user_lab_id = current_user.lab_id
+                #logged_in_lab = db_session.query(labs).filter_by(id = current_user_lab_id).first()
+
+                flash('Password successfully updated!', 'success')
+                return redirect(url_for('views.provider_settings'))
+
             else:
                 flash('Those password do not match, please try again', 'error')
                 return render_template('update_lab.html',
