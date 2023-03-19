@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, request, redirect, flash, url_for, session, send_file, jsonify, make_response, Response, send_from_directory
+from flask import Blueprint, render_template, request, redirect, flash, url_for, \
+    session, send_file, jsonify, make_response, Response, send_from_directory
 from flask_login import login_required, current_user, login_user
 from .models import tests, labs, labs_tests, individuals_login, labs_login, test_requests
 import datetime
@@ -32,8 +33,10 @@ def index():
             return redirect(url_for('views.index'))
         else:
             session['selected_test'] = selected_test
+
             zipcode = request.form['zipcode']
-            session['zipcode'] = zipcode
+            if zipcode:
+                session['zipcode'] = zipcode
 
             return redirect(url_for('views.lab_function'))
 
@@ -42,11 +45,8 @@ def index():
         with db.session() as db_session:
             test_names = db_session.query(tests).all()
 
-            date_choice = datetime.datetime.now().strftime("%Y-%m-%d")
-
         return render_template('index.html', 
                                tests = test_names, 
-                               date = date_choice,
                                user = current_user)
 
 @views.route('/about', methods=['GET'])
@@ -69,25 +69,40 @@ def lab_function():
         return redirect(url_for('views.user_info'))
 
 
+
     else:
         selected_test = session.get('selected_test')
         
         with db.session() as db_session:
-            row_in_tests_table = db_session.query(tests) \
+
+            # Get the id of the 'selected_test' from the 'tests' table
+            id_in_tests_table = db_session.query(tests.id) \
                 .filter(tests.name == selected_test) \
-                .first()
-            id_in_tests_table = row_in_tests_table.id
+                .scalar()
+            
+            # Query all the rows in the 'labs_tests' table that match that 'test_id'.
+            # This table has lab_id, price, and turnaround time. 
             rows_in_labs_tests_table = db_session.query(labs_tests) \
                 .filter(labs_tests.test_id == id_in_tests_table) \
                 .all()
 
-            # Change this to only query labs that can perform that test
+
+            # Query all the labs that have their 'id' in the 'rows_in_labs_tests_table'
+            # above. 
+
+            # If the user entered a value for the zip code, do this zip code distance calculation:
+            # Calculate the distance for each lab and sort lowest to highest. 
+
+            # If the user didn't enter a value for the zip code, then display the labs
+            # lowest price to highest. 
             lab_query = db_session.query(labs).all()
+
+            # On the HTML table, add a dropdown and javascript to sort the table by distance, price, or turnaround time. 
 
         return render_template('labs.html', 
             lab_query = lab_query, 
             selected_test = selected_test, 
-            price_table = rows_in_labs_tests_table,
+            price_turnaround_table = rows_in_labs_tests_table,
             user = current_user
             )
 
