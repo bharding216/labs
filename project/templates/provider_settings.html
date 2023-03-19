@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}USL | Edit Settings{% endblock %}
+{% block title %}Provider Settings | Unified Science Labs{% endblock %}
 
 {% block content %}
 
@@ -83,6 +83,45 @@
                     </tr>
 
                     <tr>
+                        <td class="text-center align-middle"><b>Point of Contact</b></td>
+                        <td class="text-center align-middle">{{ lab.point_of_contact }}</td>
+                        <td class="text-center align-middle">
+                            <form action="{{ url_for('views.provider_settings') }}" method="POST">
+                                <input type="hidden" name="type" value="info">
+                                <input type="hidden" name="id" value="{{ lab.id }}">
+                                <input type="hidden" name="field_name" value="point_of_contact">
+                                <input type="submit" class="btn btn-primary my-1" value="Edit">
+                            </form>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-center align-middle"><b>Phone</b></td>
+                        <td class="text-center align-middle">{{ lab.phone }}</td>
+                        <td class="text-center align-middle">
+                            <form action="{{ url_for('views.provider_settings') }}" method="POST">
+                                <input type="hidden" name="type" value="info">
+                                <input type="hidden" name="id" value="{{ lab.id }}">
+                                <input type="hidden" name="field_name" value="phone">
+                                <input type="submit" class="btn btn-primary my-1" value="Edit">
+                            </form>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-center align-middle"><b>Address</b></td>
+                        <td class="text-center align-middle">{{ lab.street_address_1 }}</td>
+                        <td class="text-center align-middle">
+                            <form action="{{ url_for('views.provider_settings') }}" method="POST">
+                                <input type="hidden" name="type" value="info">
+                                <input type="hidden" name="id" value="{{ lab.id }}">
+                                <input type="hidden" name="field_name" value="street_address_1">
+                                <input type="submit" class="btn btn-primary my-1" value="Edit">
+                            </form>
+                        </td>
+                    </tr>
+
+                    <tr>
                         <td class="text-center align-middle"><b>City</b></td>
                         <td class="text-center align-middle">{{ lab.city }}</td>
                         <td class="text-center align-middle">
@@ -108,6 +147,33 @@
                         </td>
                     </tr>
     
+                    <tr>
+                        <td class="text-center align-middle"><b>Zip Code</b></td>
+                        <td class="text-center align-middle">{{ lab.zip_code }}</td>
+                        <td class="text-center align-middle">
+                            <form action="{{ url_for('views.provider_settings') }}" method="POST">
+                                <input type="hidden" name="type" value="info">
+                                <input type="hidden" name="id" value="{{ lab.id }}">
+                                <input type="hidden" name="field_name" value="zip_code">
+                                <input type="submit" class="btn btn-primary my-1" value="Edit">
+                            </form>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-center align-middle"><b>Country</b></td>
+                        <td class="text-center align-middle">{{ lab.country }}</td>
+                        <td class="text-center align-middle">
+                            <form action="{{ url_for('views.provider_settings') }}" method="POST">
+                                <input type="hidden" name="type" value="info">
+                                <input type="hidden" name="id" value="{{ lab.id }}">
+                                <input type="hidden" name="field_name" value="country">
+                                <input type="submit" class="btn btn-primary my-1" value="Edit">
+                            </form>
+                        </td>
+                    </tr>
+
+
             </tbody>
     
         </table>
@@ -120,7 +186,15 @@
     <h3 class="pb-3">Services Offered</h3>
 
     <div class="table-responsive mx-5 pb-5">
-        <p>Please contact us if you'd like to add a new test.</p>
+
+        <div class="row pb-3">
+            <div class="col-12">
+                <a href="{{ url_for('views.add_new_test') }}">
+                    <button type="button" class="btn btn-primary">Add a New Test</button>
+                </a>                        
+            </div>
+        </div>
+
         <table class="table table-bordered">
             <thead>
                 <tr>

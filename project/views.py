@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, request, redirect, flash, url_for, session, send_file, jsonify, make_response, Response, send_from_directory
+from flask import Blueprint, render_template, request, redirect, flash, url_for, \
+    session, send_file, jsonify, make_response, Response, send_from_directory
 from flask_login import login_required, current_user, login_user
 from .models import tests, labs, labs_tests, individuals_login, labs_login, test_requests
 import datetime
@@ -16,6 +17,8 @@ from urllib.parse import quote, unquote
 import os
 import mimetypes
 import io
+from markupsafe import Markup
+
 
 
 
@@ -30,8 +33,10 @@ def index():
             return redirect(url_for('views.index'))
         else:
             session['selected_test'] = selected_test
+
             zipcode = request.form['zipcode']
-            session['zipcode'] = zipcode
+            if zipcode:
+                session['zipcode'] = zipcode
 
             return redirect(url_for('views.lab_function'))
 
@@ -40,11 +45,8 @@ def index():
         with db.session() as db_session:
             test_names = db_session.query(tests).all()
 
-            date_choice = datetime.datetime.now().strftime("%Y-%m-%d")
-
         return render_template('index.html', 
                                tests = test_names, 
-                               date = date_choice,
                                user = current_user)
 
 @views.route('/about', methods=['GET'])
@@ -67,25 +69,40 @@ def lab_function():
         return redirect(url_for('views.user_info'))
 
 
+
     else:
         selected_test = session.get('selected_test')
         
         with db.session() as db_session:
-            row_in_tests_table = db_session.query(tests) \
+
+            # Get the id of the 'selected_test' from the 'tests' table
+            id_in_tests_table = db_session.query(tests.id) \
                 .filter(tests.name == selected_test) \
-                .first()
-            id_in_tests_table = row_in_tests_table.id
+                .scalar()
+            
+            # Query all the rows in the 'labs_tests' table that match that 'test_id'.
+            # This table has lab_id, price, and turnaround time. 
             rows_in_labs_tests_table = db_session.query(labs_tests) \
                 .filter(labs_tests.test_id == id_in_tests_table) \
                 .all()
 
-            # Change this to only query labs that can perform that test
+
+            # Query all the labs that have their 'id' in the 'rows_in_labs_tests_table'
+            # above. 
+
+            # If the user entered a value for the zip code, do this zip code distance calculation:
+            # Calculate the distance for each lab and sort lowest to highest. 
+
+            # If the user didn't enter a value for the zip code, then display the labs
+            # lowest price to highest. 
             lab_query = db_session.query(labs).all()
+
+            # On the HTML table, add a dropdown and javascript to sort the table by distance, price, or turnaround time. 
 
         return render_template('labs.html', 
             lab_query = lab_query, 
             selected_test = selected_test, 
-            price_table = rows_in_labs_tests_table,
+            price_turnaround_table = rows_in_labs_tests_table,
             user = current_user
             )
 
@@ -548,14 +565,6 @@ def provider_settings():
     with db.session() as db_session:
         logged_in_lab = db_session.query(labs).filter_by(id = current_user_lab_id).first()
 
-        # Create a list of tuples, where each typle is a test name and price pair 
-        # where the logged in user id is equal to the lab_id in the labs_tests table. 
-        # tests_and_pricing = db.session.query(tests.name, labs_tests.price).\
-        #                         join(labs_tests, tests.id == labs_tests.test_id).\
-        #                         filter(labs_tests.lab_id == current_user_lab_id).\
-        #                         order_by(tests.name.asc()).\
-        #                         all()
-
         tests_and_pricing = db_session.query(tests.name, labs_tests.price, labs_tests.turnaround).\
                                 join(labs_tests, tests.id == labs_tests.test_id).\
                                 filter(labs_tests.lab_id == current_user_lab_id).\
@@ -570,6 +579,70 @@ def provider_settings():
                             )
 
 
+@views.route("/add_new_test", methods=['GET', 'POST'])
+@login_required
+def add_new_test():
+    if request.method == 'POST':
+        current_user_lab_id = current_user.lab_id
+        test_name = request.form['test_name']
+        test_price = request.form['test_price']
+        turnaround = request.form['turnaround']
+        test_input_source = request.form['test_input_source']
+
+        with db.session() as db_session:
+
+            if test_input_source == 'text_input':
+                # If the user typed in a new test name, then add
+                # it to the 'tests' table. 
+                new_test = tests(name = test_name)
+                db_session.add(new_test)
+                db_session.commit()
+
+            current_user_lab_id = current_user.lab_id
+
+            # Join 'labs_tests' and 'tests' tables on 'test_id' column
+            joined_data = db_session.query(labs_tests, tests).join(tests, labs_tests.test_id == tests.id)
+
+            # Filter the joined data by the given lab_id
+            tests_for_lab = joined_data.filter(labs_tests.lab_id == current_user_lab_id)
+
+            # Extract the test names from the joined data
+            test_names = [test.name for _, test in tests_for_lab]
+
+            if test_name in test_names:
+                prev_page_url = url_for('views.provider_settings')
+                flash(Markup(f'That test is already in your offerings. Please edit the \
+                      test parameters on the <a href="{prev_page_url}">previous page</a>.'), 'error')
+                
+                test_names = db_session.query(tests.name).order_by(tests.name).all()
+                # Convert list of tuples to list of strings:
+                test_names = [name[0] for name in test_names]
+
+                return render_template('add_new_test.html',
+                                       user = current_user,
+                                       test_names = test_names
+                                       )
+
+            new_lab_test = labs_tests(lab_id = current_user_lab_id, 
+                                    test_id = new_test.id,
+                                    price = test_price,
+                                    turnaround = turnaround)
+
+            db_session.add(new_lab_test)
+            db_session.commit()
+        
+        flash('New test successfully added!', 'success')
+        return redirect(url_for('views.provider_settings'))
+
+    with db.session() as db_session:
+        test_names = db_session.query(tests.name).order_by(tests.name).all()
+        # Convert list of tuples to list of strings:
+        test_names = [name[0] for name in test_names]
+
+    return render_template('add_new_test.html', 
+                            user = current_user,
+                            test_names = test_names
+                            )
 
 
 @views.route("/update_prices/<int:id>/<path:test_name>", methods=['GET', 'POST'])
@@ -617,8 +690,14 @@ def update_lab(id, field_name):
                 lab_login_object = db_session.query(labs_login).filter_by(lab_id=id).first()
                 lab_login_object.password = new_value
 
-                db.session.add(lab_login_object)
-                db.session.commit()
+                db_session.add(lab_login_object)
+                db_session.commit()
+
+                #current_user_lab_id = current_user.lab_id
+                #logged_in_lab = db_session.query(labs).filter_by(id = current_user_lab_id).first()
+
+                flash('Password successfully updated!', 'success')
+                return redirect(url_for('views.provider_settings'))
 
             else:
                 flash('Those password do not match, please try again', 'error')
@@ -627,15 +706,15 @@ def update_lab(id, field_name):
                                     lab_object = lab_object,
                                     field_name = field_name)
 
-    # The setattr() function is a built-in Python function that takes 
-    # three arguments: an object, a string indicating the name of 
-    # an attribute, and a new value for the attribute.  
-    setattr(lab_object, field_name, new_value)
-    
-    db.session.commit()
-    flash('Your settings have been successfully updated!', 'success')
+        # The setattr() function is a built-in Python function that takes 
+        # three arguments: an object, a string indicating the name of 
+        # an attribute, and a new value for the attribute.  
+        setattr(lab_object, field_name, new_value)
+        
+        db_session.commit()
+        flash('Your settings have been successfully updated!', 'success')
 
-    return redirect(url_for('views.provider_settings'))
+        return redirect(url_for('views.provider_settings'))
 
 
 

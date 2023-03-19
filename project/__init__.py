@@ -94,11 +94,13 @@ def create_app():
     with app.app_context():
 
         from .views import views
+        from .blog import blog
         from .contact import contact_bp
         from .auth import auth_bp
         from .models import labs_login, individuals_login
 
         app.register_blueprint(views, url_prefix="/")
+        app.register_blueprint(blog, url_prefix="/blog")
         app.register_blueprint(contact_bp, url_prefix="/contact")
         app.register_blueprint(auth_bp, url_prefix="/auth")
 

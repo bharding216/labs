@@ -23,10 +23,11 @@
         <thead>
             <tr>
                 <th class="text-center" scope="col" style="width: 40%;">Lab Name</th>
-                <th class="text-center" scope="col" style="width: 15%;">Specialty</th>
+                <th class="text-center" scope="col" style="width: 10%;">Price [$USD]</th>
+                <th class="text-center" scope="col" style="width: 10%;">Turnaround [days]</th>
+                <th class="text-center" scope="col" style="width: 10%;">Distance [miles]</th>
                 <th class="text-center" scope="col" style="width: 15%;">City</th>
                 <th class="text-center" scope="col" style="width: 10%;">State</th>
-                <th class="text-center" scope="col" style="width: 10%;">Price [$USD]</th>
                 <th class="text-center" scope="col" style="width: 10%;">Select</th>
             </tr>
         </thead>
@@ -36,18 +37,25 @@
             {% for lab in lab_query %}
                 <tr>
                     <td class="text-center">{{ lab.name }}</td>
-                    <td class="text-center">{{ lab.major_category }}</td>
-                    <td class="text-center">{{ lab.city }}</td>
-                    <td class="text-center">{{ lab.state }}</td>
-
-
                     <td class="text-center">
-                        {% for row in price_table %}
+                        {% for row in price_turnaround_table %}
                             {% if row.lab_id == lab.id %}
                                 {{ row.price }}
                             {% endif %}
                         {% endfor %}
                     </td>
+
+                    <td class="text-center">
+                        {% for row in price_turnaround_table %}
+                            {% if row.lab_id == lab.id %}
+                                {{ row.turnaround }}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+
+                    <td class="text-center">50</td>
+                    <td class="text-center">{{ lab.city }}</td>
+                    <td class="text-center">{{ lab.state }}</td>
 
                     <td class="text-center">
                         
