@@ -1,38 +1,44 @@
 {% extends "base.html" %}
 
-{% block title %}USL | Booking{% endblock %}
+{% block title %}Provider Booking | Unified Science Labs{% endblock %}
 
 {% block content %}
 <div class="container my-5">
+    <div class="row">
+        <div class="col mb-5 d-flex flex-column">
+            <h2>Returning user?</h2>
+
+            <form action="{{ url_for('views.returning_user_login') }}" method="POST">
+
+                <div class="form-floating mb-3 col-8 col-md-5">
+                    <input type="text" id="email" placeholder="email"
+                        class="form-control" name="email" value="{{ email }}">
+                    <label for="email">Email</label>
+                </div>
+        
+                <div class="form-floating mb-3 col-8 col-md-5">
+                    <input type="password" id="password" placeholder="Password"
+                        class="form-control" name="password">
+                    <label for="password">Password</label>
+                </div>
+        
+                <button type="submit" class="btn btn-primary">Login</button>
+        
+            </form>
+        </div>
+    </div>
 
     <div class="row">
+        <div class="col d-flex flex-column">
+            <h2>First time here?</h2>
 
-        <div class="col text-center d-flex flex-column justify-content-center">
-            <h2>Before we submit your request, please choose an option:</h2>
+            <a class="btn btn-primary" 
+            href="{{ url_for('views.new_user_booking') }}" role="button" style="width: 150px;">
+            Create account
+            </a>
         </div>
     </div>
 
-    <div class="row my-5 d-flex justify-content-center">
-
-        <div class="col-3 d-flex align-items-center justify-content-center">
-
-            <a class="btn btn-outline-primary" 
-            href="{{ url_for('views.new_user_booking') }}" role="button">
-
-            New User
-            </a>
-        </div>
-
-        <div class="col-3 d-flex align-items-center justify-content-center">
-
-            <a class="btn btn-outline-primary" 
-            href="{{ url_for('views.returning_user_login') }}" role="button">
-
-            Returning User
-            </a>
-        </div>
-
-    </div>
 
 </div>
 {% endblock %}

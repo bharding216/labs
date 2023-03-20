@@ -67,7 +67,11 @@ def lab_function():
     if request.method == 'POST':
         selected_lab_name = request.form['lab_name']
         session['selected_lab_name'] = selected_lab_name
-        return redirect(url_for('views.user_info'))
+
+        if current_user.is_authenticated:
+            return redirect(url_for('views.returning_user_booking'))
+        else:
+            return redirect(url_for('views.user_info'))
 
     else:
         selected_test = session.get('selected_test')
@@ -76,11 +80,6 @@ def lab_function():
         # Given the user's zip code, use the Google API to get the latitude and longitude. 
         api_key = 'AIzaSyCx7Jt0KK2U_J1t8s-BCQIzMCCnWeJepjM'
         user_latitude, user_longitude = get_lat_long_from_zipcode(user_zipcode, api_key)
-        print(f'Users Coordinates: Latitude: {user_latitude}, Longitude: {user_longitude}')
-
-
-        calculated_distance = distance_calculation(user_latitude, user_longitude, 32.7767, -96.7970)
-        print(f'The distance from Dallas, TX to your zip code is: {calculated_distance}')
 
         with db.session() as db_session:
 
@@ -108,7 +107,11 @@ def lab_function():
                 lab_zip_code = result.zip_code
                 api_key = 'AIzaSyCx7Jt0KK2U_J1t8s-BCQIzMCCnWeJepjM'
                 lab_latitude, lab_longitude = get_lat_long_from_zipcode(lab_zip_code, api_key)
-                calculated_distance = distance_calculation(user_latitude, user_longitude, lab_latitude, lab_longitude)
+                calculated_distance = distance_calculation(user_latitude, 
+                                                           user_longitude, 
+                                                           lab_latitude, 
+                                                           lab_longitude
+                                                           )
                 calculated_distance = round(calculated_distance)
                 distances.append(calculated_distance)
 
@@ -140,21 +143,20 @@ def new_user_booking():
         email = request.form['email']
         phone = request.form['phone']
         password = request.form['password']
-        turnaround = request.form['turnaround']
         sample_description = request.form['sample_description']
-        sample_name = request.form['sample_name']
+        extra_requirements = request.form['extra_requirements']
 
         session['first_name'] = first_name
-        session['sample_name'] = sample_name
         session['sample_description'] = sample_description
-        session['turnaround'] = turnaround
+        session['extra_requirements'] = extra_requirements
 
-        # Check if the phone number string has 10 characters. If it does,
-        # add +1 to make it in the correct format for `phonenumbers`.
-        # Then try to parse the phone number. If you can't parse it, then 
-        # just save the user input and move on. 
+        # If the phone number string has 10 characters, add '+1' to make it 
+        # in the correct format for `phonenumbers`. 
         if len(phone) == 10:
             phone = "+1" + phone
+        
+        # Try to parse the phone number. 
+        # If you can't parse it, then just save the user input as is and move on. 
         try:
             parsed_number = phonenumbers.parse(phone, None)
             formatted_number = phonenumbers.format_number(parsed_number, phonenumbers.PhoneNumberFormat.E164)
@@ -179,9 +181,9 @@ def new_user_booking():
                                    email = email,
                                    phone = phone,
                                    password = password,
-                                   turnaround = turnaround,
-                                   sample_name = sample_name,
-                                   sample_description = sample_description)
+                                   sample_description = sample_description,
+                                   extra_requirements = extra_requirements
+                                   )
         else:
             hashed_password = generate_password_hash(password)
             new_user = individuals_login(
@@ -201,7 +203,7 @@ def new_user_booking():
                 user = db_session.query(individuals_login).filter_by(email = email).first()
                 login_user(user, remember = True)
                 session.permanent = True
-                session['type'] = 'requestor'
+                session['type'] = 'customer'
 
             flash('New account successfully created.', category = 'success')
             return redirect(url_for('views.confirmation_new_user'))
@@ -233,7 +235,7 @@ def returning_user_login():
             if check_password_hash(individual_email.password, password):
                 login_user(individual_email, remember=False)
                 session.permanent = True
-                session['type'] = 'requestor'
+                session['type'] = 'customer'
                 flash('Login successful!', category = 'success')
                 return redirect(url_for('views.returning_user_booking'))
             
@@ -270,55 +272,51 @@ def returning_user_booking():
 def confirmation_new_user():
     selected_test = session.get('selected_test')
     first_name = session.get('first_name', None)
-    turnaround = session.get('turnaround')
-    sample_name = session.get('sample_name')
     sample_description = session.get('sample_description')
+    extra_requirements = session.get('extra_requirements')
 
     selected_lab_name = session.get('selected_lab_name')
     with db.session() as db_session:
         selected_lab_id = db_session.query(labs.id) \
             .filter(labs.name == selected_lab_name) \
             .scalar()
-    lab_choice = labs.query.get_or_404(selected_lab_id)
-    lab_id = lab_choice.id
+        lab_choice = labs.query.get_or_404(selected_lab_id)
+        lab_id = lab_choice.id
 
-    current_user_id = current_user.id
-    submitted_datetime = datetime.datetime.now()
-    formatted_date = submitted_datetime.strftime("%Y-%m-%d %H:%M:%S")
-    date_to_string = str(formatted_date)
+        current_user_id = current_user.id
+        submitted_datetime = datetime.datetime.now()
+        formatted_date = submitted_datetime.strftime("%Y-%m-%d %H:%M:%S")
+        date_to_string = str(formatted_date)
 
-    # Save the testing info to the requests table.
-    new_request = test_requests(sample_name = sample_name,
-                           sample_description = sample_description,
-                           turnaround = turnaround,
-                           test_name = selected_test,
-                           lab_id = lab_id,
-                           approval_status = 'Pending',
-                           requestor_id = current_user_id,
-                           payment_status = 'Not Paid',
-                           transit_status = 'Not Shippied',
-                           datetime_submitted = date_to_string
-                           )
+        # Save the testing info to the requests table.
+        new_request = test_requests(sample_description = sample_description,
+                                    extra_requirements = extra_requirements,
+                                    test_name = selected_test,
+                                    lab_id = lab_id,
+                                    approval_status = 'Pending',
+                                    requestor_id = current_user_id,
+                                    payment_status = 'Not Paid',
+                                    transit_status = 'Not Shippied',
+                                    datetime_submitted = date_to_string
+                                    )
 
-    db.session.add(new_request)
-    db.session.commit()
+        db.session.add(new_request)
+        db.session.commit()
 
-    return render_template('confirmation.html', 
-                           selected_test = selected_test,
-                           first_name = first_name,
-                           lab_choice = lab_choice,
-                           turnaround = turnaround,
-                           user = current_user
-                           )
+        return render_template('confirmation.html', 
+                                selected_test = selected_test,
+                                first_name = first_name,
+                                lab_choice = lab_choice,
+                                user = current_user
+                                )
 
 
 @views.route('/confirmation_returning_user', methods=['GET', 'POST'])
 @login_required
 def confirmation_returning_user():
     if request.method == 'POST':
-        sample_name = request.form['sample_name']
         sample_description = request.form['sample_description']
-        turnaround = request.form['turnaround']
+        extra_requirements = request.form['extra_requirements']
 
         selected_test = session.get('selected_test')
         selected_lab_id = session.get('selected_lab_id')
@@ -326,20 +324,24 @@ def confirmation_returning_user():
         with db.session() as db_session:
             lab_choice = db_session.query(labs).get_or_404(selected_lab_id)
             lab_id = lab_choice.id
+
+            # May not need this code block. On the HTML page, you could probably just use 
+            # {{ user.first_name }} to get the first name (assuming you pass 'user = current_user'
+            # to the HTML template).
             current_user_id = current_user.id
             logged_in_user = db_session.query(individuals_login).filter_by(id = current_user_id).first()
             name = logged_in_user.first_name
+
             submitted_datetime = datetime.datetime.now()
             formatted_date = submitted_datetime.strftime("%Y-%m-%d %H:%M:%S")
             date_to_string = str(formatted_date)
 
-            # Save the testing info to the requests table.
-            new_request = test_requests(sample_name = sample_name,
-                                        sample_description = sample_description,
-                                        turnaround = turnaround,
+            # Save the testing info to the test_requests db table.
+            new_request = test_requests(sample_description = sample_description,
+                                        extra_requirements = extra_requirements,
                                         test_name = selected_test,
-                                        lab_id = lab_id,
                                         approval_status = 'Pending',
+                                        lab_id = lab_id,
                                         requestor_id = current_user_id,
                                         payment_status = 'Not Paid',
                                         transit_status = 'Not Shippied',
@@ -354,7 +356,6 @@ def confirmation_returning_user():
                                 selected_test = selected_test,
                                 first_name = name,
                                 lab_choice = lab_choice,
-                                turnaround = turnaround,
                                 user = current_user
                                 )
 
@@ -543,7 +544,12 @@ def user_requests():
                             )
 
 
-
+@views.route("/customer_settings", methods=['GET', 'POST'])
+@login_required
+def customer_settings():
+    return render_template('customer_settings.html', 
+                            user = current_user
+                            )
 
 @views.route("/provider_settings", methods=['GET', 'POST'])
 @login_required

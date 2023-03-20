@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 auth_bp = Blueprint('auth', __name__, template_folder='auth_templates', static_folder='auth_static')
 
-
+# Provider login
 @auth_bp.route("/lab", methods=['GET', 'POST'])
 def provider_login():
     if request.method == 'POST':
@@ -31,6 +31,7 @@ def provider_login():
 
 
 
+# Customer login
 @auth_bp.route("/individual", methods=['GET', 'POST'])
 def customer_login():
     if request.method == 'POST':
@@ -51,6 +52,7 @@ def customer_login():
             flash('That email is not associated with an account.', category = 'error')
 
     return render_template('user_login.html', user = current_user)
+
 
 
 # New lab signup
@@ -82,7 +84,8 @@ def lab_signup():
     return render_template('lab_signup.html', user=current_user)
 
 
-# New user signup
+
+# New customer signup
 @auth_bp.route("/user_signup", methods=['GET', 'POST'])
 def user_signup():
     if request.method == "POST":
@@ -113,8 +116,6 @@ def user_signup():
             return redirect(url_for('views.index'))
 
     return render_template('user_signup.html', user=current_user)
-
-
 
 
 

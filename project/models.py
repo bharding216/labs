@@ -1,12 +1,8 @@
-import jwt
-import os
-from time import time
 from . import db
 from sqlalchemy.dialects.mysql import BLOB
 from flask_login import UserMixin
 from itsdangerous import URLSafeTimedSerializer as Serializer
 from flask import Flask
-import yaml
 from sqlalchemy import DateTime
 
 
@@ -64,11 +60,9 @@ class individuals_login(db.Model, UserMixin):
 class test_requests(db.Model):
     request_id = db.Column(db.Integer, primary_key=True)
     requestor_id = db.Column(db.Integer, db.ForeignKey('individuals_login.id'), nullable=False)
-    sample_name = db.Column(db.String(100))
     sample_description = db.Column(db.String(16000000))
-    turnaround = db.Column(db.Integer)
+    extra_requirements = db.Column(db.String(16000000))
     test_name = db.Column(db.String(100), nullable=False)
-    # This is approval status:
     approval_status = db.Column(db.String(100), nullable=False)
     lab_id = db.Column(db.Integer, db.ForeignKey('labs.id'), nullable=False)
     results = db.Column(db.LargeBinary(length=2**32-1))

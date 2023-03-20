@@ -125,7 +125,7 @@ def create_app():
             type = session.get('type')
             if type == 'lab':
                 user = labs_login.query.filter_by(id = id).first()
-            elif type == 'requestor':
+            elif type == 'customer':
                 user = individuals_login.query.filter_by(id = id).first()
             else:
                 user = None

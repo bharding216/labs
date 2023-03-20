@@ -25,7 +25,6 @@
 
 
 
-
 <!-- TOP BLUE SECTION -->
 <div class="py-5" style="background-image:linear-gradient(#1e96fc, #11296b);">
 
@@ -86,8 +85,8 @@
                         <input type="text" pattern="[0-9]{5}" name="zipcode"
                             class="form-control" 
                             id="zipcode"
-                            placeholder="ZIP Code"/>
-                        <label for="zipcode">ZIP Code</label>
+                            placeholder="ZIP code"/>
+                        <label for="zipcode">ZIP code</label>
 
                     </div>
                     
@@ -104,7 +103,7 @@
                     <button type="submit" 
                         class="btn btn-primary"
                         style="width:auto">
-                        Find a Lab
+                        Find a lab
                     </button>
 
                 </div>
@@ -197,7 +196,7 @@
                 <div class="row align-items-center">
                     <div class="col-12">
                         <a href="{{ url_for('views.about') }}">
-                            <button type="button" class="btn btn-primary" data-aos="fade-up">Learn More</button>
+                            <button type="button" class="btn btn-primary" data-aos="fade-up">Find out more</button>
                         </a>                        
                     </div>
                 </div>
@@ -228,21 +227,24 @@
                             Interested in reaching 
                             a larger audience for your lab services?
                         </p>
-                        <li>Increase equipment utilization</li>
-                        <li>Strengthen online reputation</li>
-                        <li>Acquire new customers</li>
+
+                        <ul>
+                            <li>Increase equipment utilization</li>
+                            <li>Strengthen online reputation</li>
+                            <li>Acquire new customers</li>
+                        </ul>
                     </div>
                 </div>
 
                 <div class="row align-items-center">
                     <div class="col-6 text-center">
                         <a href="{{ url_for('contact.lab_contact') }}">
-                            <button type="button" class="btn btn-reversed" data-aos="fade-up">Reach Out</button>
+                            <button type="button" class="btn btn-reversed" data-aos="fade-up">Reach out</button>
                         </a>                        
                     </div>
                     <div class="col-6 text-center">
                         <a href="{{ url_for('views.labs_about') }}">
-                            <button type="button" class="btn btn-reversed" data-aos="fade-up">Learn More</button>
+                            <button type="button" class="btn btn-reversed" data-aos="fade-up">More details</button>
                         </a>                        
                     </div>
                 </div>

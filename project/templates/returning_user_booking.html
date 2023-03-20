@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}USL | Booking{% endblock %}
+{% block title %}Returning User Booking | Unified Science Labs{% endblock %}
 
 {% block head %}
 {% endblock %}
@@ -30,10 +30,12 @@
 
 <div class="container my-5">
 
-    <h1>Welcome Back</h1>
+    <h1>Last Step!</h1>
 
     <p>
         Thanks for selecting <b>{{ lab_choice.name }}</b>.
+    </p>
+    <p>
         Please tell us a little bit about your specific testing requirements. 
     </p>
 
@@ -45,30 +47,19 @@
 
     <form action="{{ url_for('views.confirmation_returning_user') }}" method="POST">
 
-        <div class="mb-3 col-md-8 col-lg-6">
-            <h2>Your Sample Details</h2>
-        </div>
-
-        <div class="form-floating mb-3 col-md-8 col-lg-6">
-            <input type="text" class="form-control" id="sample_name" name="sample_name"
-                placeholder="Sample Name" value="{{ sample_name }}">
-            <label for="sample_name">Sample Name</label>
+        <div class="form-floating mb-3 col-md-12 col-lg-8">
+            <textarea style="height: 100px;" class="form-control" name="sample_description"
+                placeholder="Sample description" value="{{ sample_description }}"></textarea>
+            <label for="sample_description">Sample description</label>
         </div>
 
         <div class="form-floating mb-3 col-md-12 col-lg-8">
-            <textarea class="form-control" id="sample_description" name="sample_description"
-                placeholder="Sample Description" value="{{ sample_description }}"></textarea>
-            <label for="sample_description">Sample Description</label>
+            <textarea style="height: 100px;" class="form-control" name="extra_requirements"
+                placeholder="Your specific testing requirements" value="{{ extra_requirements }}"></textarea>
+            <label for="extra_requirements">Your specific testing requirements</label>
         </div>
 
-        <div class="form-floating mb-3 col-sm-6 col-md-6 col-lg-3">
-            <input type="number" class="form-control" id="turnaround" name="turnaround"
-                placeholder="Turnaround Time [days]" value="{{ turnaround }}">
-            </input>
-            <label for="turnaround">Turnaround Time [days]</label>
-        </div>
-
-        <button type="submit" class="btn btn-outline-primary"
+        <button type="submit" class="btn btn-primary"
             id = submitButton>Submit</button>
 
     </form>

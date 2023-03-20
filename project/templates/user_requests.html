@@ -30,8 +30,8 @@
             <thead>
                 <tr>
                     <th class="text-center align-middle" scope="col">Test Name</th>
-                    <th class="text-center align-middle" scope="col">Sample Name</th>
                     <th class="text-center align-middle" scope="col">Sample Description</th>
+                    <th class="text-center align-middle" scope="col">Additional Notes</th>
                     <th class="text-center align-middle" scope="col">Lab Name</th>
                     <th class="text-center align-middle" scope="col">Current Status</th>
                     <th class="text-center align-middle" scope="col">Ship/Purchase</th>
@@ -43,8 +43,8 @@
                 {% for my_request, name in my_requests %}
                     <tr>
                         <td class="text-center align-middle">{{ my_request.test_name }}</td>
-                        <td class="text-center align-middle">{{ my_request.sample_name }}</td>
                         <td class="text-center align-middle">{{ my_request.sample_description }}</td>
+                        <td class="text-center align-middle">{{ my_request.extra_requirements }}</td>
                         <td class="text-center align-middle">{{ name }}</td>
                         <td class="text-center align-middle">{{ my_request.approval_status }}</td>
 

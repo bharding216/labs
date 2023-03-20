@@ -77,57 +77,34 @@
 </div>
 
 
-<div class="container my-5">
-
-    <h1>Tell us more about your requirements</h1>
-
-    <p>
-        Thanks for selecting <b>{{ lab_choice.name }}</b> for your testing needs.
-        Please tell us a little bit about your specific testing requirements. 
-    </p>
-
+<div class="container mt-5">
+    <h1>Last Step!</h1>
+    <p>Thanks for selecting <b>{{ lab_choice.name }}</b> for your testing needs.</p>
+    <p>Please tell us a little bit about your specific testing requirements.</p>
 </div>
 
 
-
-<div class="container my-5">
+<div class="container mb-5">
 
     <form action="{{ url_for('views.new_user_booking') }}" method="POST">
 
-        <div class="mb-3 col-md-8 col-lg-6">
-            <h2>Your Sample Details</h2>
-        </div>
-
-        <div class="form-floating mb-3 col-md-8 col-lg-6">
-            <input type="text" class="form-control" id="sample_name" name="sample_name"
-                placeholder="Sample Name" value="{{ sample_name }}">
-            <label for="sample_name">Sample Name</label>
-        </div>
-
         <div class="form-floating mb-3 col-md-12 col-lg-8">
-            <textarea class="form-control" id="sample_description" name="sample_description"
-                placeholder="Sample Description" value="{{ sample_description }}"></textarea>
-            <label for="sample_description">Sample Description</label>
+            <textarea style="height: 100px;" class="form-control" name="sample_description"
+                placeholder="Sample description" value="{{ sample_description }}"></textarea>
+            <label for="sample_description">Sample description</label>
         </div>
 
-        <div class="form-floating mb-3 col-sm-6 col-md-6 col-lg-3">
-            <input type="number" class="form-control" id="turnaround" name="turnaround"
-                placeholder="Turnaround Time [days]" value="{{ turnaround }}">
-            </input>
-            <label for="turnaround">Turnaround Time [days]</label>
+        <div class="form-floating mb-5 col-md-12 col-lg-8">
+            <textarea style="height: 100px;" class="form-control" name="extra_requirements"
+                placeholder="Your specific testing requirements" value="{{ extra_requirements }}"></textarea>
+            <label for="extra_requirements">Your specific testing requirements</label>
         </div>
-
-
-        <br>
 
 
         <div class="mb-3 col-md-8 col-lg-6">
             <h2>Your Contact Info</h2>
-
-            <p>
-                This information will be used to create your account. You will need
-                your <b>email and password</b> to log in once your request is approved. 
-            </p>
+            <p>This information will be used to create your account.</p>
+            <p>You will need your <b>email and password</b> to log in once your request is approved.</p> 
         </div>
 
 
@@ -170,12 +147,10 @@
 
         <div class="form-group mb-3 col-md-8 col-lg-6">
             <p class="mx-1"><small>Password Strength:</small></p>
-            <!--<label for="password_strength">Password Strength:</label>-->
             <p id="password_strength" class="form-control"></p>
           </div>
 
-        <button type="submit" class="btn btn-outline-primary"
-            id = submitButton>Submit</button>
+        <button type="submit" class="btn btn-primary">Submit</button>
 
     </form>
 
