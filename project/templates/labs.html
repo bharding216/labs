@@ -34,40 +34,27 @@
 
 
         <tbody>
-            {% for lab in lab_query %}
-                <tr>
-                    <td class="text-center">{{ lab.name }}</td>
-                    <td class="text-center">
-                        {% for row in price_turnaround_table %}
-                            {% if row.lab_id == lab.id %}
-                                {{ row.price }}
-                            {% endif %}
-                        {% endfor %}
-                    </td>
 
-                    <td class="text-center">
-                        {% for row in price_turnaround_table %}
-                            {% if row.lab_id == lab.id %}
-                                {{ row.turnaround }}
-                            {% endif %}
-                        {% endfor %}
-                    </td>
+            {% for row, distance in combined_data %}
+            <tr>
+                <td class="text-center">{{ row.name }}</td>
+                <td class="text-center">{{ row.price }}</td>
+                <td class="text-center">{{ row.turnaround }}</td>
+                <td class="text-center">{{ distance }}</td>
+                <td class="text-center">{{ row.city }}</td>
+                <td class="text-center">{{ row.state }}</td>
 
-                    <td class="text-center">50</td>
-                    <td class="text-center">{{ lab.city }}</td>
-                    <td class="text-center">{{ lab.state }}</td>
+                <td class="text-center">
+                    
+                    <form action="{{ url_for('views.lab_function') }}" method="POST">
+                        <input type="hidden" name="lab_name" value="{{ row.name }}">
+                        <input type="submit" class="btn btn-primary m-1" value="Choose Lab">
+                    </form>
 
-                    <td class="text-center">
-                        
-                        <form action="{{ url_for('views.lab_function') }}" method="POST">
-                            <input type="hidden" name="lab_id" value="{{ lab.id }}">
-                            <input type="submit" class="btn btn-primary m-1" value="Choose Lab">
-                        </form>
-
-                    </td>
-                </tr>
-
+                </td>
+            </tr>
             {% endfor %}
+
         </tbody>
 
     </table>

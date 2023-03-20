@@ -1,11 +1,12 @@
 from flask import Blueprint, render_template, request, redirect, flash, url_for, \
     session, send_file, jsonify, make_response, Response, send_from_directory
+from sqlalchemy import func
 from flask_login import login_required, current_user, login_user
-from .models import tests, labs, labs_tests, individuals_login, labs_login, test_requests
+from project.models import tests, labs, labs_tests, individuals_login, labs_login, test_requests
 import datetime
 from flask_mail import Message
 from . import db, mail
-from helpers import generate_sitemap
+from helpers import generate_sitemap, get_lat_long_from_zipcode, distance_calculation
 from itsdangerous.url_safe import URLSafeSerializer
 import yaml
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -64,15 +65,23 @@ def labs_about():
 @views.route('/labs', methods=['GET', 'POST'])
 def lab_function():
     if request.method == 'POST':
-        selected_lab_id = request.form['lab_id']
-        session['selected_lab_id'] = selected_lab_id
+        selected_lab_name = request.form['lab_name']
+        session['selected_lab_name'] = selected_lab_name
         return redirect(url_for('views.user_info'))
-
-
 
     else:
         selected_test = session.get('selected_test')
+        user_zipcode = session.get('zipcode')
         
+        # Given the user's zip code, use the Google API to get the latitude and longitude. 
+        api_key = 'AIzaSyCx7Jt0KK2U_J1t8s-BCQIzMCCnWeJepjM'
+        user_latitude, user_longitude = get_lat_long_from_zipcode(user_zipcode, api_key)
+        print(f'Users Coordinates: Latitude: {user_latitude}, Longitude: {user_longitude}')
+
+
+        calculated_distance = distance_calculation(user_latitude, user_longitude, 32.7767, -96.7970)
+        print(f'The distance from Dallas, TX to your zip code is: {calculated_distance}')
+
         with db.session() as db_session:
 
             # Get the id of the 'selected_test' from the 'tests' table
@@ -81,28 +90,33 @@ def lab_function():
                 .scalar()
             
             # Query all the rows in the 'labs_tests' table that match that 'test_id'.
-            # This table has lab_id, price, and turnaround time. 
-            rows_in_labs_tests_table = db_session.query(labs_tests) \
+            # This table has lab_ids, prices, and turnaround times for that test_id. 
+            test_query_results = db_session.query(
+                labs.name, 
+                labs_tests.price, 
+                labs_tests.turnaround, 
+                labs.city, 
+                labs.state,
+                labs.zip_code) \
+                .join(labs_tests, labs_tests.lab_id == labs.id) \
                 .filter(labs_tests.test_id == id_in_tests_table) \
+                .order_by(labs_tests.price.asc()) \
                 .all()
 
+            distances = []
+            for result in test_query_results:
+                lab_zip_code = result.zip_code
+                api_key = 'AIzaSyCx7Jt0KK2U_J1t8s-BCQIzMCCnWeJepjM'
+                lab_latitude, lab_longitude = get_lat_long_from_zipcode(lab_zip_code, api_key)
+                calculated_distance = distance_calculation(user_latitude, user_longitude, lab_latitude, lab_longitude)
+                calculated_distance = round(calculated_distance)
+                distances.append(calculated_distance)
 
-            # Query all the labs that have their 'id' in the 'rows_in_labs_tests_table'
-            # above. 
-
-            # If the user entered a value for the zip code, do this zip code distance calculation:
-            # Calculate the distance for each lab and sort lowest to highest. 
-
-            # If the user didn't enter a value for the zip code, then display the labs
-            # lowest price to highest. 
-            lab_query = db_session.query(labs).all()
-
-            # On the HTML table, add a dropdown and javascript to sort the table by distance, price, or turnaround time. 
+        combined_data = zip(test_query_results, distances)
 
         return render_template('labs.html', 
-            lab_query = lab_query, 
             selected_test = selected_test, 
-            price_turnaround_table = rows_in_labs_tests_table,
+            combined_data = combined_data,
             user = current_user
             )
 
@@ -193,8 +207,11 @@ def new_user_booking():
             return redirect(url_for('views.confirmation_new_user'))
 
     else:
-        selected_lab_id = session.get('selected_lab_id')
+        selected_lab_name = session.get('selected_lab_name')
         with db.session() as db_session:
+            selected_lab_id = db_session.query(labs.id) \
+                .filter(labs.name == selected_lab_name) \
+                .scalar()        
             lab_choice = db_session.query(labs).get_or_404(selected_lab_id)
 
         return render_template('new_user_booking.html', 
@@ -257,14 +274,18 @@ def confirmation_new_user():
     sample_name = session.get('sample_name')
     sample_description = session.get('sample_description')
 
-    selected_lab_id = session.get('selected_lab_id')
+    selected_lab_name = session.get('selected_lab_name')
+    with db.session() as db_session:
+        selected_lab_id = db_session.query(labs.id) \
+            .filter(labs.name == selected_lab_name) \
+            .scalar()
     lab_choice = labs.query.get_or_404(selected_lab_id)
     lab_id = lab_choice.id
+
     current_user_id = current_user.id
     submitted_datetime = datetime.datetime.now()
     formatted_date = submitted_datetime.strftime("%Y-%m-%d %H:%M:%S")
     date_to_string = str(formatted_date)
-    print(datetime)
 
     # Save the testing info to the requests table.
     new_request = test_requests(sample_name = sample_name,
