@@ -23,16 +23,101 @@
 </div>
 
 
+<div class="container my-5">
 
-<div style="background-image:linear-gradient(#11296b, #1e96fc);">
-    <div class="container py-5">
-        <div class="row" style="height: 300px">
-            <div class="col-md-12 text-center d-flex flex-column justify-content-center"> 
-                
-                <h1 class="mb-5" style="color: white;">A customer settings page</h1>
-
-            </div>
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="text-center">Profile for <u>{{ user.first_name }} {{ user.last_name }}</u></h2>
         </div>
+    </div>
+
+
+
+    <div class="row mb-3">
+        <div class="col">
+            <h3>My Info</h3>
+        </div>
+    </div>
+
+
+
+
+
+    <div class="table-responsive mx-5 pb-4">
+        <table class="table table-bordered">
+
+            <tbody>
+
+                    <tr>
+                        <td class="text-center align-middle"><b>First Name</b></td>
+                        <td class="text-center align-middle">{{ user.first_name }}</td>
+                        <td class="text-center align-middle">
+                            <form action="{{ url_for('views.customer_settings') }}" method="POST">
+                                <input type="hidden" name="field_name" value="first_name">
+                                <input type="submit" class="btn btn-primary my-1" value="Edit">
+                            </form>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-center align-middle"><b>Last Name</b></td>
+                        <td class="text-center align-middle">{{ user.last_name }}</td>
+                        <td class="text-center align-middle">
+                            <form action="{{ url_for('views.customer_settings') }}" method="POST">
+                                <input type="hidden" name="field_name" value="last_name">
+                                <input type="submit" class="btn btn-primary my-1" value="Edit">
+                            </form>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-center align-middle"><b>Email</b></td>
+                        <td class="text-center align-middle">{{ user.email }}</td>
+                        <td class="text-center align-middle">
+                            <form action="{{ url_for('views.customer_settings') }}" method="POST">
+                                <input type="hidden" name="field_name" value="email">
+                                <input type="submit" class="btn btn-primary my-1" value="Edit">
+                            </form>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-center align-middle"><b>Phone</b></td>
+                        <td class="text-center align-middle">{{ user.phone }}</td>
+                        <td class="text-center align-middle">
+                            <form action="{{ url_for('views.customer_settings') }}" method="POST">
+                                <input type="hidden" name="field_name" value="phone">
+                                <input type="submit" class="btn btn-primary my-1" value="Edit">
+                            </form>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-center align-middle"><b>Password</b></td>
+                        <td class="text-center align-middle">*********</td>
+                        <td class="text-center align-middle">
+                            <form action="{{ url_for('views.customer_settings') }}" method="POST">
+                                <input type="hidden" name="field_name" value="password">
+                                <input type="submit" class="btn btn-primary my-1" value="Edit">
+                            </form>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-center align-middle"><b>Company</b></td>
+                        <td class="text-center align-middle">{{ user.company_name }}</td>
+                        <td class="text-center align-middle">
+                            <form action="{{ url_for('views.customer_settings') }}" method="POST">
+                                <input type="hidden" name="field_name" value="company_name">
+                                <input type="submit" class="btn btn-primary my-1" value="Edit">
+                            </form>
+                        </td>
+                    </tr>
+
+
+            </tbody>
+
+        </table>
     </div>
 </div>
 

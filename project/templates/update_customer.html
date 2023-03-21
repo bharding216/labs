@@ -36,8 +36,7 @@
     <!-- 'lab_object' and 'field_name' are received from 'provider_settings' view function by 
         the template. Then, the form action passes the parameters to the 'update_lab' view function
         through the URL. -->
-    <form action="{{ url_for('views.update_lab', id=lab_object.id, field_name=field_name) }}" 
-            method="POST">
+    <form action="{{ url_for('views.update_customer', field_name=field_name) }}" method="POST">
             
             {% if field_name == 'password' %}
 
@@ -45,7 +44,6 @@
 
                 <input type="text" 
                         name="{{ field_name }}" 
-                        id="{{ field_name }}"
                         class="form-control"
                         placeholder="Enter Password">
                 <label for="{{ field_name }}">Enter New Password</label>
@@ -56,7 +54,6 @@
 
                 <input type="text" 
                         name="password2" 
-                        id="password2"
                         class="form-control"
                         placeholder="Confirm Password">
                 <label for="password2">Confirm New Password</label>
@@ -70,7 +67,7 @@
                 <input type="text" 
                         class="form-control"
                         name="{{ field_name }}" 
-                        value="{{ lab_object[field_name] }}"
+                        value="{{ user[field_name] }}"
                         placeholder="{{ field_name|replace('_',' ')|title }}">
 
                 <!--returns a title-cased string-->

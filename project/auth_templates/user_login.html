@@ -22,19 +22,25 @@
 
     <form action="{{ url_for('auth.customer_login') }}" method="POST">
 
-        <h3>Customer Login</h3>
-        <p>Returning customers login here</p>
+        <h3 class="mb-3">Customer Login</h3>
 
-        <div class="form-floating mb-3">
-            <input type="text" id="email" placeholder="email"
-                class="form-control" name="email">
-            <label for="email">Email</label>
-        </div>
 
-        <div class="form-floating mb-3">
-            <input type="password" id="password" placeholder="Password"
-                class="form-control" name="password">
-            <label for="password">Password</label>
+        <div class="row">
+            <div class="col-md-6 col-lg-4">
+                <div class="form-floating mb-3">
+                    <input type="text" id="email" placeholder="email"
+                        class="form-control" name="email">
+                    <label for="email">Email</label>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="form-floating mb-3">
+                    <input type="password" id="password" placeholder="Password"
+                        class="form-control" name="password">
+                    <label for="password">Password</label>
+                </div>
+            </div>
         </div>
 
         <button type="submit" class="btn btn-primary">Login</button>

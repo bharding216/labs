@@ -547,6 +547,16 @@ def user_requests():
 @views.route("/customer_settings", methods=['GET', 'POST'])
 @login_required
 def customer_settings():
+    if request.method == 'POST':
+        # The name of the category you are updating.
+        field_name = request.form['field_name']
+
+        return render_template('update_customer.html',
+                            user = current_user,
+                            field_name = field_name)
+
+                
+
     return render_template('customer_settings.html', 
                             user = current_user
                             )
@@ -701,6 +711,41 @@ def update_prices(id, test_name):
 
 
 
+@views.route("/update_customer/<string:field_name>", methods=['GET', 'POST'])
+@login_required
+def update_customer(field_name):
+    if request.method == 'POST':
+        new_value = request.form[field_name]
+
+        if field_name == 'password':
+            password2 = request.form['password2']
+            if new_value == password2:
+                new_value = generate_password_hash(new_value)
+                current_user.password = new_value
+
+                with db.session() as db_session:
+                    db_session.add(current_user)
+                    db_session.commit()
+
+                    flash('Password successfully updated!', 'success')
+                    return redirect(url_for('views.customer_settings'))
+
+            else:
+                flash('Those password do not match, please try again', 'error')
+                return render_template('update_customer.html',
+                                    user = current_user,
+                                    field_name = field_name)
+
+
+
+        setattr(current_user, field_name, new_value)
+        with db.session() as db_session:
+            db_session.commit()
+            flash('Your settings have been successfully updated!', 'success')
+            return redirect(url_for('views.customer_settings'))
+        
+
+
 
 @views.route("/update_lab/<int:id>/<string:field_name>", methods=['GET', 'POST'])
 @login_required
@@ -719,9 +764,6 @@ def update_lab(id, field_name):
 
                 db_session.add(lab_login_object)
                 db_session.commit()
-
-                #current_user_lab_id = current_user.lab_id
-                #logged_in_lab = db_session.query(labs).filter_by(id = current_user_lab_id).first()
 
                 flash('Password successfully updated!', 'success')
                 return redirect(url_for('views.provider_settings'))
