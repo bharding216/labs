@@ -1,5 +1,5 @@
 from flask import url_for, current_app, request
-import requests, math
+import requests, math, pgeocode
 
 # helpers.py
 
@@ -21,16 +21,13 @@ def generate_sitemap():
         return sitemap_xml
     
 
-def get_lat_long_from_zipcode(zipcode, api_key):
-    url = f'https://maps.googleapis.com/maps/api/geocode/json?address={zipcode}&key={api_key}'
-    response = requests.get(url)
-    json_data = response.json()
-    if json_data['status'] == 'OK':
-        latitude = json_data['results'][0]['geometry']['location']['lat']
-        longitude = json_data['results'][0]['geometry']['location']['lng']
-        return latitude, longitude
-    else:
-        return None
+def get_lat_long_from_zipcode(zipcode):
+    nomi = pgeocode.Nominatim('us')
+    location = nomi.query_postal_code(zipcode)
+    latitude = location.latitude
+    longitude = location.longitude
+    return latitude, longitude
+
 
 def distance_calculation(user_latitude, user_longitude, lab_latitude, lab_longitude):
     user_lat_rad = math.radians(user_latitude)

@@ -151,6 +151,10 @@ p, .nav-link, .btn-primary, .footer,
   }
 
   #lab_requests_table {
+    width: 1200px;
+  }
+
+  #user_requests_table {
     width: 1000px;
   }
 
@@ -183,6 +187,10 @@ p, .nav-link, .btn-primary, .footer,
   }
 
   #lab_requests_table {
+    width: 1200px;
+  }
+
+  #user_requests_table {
     width: 1000px;
   }
 
@@ -219,6 +227,10 @@ p, .nav-link, .btn-primary, .footer,
   }
 
   #lab_requests_table {
+    width: 1200px;
+  }
+
+  #user_requests_table {
     width: 1000px;
   }
 
@@ -269,6 +281,10 @@ p, .nav-link, .btn-primary, .footer,
   }
 
   #lab_requests_table {
+    width: 1200px;
+  }
+
+  #user_requests_table {
     width: 1200px;
   }
 

@@ -48,7 +48,8 @@ def index():
 
         return render_template('index.html', 
                                tests = test_names, 
-                               user = current_user)
+                               user = current_user
+                               )
 
 @views.route('/about', methods=['GET'])
 def about():
@@ -77,13 +78,9 @@ def lab_function():
         selected_test = session.get('selected_test')
         user_zipcode = session.get('zipcode')
         
-        # Given the user's zip code, use the Google API to get the latitude and longitude. 
-        api_key = os.getenv('geocoding_api_key')
-        user_latitude, user_longitude = get_lat_long_from_zipcode(user_zipcode, api_key)
-
         with db.session() as db_session:
 
-            # Get the id of the 'selected_test' from the 'tests' table
+            # Get the id of the 'selected_test' from the 'tests' table.
             id_in_tests_table = db_session.query(tests.id) \
                 .filter(tests.name == selected_test) \
                 .scalar()
@@ -102,18 +99,30 @@ def lab_function():
                 .order_by(labs_tests.price.asc()) \
                 .all()
 
+
+            # Make a list of all zip codes
+            zip_code_list = [user_zipcode]
+            zip_code_list.extend([result.zip_code for result in test_query_results])
+
+            lat_lng_list = []
+            for code in zip_code_list:
+                lat_and_lng = get_lat_long_from_zipcode(code)
+                lat_lng_list.append(lat_and_lng)
+            print(lat_lng_list)
+
+
+            # Calculate the distance between the coordinates.
+            user_latitude, user_longitude = lat_lng_list[0]
             distances = []
-            for result in test_query_results:
-                lab_zip_code = result.zip_code
-                api_key = os.getenv('geocoding_api_key')
-                lab_latitude, lab_longitude = get_lat_long_from_zipcode(lab_zip_code, api_key)
-                calculated_distance = distance_calculation(user_latitude, 
-                                                           user_longitude, 
-                                                           lab_latitude, 
-                                                           lab_longitude
-                                                           )
-                calculated_distance = round(calculated_distance)
-                distances.append(calculated_distance)
+
+            for i in range(1, len(lat_lng_list)):
+                lab_latitude, lab_longitude = lat_lng_list[i]
+                distance = round(distance_calculation(user_latitude, 
+                                                      user_longitude, 
+                                                      lab_latitude, 
+                                                      lab_longitude
+                                                      ))
+                distances.append(distance)
 
         combined_data = zip(test_query_results, distances)
 
@@ -407,7 +416,10 @@ def lab_requests():
         try:
             with db.session() as db_session:
                 lab_info_id = db_session.query(labs_login).filter_by(id = current_user.id).first().lab_id # this is an integer type
-                lab_requests = db_session.query(test_requests).filter_by(lab_id = lab_info_id).all() # this is a list type
+                lab_requests = db_session.query(test_requests) \
+                                        .filter_by(lab_id = lab_info_id) \
+                                        .order_by(test_requests.datetime_submitted.desc()) \
+                                        .all() # this is a list type
 
         except AttributeError:
             flash('Invalid user information.', 'error')
@@ -534,6 +546,7 @@ def user_requests():
     my_requests = db.session.query(test_requests, labs.name) \
         .join(labs, test_requests.lab_id == labs.id) \
         .filter(test_requests.requestor_id == current_user.id) \
+        .order_by(test_requests.datetime_submitted.desc()) \
         .all()
     
     db.session.close()

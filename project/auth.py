@@ -24,6 +24,10 @@ def provider_login():
                 return redirect(url_for('views.index'))
             else:
                 flash('Incorrect password. Please try again.', category = 'error')
+                return render_template('lab_login.html', 
+                                       user = current_user,
+                                       email = email)
+
         else:
             flash('That email is not associated with an account.', category = 'error')
 
@@ -48,6 +52,10 @@ def customer_login():
                 return redirect(url_for('views.index'))
             else:
                 flash('Incorrect password. Please try again.', category = 'error')
+                return render_template('user_login.html', 
+                                       user = current_user,
+                                       email = email)
+
         else:
             flash('That email is not associated with an account.', category = 'error')
 

@@ -40,13 +40,14 @@
 
 <div class="container py-5" style="overflow-x: auto;">
 
-    <table class="mx-auto" id="lab_requests_table">
+    <table id="lab_requests_table">
         <thead>
             <tr>
-                <th class="text-center" scope="col" style="width: 15%;">Test Name</th>
+                <th class="text-center" scope="col" style="width: 10%;">Test Name</th>
                 <th class="text-center" scope="col" style="width: 15%;">Date/Time Submitted</th>
-                <th class="text-center" scope="col" style="width: 22%;">Customer Notes</th>
-                <th class="text-center" scope="col" style="width: 4%;">Approval Status</th>
+                <th class="text-center" scope="col" style="width: 10%;">Sample Description</th>
+                <th class="text-center" scope="col" style="width: 15%;">Extra Notes</th>
+                <th class="text-center" scope="col" style="width: 3%;">Approval Status</th>
                 <th class="text-center" scope="col" style="width: 5%;">Edit Approval Status</th>
                 <th class="text-center" scope="col" style="width: 5%;">Payment Status</th>
                 <th class="text-center" scope="col" style="width: 4%;">Transit Status</th>
@@ -62,6 +63,7 @@
                     <td class="text-center">{{ lab_request.test_name }}</td>
                     <td class="text-center">{{ lab_request.datetime_submitted }}</td>
                     <td class="text-center">{{ lab_request.sample_description }}</td>
+                    <td class="text-center">{{ lab_request.extra_requirements }}</td>
                     <td class="text-center">{{ lab_request.approval_status }}</td>
 
                     <td class="text-center">
@@ -118,7 +120,7 @@
 
                     </td>
 
-                    <td class="text-center">
+                    <td class="text-center align-items-center">
                     {% if lab_request.results %}
                         <a href="{{ url_for('views.download', request_id=lab_request.request_id) }}"
                             class="btn btn-primary my-1">Download</a>

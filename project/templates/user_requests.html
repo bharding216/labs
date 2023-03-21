@@ -22,57 +22,43 @@
     {% endwith %}
 </div>
 
+<div class="container my-5" style="overflow-x: auto;">
+    <table id="user_requests_table">
+        <thead>
+            <tr>
+                <th class="text-center align-middle" scope="col">Test Name</th>
+                <th class="text-center align-middle" scope="col">Sample Description</th>
+                <th class="text-center align-middle" scope="col">Additional Notes</th>
+                <th class="text-center align-middle" scope="col">Lab Name</th>
+                <th class="text-center align-middle" scope="col" style="width: 15%;">Date/Time Submitted</th>
+                <th class="text-center align-middle" scope="col">Current Status</th>
+                <th class="text-center align-middle" scope="col">Ship/Purchase</th>
+            </tr>
+        </thead>
 
-<div class="container my-5">
-
-    <div class="table-responsive mx-5">
-        <table class="table table-bordered">
-            <thead>
+        <tbody>
+            {% for my_request, name in my_requests %}
                 <tr>
-                    <th class="text-center align-middle" scope="col">Test Name</th>
-                    <th class="text-center align-middle" scope="col">Sample Description</th>
-                    <th class="text-center align-middle" scope="col">Additional Notes</th>
-                    <th class="text-center align-middle" scope="col">Lab Name</th>
-                    <th class="text-center align-middle" scope="col">Current Status</th>
-                    <th class="text-center align-middle" scope="col">Ship/Purchase</th>
+                    <td class="text-center align-middle">{{ my_request.test_name }}</td>
+                    <td class="text-center align-middle">{{ my_request.sample_description }}</td>
+                    <td class="text-center align-middle">{{ my_request.extra_requirements }}</td>
+                    <td class="text-center align-middle">{{ name }}</td>
+                    <td class="text-center align-middle">{{ my_request.datetime_submitted }}</td>
+                    <td class="text-center align-middle">{{ my_request.approval_status }}</td>
+                    <td class="text-center align-middle">
+                        <form action="#" method="POST">
+                            <input type="hidden" name="buy_label">
+                            <input type="submit" class="btn btn-primary my-1" value="Get Shipping Label">
+                        </form>
+                        <form action="#" method="POST">
+                            <input type="hidden" name="buy_test">
+                            <input type="submit" class="btn btn-primary my-1" value="Purchase Test">
+                        </form>
+                    </td>
                 </tr>
-            </thead>
-    
-    
-            <tbody>
-                {% for my_request, name in my_requests %}
-                    <tr>
-                        <td class="text-center align-middle">{{ my_request.test_name }}</td>
-                        <td class="text-center align-middle">{{ my_request.sample_description }}</td>
-                        <td class="text-center align-middle">{{ my_request.extra_requirements }}</td>
-                        <td class="text-center align-middle">{{ name }}</td>
-                        <td class="text-center align-middle">{{ my_request.approval_status }}</td>
-
-                        <td class="text-center align-middle">
-                            
-                            <form action="#" method="POST">
-                                <input type="hidden" name="buy_label">
-                                <input type="submit" class="btn btn-primary my-1" value="Get Shipping Label">
-                            </form>
-
-                            <form action="#" method="POST">
-                                <input type="hidden" name="buy_test">
-                                <input type="submit" class="btn btn-primary my-1" value="Purchase Test">
-                            </form>
-
-                        </td>
-                    </tr>
-    
-                {% endfor %}
-            </tbody>
-    
-        </table>
-    
-    </div>
-
-
-
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
-
 
 {% endblock %}

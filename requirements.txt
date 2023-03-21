@@ -7,6 +7,7 @@ Flask_SQLAlchemy==2.5.1
 gunicorn==20.1.0
 itsdangerous==2.1.2
 phonenumbers==8.13.6
+pgeocode==0.4.0
 PyJWT==2.6.0
 PyMySQL==1.0.2
 python-dotenv==1.0.0
