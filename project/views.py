@@ -78,7 +78,7 @@ def lab_function():
         user_zipcode = session.get('zipcode')
         
         # Given the user's zip code, use the Google API to get the latitude and longitude. 
-        api_key = 'AIzaSyCx7Jt0KK2U_J1t8s-BCQIzMCCnWeJepjM'
+        api_key = os.getenv('geocoding_api_key')
         user_latitude, user_longitude = get_lat_long_from_zipcode(user_zipcode, api_key)
 
         with db.session() as db_session:
@@ -105,7 +105,7 @@ def lab_function():
             distances = []
             for result in test_query_results:
                 lab_zip_code = result.zip_code
-                api_key = 'AIzaSyCx7Jt0KK2U_J1t8s-BCQIzMCCnWeJepjM'
+                api_key = os.getenv('geocoding_api_key')
                 lab_latitude, lab_longitude = get_lat_long_from_zipcode(lab_zip_code, api_key)
                 calculated_distance = distance_calculation(user_latitude, 
                                                            user_longitude, 
