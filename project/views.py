@@ -108,8 +108,6 @@ def lab_function():
             for code in zip_code_list:
                 lat_and_lng = get_lat_long_from_zipcode(code)
                 lat_lng_list.append(lat_and_lng)
-            print(lat_lng_list)
-
 
             # Calculate the distance between the coordinates.
             user_latitude, user_longitude = lat_lng_list[0]
@@ -540,8 +538,15 @@ def download(request_id):
 @login_required
 def user_requests():
     if request.method == 'POST':
-        flash('The buttons work!', 'success')
-        return redirect(url_for('views.user_requests'))
+        pay_type = request.form['pay_type']
+        if pay_type == 'buy_label':
+            lab_name = request.form['lab_name']
+            session['lab_name_for_shipping_label'] = lab_name
+            return redirect(url_for('views.shipping'))
+        else:
+            flash('you clicked the purchase test button')
+            return redirect(url_for('views.user_requests'))
+
 
     my_requests = db.session.query(test_requests, labs.name) \
         .join(labs, test_requests.lab_id == labs.id) \
@@ -801,60 +806,77 @@ def update_lab(id, field_name):
 
 
 @views.route('/shipping', methods=['GET', 'POST'])
+@login_required
 def shipping():
     if request.method == 'POST':
-        with open('project/db.yaml', 'r') as file:
-            test = yaml.load(file, Loader=yaml.FullLoader)
-
-        # Shippo API Key:
         shippo.config.api_key = os.getenv('shippo_api_key')
 
+        street1 = request.form['from_address_1']
+        street2 = request.form['from_address_2']
+        city = request.form['city']
+        state = request.form['state']
+        zip = request.form['zip']
+
+        user = individuals_login.query.filter_by(id=current_user.id).first()
+        first_name = user.first_name
+        last_name = user.last_name
+        full_name = first_name + last_name
+        phone = user.phone
+        email = user.email
+
         address_from = {
-            "name": "John Doe",
-            "street1": "6512 Green St",
-            "city": "Philadelphia",
-            "state": "PA",
-            "zip": "19144",
+            "name": full_name,
+            "street1": street1,
+            "street2": street2,
+            "city": city,
+            "state": state,
+            "zip": zip,
             "country": "US",
-            "phone": "555-555-5555",
-            "email": "jdoe@example.com"
-        }
+            "phone": phone,
+            "email": email
+            }
 
-
-
-        # from session get the selected lab
-        # get company name, street, city, state, country, zip, phone, email
+        lab_name = session.get('lab_name_for_shipping_label')
+        lab = labs.query.filter_by(name = lab_name).first()
 
         address_to = {
-            "name": "Jane Doe",
-            "street1": "123 Main St",
-            "city": "San Francisco",
-            "state": "CA",
-            "zip": "94105",
-            "country": "US",
-            "phone": "555-555-5555",
-            "email": "jane.doe@example.com"
-        }
+            "name": lab.name,
+            "street1": lab.street_address_1,
+            "street2": lab.street_address_2,
+            "city": lab.city,
+            "state": lab.state,
+            "zip": lab.zip_code,
+            "country": lab.country,
+            "phone": lab.phone,
+            "email": lab.email
+            }
+
+
+        length = request.form['length']
+        width = request.form['width']
+        height = request.form['height']
+        distance_units = request.form['distance_units']
+        weight = request.form['weight']
+        weight_units = request.form['weight_units']
 
         parcel = {
-            "length": "5",
-            "width": "5",
-            "height": "5",
-            "distance_unit": "in",
-            "weight": "2",
-            "mass_unit": "lb"
-        }
+            "length": length,
+            "width": width,
+            "height": height,
+            "distance_unit": distance_units,
+            "weight": weight,
+            "mass_unit": weight_units
+            }
 
 
         shipment = shippo.Shipment.create(
-            address_from=address_from,
-            address_to=address_to,
-            parcels=[parcel],
-            asynchronous=False
-        )
+            address_from = address_from,
+            address_to = address_to,
+            parcels = [parcel],
+            asynchronous = False
+            )
 
         rates = shipment.rates
-
 
 
         # transaction = shippo.Transaction.create(
@@ -880,7 +902,15 @@ def shipping():
 
         #return render_template('label.html', label_url = label_url)
 
-    return render_template('shipping.html', user = current_user)
+
+
+    lab_name = session.get('lab_name_for_shipping_label')
+    lab = labs.query.filter_by(name = lab_name).first()
+
+    return render_template('shipping.html', 
+                           user = current_user,
+                           lab = lab
+                           )
 
 
 

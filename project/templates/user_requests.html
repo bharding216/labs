@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}USL | Customer Requests{% endblock %}
+{% block title %}Customer Testing Requests | Unified Science Labs{% endblock %}
 
 {% block content %}
 
@@ -47,11 +47,12 @@
                     <td class="text-center align-middle">{{ my_request.approval_status }}</td>
                     <td class="text-center align-middle">
                         <form action="#" method="POST">
-                            <input type="hidden" name="buy_label">
+                            <input type="hidden" name="pay_type" value="buy_label">
+                            <input type="hidden" name="lab_name" value="{{ name }}">
                             <input type="submit" class="btn btn-primary my-1" value="Get Shipping Label">
                         </form>
                         <form action="#" method="POST">
-                            <input type="hidden" name="buy_test">
+                            <input type="hidden" name="pay_type" value="buy_test">
                             <input type="submit" class="btn btn-primary my-1" value="Purchase Test">
                         </form>
                     </td>
