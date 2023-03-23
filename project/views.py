@@ -238,24 +238,24 @@ def returning_user_login():
         with db.session() as db_session:
             individual_email = db_session.query(individuals_login).filter_by(email = email).first()
         
-        if individual_email:
-            if check_password_hash(individual_email.password, password):
-                login_user(individual_email, remember=False)
-                session.permanent = True
-                session['type'] = 'customer'
-                flash('Login successful!', category = 'success')
-                return redirect(url_for('views.returning_user_booking'))
-            
+            if individual_email:
+                if check_password_hash(individual_email.password, password):
+                    login_user(individual_email, remember=False)
+                    session.permanent = True
+                    session['type'] = 'customer'
+                    flash('Login successful!', category = 'success')
+                    return redirect(url_for('views.returning_user_booking'))
+                
+                else:
+                    flash('Incorrect password. Please try again.', category = 'error')
+                    return render_template('user_info.html', 
+                                            user = current_user, 
+                                            email = email)
             else:
-                flash('Incorrect password. Please try again.', category = 'error')
+                flash('That email is not associated with an account. Please check for typos.', category = 'error')
                 return render_template('user_info.html', 
-                                       user = current_user, 
-                                       email = email)
-        else:
-            flash('That email is not associated with an account. Please check for typos.', category = 'error')
-            return render_template('user_info.html', 
-                                   user = current_user, 
-                                   email = email)
+                                        user = current_user, 
+                                        email = email)
 
     #return render_template('returning_user_login.html', user = current_user)
 
