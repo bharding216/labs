@@ -836,8 +836,12 @@ def shipping():
             "email": email
             }
 
+
+
         lab_name = session.get('lab_name_for_shipping_label')
         lab = labs.query.filter_by(name = lab_name).first()
+        formatted_phone = f"{lab.phone[:2]} {lab.phone[2:5]} {lab.phone[5:8]} {lab.phone[8:]}"
+
 
         address_to = {
             "name": lab.name,
@@ -847,9 +851,9 @@ def shipping():
             "state": lab.state,
             "zip": lab.zip_code,
             "country": lab.country,
-            "phone": lab.phone,
-            "email": lab.email
-            }
+            "phone": formatted_phone
+        }
+
 
 
         length = request.form['length']
@@ -869,6 +873,7 @@ def shipping():
             }
 
 
+
         shipment = shippo.Shipment.create(
             address_from = address_from,
             address_to = address_to,
@@ -876,7 +881,10 @@ def shipping():
             asynchronous = False
             )
 
+
         rates = shipment.rates
+        sorted_rates = sorted(rates, key=lambda resp: float(resp['amount']))
+
 
 
         # transaction = shippo.Transaction.create(
@@ -898,7 +906,7 @@ def shipping():
         
         return render_template('shipping_rates.html',
                                user = current_user,
-                               rates = rates)
+                               rates = sorted_rates)
 
         #return render_template('label.html', label_url = label_url)
 
