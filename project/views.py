@@ -65,17 +65,15 @@ def labs_about():
 
 @views.route('/labs', methods=['GET', 'POST'])
 def lab_function():
-    if request.method == 'POST':
+    if request.method == 'POST':    
         selected_lab_name = request.form['lab_name']
         session['selected_lab_name'] = selected_lab_name
 
-        selected_lab_id = db_session.query(labs.id) \
-            .filter(labs.name == selected_lab_name) \
-            .scalar()        
-        session['selected_lab_id'] = selected_lab_id
-
-
-
+        with db.session() as db_session:
+            selected_lab_id = db_session.query(labs.id) \
+                .filter(labs.name == selected_lab_name) \
+                .scalar()        
+            session['selected_lab_id'] = selected_lab_id
 
         if current_user.is_authenticated:
             return redirect(url_for('views.returning_user_booking'))
