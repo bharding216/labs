@@ -69,6 +69,14 @@ def lab_function():
         selected_lab_name = request.form['lab_name']
         session['selected_lab_name'] = selected_lab_name
 
+        selected_lab_id = db_session.query(labs.id) \
+            .filter(labs.name == selected_lab_name) \
+            .scalar()        
+        session['selected_lab_id'] = selected_lab_id
+
+
+
+
         if current_user.is_authenticated:
             return redirect(url_for('views.returning_user_booking'))
         else:
