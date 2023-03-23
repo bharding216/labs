@@ -248,16 +248,16 @@ def returning_user_login():
             
             else:
                 flash('Incorrect password. Please try again.', category = 'error')
-                return render_template('returning_user_login.html', 
+                return render_template('user_info.html', 
                                        user = current_user, 
                                        email = email)
         else:
             flash('That email is not associated with an account. Please check for typos.', category = 'error')
-            return render_template('returning_user_login.html', 
+            return render_template('user_info.html', 
                                    user = current_user, 
                                    email = email)
 
-    return render_template('returning_user_login.html', user = current_user)
+    #return render_template('returning_user_login.html', user = current_user)
 
 
 
