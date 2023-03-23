@@ -268,9 +268,9 @@ def returning_user_booking():
     selected_lab_id = session.get('selected_lab_id')
     with db.session() as db_session:
         lab_choice = db_session.query(labs).get_or_404(selected_lab_id)
-    return render_template('returning_user_booking.html', 
-                            user = current_user,
-                            lab_choice = lab_choice)
+        return render_template('returning_user_booking.html', 
+                                user = current_user,
+                                lab_choice = lab_choice)
 
 
 
