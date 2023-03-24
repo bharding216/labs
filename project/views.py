@@ -12,12 +12,10 @@ import yaml
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous.exc import BadSignature
 import shippo
-from io import BytesIO
 import phonenumbers
 from urllib.parse import quote, unquote
 import os
-import mimetypes
-import io
+import stripe
 from markupsafe import Markup
 
 
@@ -544,28 +542,23 @@ def download(request_id):
 @login_required
 def user_requests():
     if request.method == 'POST':
-        pay_type = request.form['pay_type']
-        if pay_type == 'buy_label':
-            lab_name = request.form['lab_name']
-            session['lab_name_for_shipping_label'] = lab_name
-            return redirect(url_for('views.shipping'))
-        else:
-            flash('you clicked the purchase test button')
-            return redirect(url_for('views.user_requests'))
-
-
-    my_requests = db.session.query(test_requests, labs.name) \
-        .join(labs, test_requests.lab_id == labs.id) \
-        .filter(test_requests.requestor_id == current_user.id) \
-        .order_by(test_requests.datetime_submitted.desc()) \
-        .all()
-    
-    db.session.close()
-
-    return render_template('user_requests.html', 
-                            user = current_user,
-                            my_requests = my_requests
-                            )
+        # If the user wants to get a shipping label with their test.
+        lab_name = request.form['lab_name']
+        session['lab_name_for_shipping_label'] = lab_name
+        return redirect(url_for('views.shipping'))
+       
+    else:   
+        with db.session() as db_session:
+            my_requests = db_session.query(test_requests, labs.name) \
+                .join(labs, test_requests.lab_id == labs.id) \
+                .filter(test_requests.requestor_id == current_user.id) \
+                .order_by(test_requests.datetime_submitted.desc()) \
+                .all()
+            
+            return render_template('user_requests.html', 
+                                    user = current_user,
+                                    my_requests = my_requests
+                                    )
 
 
 @views.route("/customer_settings", methods=['GET', 'POST'])
@@ -925,6 +918,67 @@ def shipping():
                            user = current_user,
                            lab = lab
                            )
+
+
+
+
+
+
+@views.route('/checkout/<string:lab_name>/<string:test_name>', methods=['GET', 'POST'])
+def checkout(lab_name, test_name):
+    if request.method == 'POST':
+        lab_object = labs.query.filter_by(name = lab_name).first()
+        print(lab_object)
+        lab_id = lab_object.id
+
+        test_object = tests.query.filter_by(name = test_name).first()
+        print(test_object)
+        test_id = test_object.id
+
+        row_in_labs_tests = labs_tests.query.filter_by(lab_id = lab_id,
+                                           test_id = test_id).first()
+        price = row_in_labs_tests.price
+        stripe_price = round(price * 100)
+
+        stripe.api_key = os.getenv('stripe_secret_key')
+
+        session = stripe.checkout.Session.create(
+            payment_method_types = ['card'],
+            line_items = [{
+                'price_data': {
+                    'currency': 'usd',
+                    'unit_amount': stripe_price,
+                    'product_data': {
+                        'name': test_name,
+                    },
+                },
+                'quantity': 1,
+            }],
+            mode = 'payment',
+            success_url = url_for('views.success', _external = True) + '?session_id={CHECKOUT_SESSION_ID}',
+            cancel_url = url_for('views.index', _external = True)
+        )
+        return redirect(session.url)
+
+
+@views.route('/order/success')
+def success():
+    session_id = request.args.get('session_id')
+    session = stripe.checkout.Session.retrieve(session_id)
+    if session.payment_status == 'paid':
+        # Payment was successful, show success page
+        return render_template('order_success.html')
+    else:
+        # Payment was not successful, show error page
+        return render_template('order_error.html')
+
+
+
+
+
+
+
+
 
 
 
