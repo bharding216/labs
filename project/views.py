@@ -994,17 +994,18 @@ def checkout(lab_name, test_name):
 @views.route('/order/success')
 @login_required
 def success():
+    stripe.api_key = os.getenv('stripe_secret_key')
     stripe_session = session.get('stripe_session')
     stripe.checkout.Session.retrieve(stripe_session.id)
     # The docs: https://stripe.com/docs/api/checkout/sessions/retrieve
 
     if stripe_session.payment_status == 'paid':
-        print(stripe_session.payment_status)
         label_purchase = request.args.get('label_purchase')
         if label_purchase == 'yes':
             selected_rate_object = session.get('selected_rate_object')
-
-            transaction = shippo.Transaction.create(rate=selected_rate_object.object_id, 
+            
+            shippo.config.api_key = os.getenv('shippo_api_key')
+            transaction = shippo.Transaction.create(rate=selected_rate_object['object_id'], 
                                                     asynchronous=False
                                                     )
 
@@ -1024,13 +1025,12 @@ def success():
                                            error_message_list = error_message_list)
 
         else:
-            # If the user did not get a label.
+            # If the user chose not to buy a label.
             return render_template('order_success.html',
                                     user = current_user
                                     )
     
     else:
-        print(stripe_session.payment_status)
         # Payment was not successful, show error page
         return render_template('order_error.html',
                                user = current_user)

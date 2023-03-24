@@ -29,22 +29,29 @@
     <h3>Everything looks good, {{ user.first_name }}!</h3>
 
     {% if label_purchase == 'yes' %}
-
     <p>
-        Follow this URL to download your shipping label: {{ transaction.label_url }}
+        <a href="{{ transaction.label_url }}" target="_blank">Click here</a> to download your shipping label.
     </p>
     <p>
-        Here is the tracking number for your shipment: {{ transaction.tracking_number }}
+        Here is the <b>tracking number</b> for your shipment: {{ transaction.tracking_number }}
+    </p>
+    {% endif %}
+
+    <p>You should receive a confirmation email shortly with instructions for next steps.</p>
+
+    <p>
+        The email we have on file for you is: <b>{{ user.email }}</b>. If this is not correct, 
+        please <a href="{{ url_for('contact.contact_function') }}">contact us</a>.
     </p>
 
-</div>
-
-<div class="row align-items-center">
-    <div class="col-12">
-        <a href="{{ url_for('views.index') }}">
-            <button type="button" class="btn btn-primary">Return to homepage</button>
-        </a>                        
+    <div class="row align-items-center">
+        <div class="col-12">
+            <a href="{{ url_for('views.index') }}">
+                <button type="button" class="btn btn-primary">Return to homepage</button>
+            </a>                        
+        </div>
     </div>
+
 </div>
 
 {% endblock %}

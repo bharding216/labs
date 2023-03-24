@@ -22,9 +22,18 @@
     {% endwith %}
 </div>
 
-<h3>Order error page</h3>
+<div class="container my-5">
 
-<h3>Put a contact form down here so the user can reach out</h3>
+    <h3>We're having some technical difficulties &#128531;</h3>
 
+    <div class="row align-items-center">
+        <div class="col-12">
+            <a href="{{ url_for('contact.contact_function') }}">
+                <button type="button" class="btn btn-primary">Reach out</button>
+            </a>                        
+        </div>
+    </div>
+
+</div>
 
 {% endblock %}
