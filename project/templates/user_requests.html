@@ -48,11 +48,13 @@
                     <td class="text-center align-middle">
                         <form action="{{ url_for('views.user_requests') }}" method="POST">
                             <input type="hidden" name="lab_name" value="{{ name }}">
-                            <input type="submit" class="btn btn-primary my-1 btn-sm" value="Buy Shipping Label & Test">
+                            <input type="hidden" name="test_name" value="{{ my_request.test_name }}">
+                            <input type="submit" class="btn btn-primary mt-3 mb-1 btn-sm" value="Buy Shipping Label & Test">
                         </form>
 
                         <form action="{{ url_for('views.checkout', lab_name = name, test_name = my_request.test_name) }}" method="POST">
-                            <input type="submit" class="btn btn-primary my-1 btn-sm" value="Purchase Test Only">
+                            <input type="hidden" name="label_purchase" value="no">
+                            <input type="submit" class="btn btn-primary mb-3 mt-1 btn-sm" value="Purchase Test Only">
                         </form>
                     </td>
                 </tr>

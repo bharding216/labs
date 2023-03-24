@@ -21,7 +21,7 @@
     <form method="POST">
 
         <div class="mb-5">
-            <h4>Your Address Info:</h4>
+            <h4 class="mb-4">Sender Address</h4>
 
             <div class="form-floating mb-3 col-md-8 col-lg-6">
                 <input type="text" class="form-control" id="from_address_1" name="from_address_1"
@@ -55,66 +55,46 @@
         </div>
 
         <div class="mb-5">
-            <h4>Address Details for <b>{{ lab.name }}</b>:</h4>
+            <h4 class="mb-4">Address Details for <b>{{ lab.name }}</b></h4>
             <ul>
                 <!-- info to be passed from view function-->
-                <li>Street address 1: {{ lab.street_address_1 }}</li>
-                <li>Street address 2: {{ lab.street_address_2 }}</li>
-                <li>City: {{ lab.city }}</li>
-                <li>State: {{ lab.state }}</li>
-                <li>Zip code: {{ lab.zip_code }}</li>
+                <li><b>Street address 1:</b> {{ lab.street_address_1 }}</li>
+                <li><b>Street address 2:</b> {{ lab.street_address_2 }}</li>
+                <li><b>City:</b> {{ lab.city }}</li>
+                <li><b>State:</b> {{ lab.state }}</li>
+                <li><b>Zip code:</b> {{ lab.zip_code }}</li>
             </ul>
         </div>
 
 
         <div>
-            <h4>Sample Package Details:</h4>
+            <h4 class="mb-4">Sample Package Details</h4>
 
             <div class="form-floating mb-3 col-md-8 col-lg-6">
                 <input type="text" class="form-control" id="length" name="length"
-                    placeholder="Length">
-                <label for="length">Length</label>
+                    placeholder="Length [in]">
+                <label for="length">Length [in]</label>
             </div>
 
             <div class="form-floating mb-3 col-md-8 col-lg-6">
                 <input type="text" class="form-control" id="width" name="width"
-                    placeholder="Width">
-                <label for="width">Width</label>
+                    placeholder="Width [in]">
+                <label for="width">Width [in]</label>
             </div>
 
             <div class="form-floating mb-3 col-md-8 col-lg-6">
                 <input type="text" class="form-control" id="height" name="height"
-                    placeholder="Height">
-                <label for="height">Height</label>
-            </div>
-
-            <div class="form-group col-md-6">
-                <select name="distance_units" class="form-select" 
-                    style="width:auto" id="distance_units">
-    
-                    <option selected disabled="disabled">Distance unit of measure</option>
-                    <option value="ft">ft</option>
-                    <option value="in">in</option>
-                    <option value="cm">cm</option>
-                </select>
+                    placeholder="Height [in]">
+                <label for="height">Height [in]</label>
             </div>
 
 
             <div class="form-floating mb-3 col-md-8 col-lg-6">
                 <input type="text" class="form-control" id="weight" name="weight"
-                    placeholder="weight">
-                <label for="weight">Weight</label>
+                    placeholder="Weight [lbs]">
+                <label for="weight">Weight [lbs]</label>
             </div>
 
-            <div class="form-group col-md-6">
-                <select name="weight_units" class="form-select" 
-                    style="width:auto" id="weight_units">
-    
-                    <option selected disabled="disabled">Weight unit of measure</option>
-                    <option value="lb">lb</option>
-                    <option value="kg">kg</option>
-                </select>
-            </div>
         </div>
 
 

@@ -17,6 +17,7 @@ from urllib.parse import quote, unquote
 import os
 import stripe
 from markupsafe import Markup
+import json
 
 
 
@@ -544,7 +545,9 @@ def user_requests():
     if request.method == 'POST':
         # If the user wants to get a shipping label with their test.
         lab_name = request.form['lab_name']
+        test_name = request.form['test_name']
         session['lab_name_for_shipping_label'] = lab_name
+        session['test_name_for_shipping_label'] = test_name
         return redirect(url_for('views.shipping'))
        
     else:   
@@ -835,8 +838,6 @@ def shipping():
             "email": email
             }
 
-
-
         lab_name = session.get('lab_name_for_shipping_label')
         lab = labs.query.filter_by(name = lab_name).first()
         formatted_phone = f"{lab.phone[:2]} {lab.phone[2:5]} {lab.phone[5:8]} {lab.phone[8:]}"
@@ -853,25 +854,19 @@ def shipping():
             "phone": formatted_phone
         }
 
-
-
         length = request.form['length']
         width = request.form['width']
         height = request.form['height']
-        distance_units = request.form['distance_units']
         weight = request.form['weight']
-        weight_units = request.form['weight_units']
 
         parcel = {
             "length": length,
             "width": width,
             "height": height,
-            "distance_unit": distance_units,
+            "distance_unit": 'in',
             "weight": weight,
-            "mass_unit": weight_units
+            "mass_unit": 'lb'
             }
-
-
 
         shipment = shippo.Shipment.create(
             address_from = address_from,
@@ -880,35 +875,17 @@ def shipping():
             asynchronous = False
             )
 
-
         rates = shipment.rates
         sorted_rates = sorted(rates, key=lambda resp: float(resp['amount']))
+     
+        lab_name = session.get('lab_name_for_shipping_label')
+        test_name = session.get('test_name_for_shipping_label')
 
-
-
-        # transaction = shippo.Transaction.create(
-        #     rate=selected_rate_object_id, asynchronous=False)
-        
-
-        # # print the shipping label from label_url
-        # # Get the tracking number from tracking_number
-        # ##### "transacation.label_url" is the url that will take the user
-        # # to the shipping label.
-        # if transaction.status == "SUCCESS":
-        #     print("Purchased label with tracking number %s" %
-        #         transaction.tracking_number)
-        #     print("The label can be downloaded at %s" % transaction.label_url)
-        # else:
-        #     print("Failed purchasing the label due to:")
-        #     for message in transaction.messages:
-        #         print("- %s" % message['text'])
-        
         return render_template('shipping_rates.html',
                                user = current_user,
-                               rates = sorted_rates)
-
-        #return render_template('label.html', label_url = label_url)
-
+                               rates = sorted_rates,
+                               lab_name = lab_name,
+                               test_name = test_name)
 
 
     lab_name = session.get('lab_name_for_shipping_label')
@@ -924,53 +901,139 @@ def shipping():
 
 
 
+
+
+
+
+
+
+
+
 @views.route('/checkout/<string:lab_name>/<string:test_name>', methods=['GET', 'POST'])
+@login_required
 def checkout(lab_name, test_name):
     if request.method == 'POST':
         lab_object = labs.query.filter_by(name = lab_name).first()
-        print(lab_object)
         lab_id = lab_object.id
 
         test_object = tests.query.filter_by(name = test_name).first()
-        print(test_object)
         test_id = test_object.id
 
-        row_in_labs_tests = labs_tests.query.filter_by(lab_id = lab_id,
-                                           test_id = test_id).first()
+        row_in_labs_tests = labs_tests.query.filter_by(lab_id = lab_id, 
+                                                       test_id = test_id) \
+                                                       .first()
         price = row_in_labs_tests.price
-        stripe_price = round(price * 100)
+        stripe_price = int(price * 100)
 
         stripe.api_key = os.getenv('stripe_secret_key')
 
-        session = stripe.checkout.Session.create(
-            payment_method_types = ['card'],
-            line_items = [{
-                'price_data': {
-                    'currency': 'usd',
-                    'unit_amount': stripe_price,
-                    'product_data': {
-                        'name': test_name,
+        # Check if the user is getting a shipping label
+        label_purchase = request.form['label_purchase']
+
+        if label_purchase == 'yes':
+            selected_rate_object = json.loads(request.form.get('selected_rate'))
+            session['selected_rate_object'] = selected_rate_object
+
+            stripe_session = stripe.checkout.Session.create(
+                payment_method_types = ['card'],
+                line_items = [
+                    {'price_data': {
+                            'currency': 'usd',
+                            'unit_amount': stripe_price,
+                            'product_data': {
+                                'name': test_name,
+                                },
+                            }, 'quantity': 1,
+                        },
+
+                    {'price_data': {
+                            'currency': 'usd',
+                            'unit_amount': int(float(selected_rate_object['amount']) * 100),
+                            'product_data': {
+                                'name': 'Shipping label - ' + selected_rate_object['provider'],
+                                },
+                            }, 'quantity': 1,
+                        }
+                ],
+                mode = 'payment',
+                success_url = url_for('views.success',
+                                      _external = True, 
+                                      label_purchase = label_purchase
+                                      ),
+                cancel_url = url_for('views.index', 
+                                     _external = True
+                                     )
+            )
+
+            session['stripe_session'] = stripe_session
+            return redirect(stripe_session.url) # Goes to 'views.success'
+
+        
+        else: # If the user is not purchasing a label.
+            stripe_session = stripe.checkout.Session.create(
+                payment_method_types = ['card'],
+                line_items = [{
+                    'price_data': {
+                        'currency': 'usd',
+                        'unit_amount': stripe_price,
+                        'product_data': {
+                            'name': test_name,
+                        },
                     },
-                },
-                'quantity': 1,
-            }],
-            mode = 'payment',
-            success_url = url_for('views.success', _external = True) + '?session_id={CHECKOUT_SESSION_ID}',
-            cancel_url = url_for('views.index', _external = True)
-        )
-        return redirect(session.url)
+                    'quantity': 1,
+                }],
+                mode = 'payment',
+                success_url = url_for('views.success', _external = True),
+                cancel_url = url_for('views.index', _external = True)
+            )
+            session['stripe_session'] = stripe_session
+            return redirect(stripe_session.url)
+
 
 
 @views.route('/order/success')
+@login_required
 def success():
-    session_id = request.args.get('session_id')
-    session = stripe.checkout.Session.retrieve(session_id)
-    if session.payment_status == 'paid':
-        # Payment was successful, show success page
-        return render_template('order_success.html')
+    stripe_session = session.get('stripe_session')
+    stripe.checkout.Session.retrieve(stripe_session.id)
+    # The docs: https://stripe.com/docs/api/checkout/sessions/retrieve
+
+    if stripe_session.payment_status == 'paid':
+        print(stripe_session.payment_status)
+        label_purchase = request.args.get('label_purchase')
+        if label_purchase == 'yes':
+            selected_rate_object = session.get('selected_rate_object')
+
+            transaction = shippo.Transaction.create(rate=selected_rate_object.object_id, 
+                                                    asynchronous=False
+                                                    )
+
+            if transaction.status == "SUCCESS":
+                return render_template('order_success.html',
+                                        user = current_user,
+                                        transaction = transaction,
+                                        label_purchase = label_purchase
+                                        )
+            else:
+                error_message_list = []
+                for message in transaction.messages:
+                    error_message_list.append(message)
+                    return render_template('order_error.html', 
+                                           user = current_user,
+                                           transaction = transaction,
+                                           error_message_list = error_message_list)
+
+        else:
+            # If the user did not get a label.
+            return render_template('order_success.html',
+                                    user = current_user
+                                    )
+    
     else:
+        print(stripe_session.payment_status)
         # Payment was not successful, show error page
-        return render_template('order_error.html')
+        return render_template('order_error.html',
+                               user = current_user)
 
 
 

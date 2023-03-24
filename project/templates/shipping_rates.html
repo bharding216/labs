@@ -29,8 +29,10 @@
                     <td class="text-center">{{ rate.estimated_days }}</td>
 
                     <td> 
-                        <form>
-                            <input type="submit" class="btn btn-primary my-1" value="Choose Lab">
+                        <form action="{{ url_for('views.checkout', lab_name = lab_name, test_name = test_name) }}" method="POST">
+                            <input type="hidden" name="selected_rate" value="{{ rate }}">
+                            <input type="hidden" name="label_purchase" value="yes" >
+                            <input type="submit" class="btn btn-primary my-1" value="Select">
                         </form>
                     </td>
                 </tr>

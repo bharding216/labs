@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Order Successfully Placed | Unified Science Labs{% endblock %}
+{% block title %}Order Confirmation | Unified Science Labs{% endblock %}
 
 {% block content %}
 
@@ -22,9 +22,29 @@
     {% endwith %}
 </div>
 
-<h3>Order success page</h3>
 
-<h3>Ask the user to subscribe to our newsletter</h3>
 
+<div class="container my-5">
+
+    <h3>Everything looks good, {{ user.first_name }}!</h3>
+
+    {% if label_purchase == 'yes' %}
+
+    <p>
+        Follow this URL to download your shipping label: {{ transaction.label_url }}
+    </p>
+    <p>
+        Here is the tracking number for your shipment: {{ transaction.tracking_number }}
+    </p>
+
+</div>
+
+<div class="row align-items-center">
+    <div class="col-12">
+        <a href="{{ url_for('views.index') }}">
+            <button type="button" class="btn btn-primary">Return to homepage</button>
+        </a>                        
+    </div>
+</div>
 
 {% endblock %}
