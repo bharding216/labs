@@ -43,11 +43,25 @@
                 
                 <h1 class="mb-5" style="color: white;">Get Exclusive Access to the Latest Lab Testing Breakthroughs</h1>
 
-                <a class="btn btn-primary mx-auto btn-lg" 
-                href="#" role="button"
-                style="width:auto">
-                I'm in
-                </a>
+                <form action="{{ url_for('views.new_email_subscriber') }}" method="POST">
+                    <div class="row justify-content-center mb-4">
+                        <div class="col-8 col-md-6 col-lg-4">
+                            <input type="text" class="form-control" id="subscriber_email_input" name="subscriber_email_input"
+                                placeholder="{{ user.email }}" value="{{ user.email }}">
+                        </div>
+                    </div>
+
+                    <div class="row justify-content-center">
+                        <div class="col-4 col-md-2">
+                            <input type="submit" class="btn btn-primary" value="I'm in">
+                        </div>
+                    </div>
+
+
+                </form>
+
+
+
 
             </div>
         </div>

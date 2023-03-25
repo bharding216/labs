@@ -271,11 +271,14 @@ def returning_user_login():
 @login_required
 def returning_user_booking():
     selected_lab_id = session.get('selected_lab_id')
+    selected_test = session.get('selected_test')
+
     with db.session() as db_session:
         lab_choice = db_session.query(labs).get_or_404(selected_lab_id)
         return render_template('returning_user_booking.html', 
                                 user = current_user,
-                                lab_choice = lab_choice)
+                                lab_choice = lab_choice,
+                                selected_test = selected_test)
 
 
 
@@ -371,6 +374,18 @@ def confirmation_returning_user():
                                 user = current_user
                                 )
 
+
+
+@views.route('/new_email_subscriber', methods=['GET', 'POST'])
+@login_required
+def new_email_subscriber():
+    if request.method == 'POST':
+        # The logic to add the user's email to the 'email_subscribers' db table.
+
+        flash("You're in! You should receive a confirmation email shortly.", 'success')
+        return render_template('index.html', 
+                                user = current_user
+                                )
 
 
 
