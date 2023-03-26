@@ -11,6 +11,7 @@ import os
 from helpers import my_enumerate, generate_sitemap
 from dotenv import load_dotenv
 import datetime
+import stripe
 
 
 
@@ -22,6 +23,8 @@ mail = Mail()
 def create_app():
     app = Flask(__name__)
 
+    app.config['STRIPE_PUBLIC_KEY'] = os.getenv('stripe_public_key')
+    app.config['STRIPE_SECRET_KEY'] = os.getenv('stripe_secret_key')
 
     load_dotenv()
     # Create my_enumerate function and make it available globally.
@@ -106,7 +109,7 @@ def create_app():
 
         db.create_all()
 
-        login_manager.login_view = "auth.returning_user_login"
+        login_manager.login_view = "views.returning_user_login"
         login_manager.login_message = ""
         login_manager.login_message_category = "error"
         login_manager.init_app(app)

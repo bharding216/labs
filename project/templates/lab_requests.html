@@ -112,7 +112,7 @@
                         <form action="{{ url_for('views.upload') }}" method="POST" enctype="multipart/form-data">
                             <div>
                                 <input type="hidden" name="id" value="{{ lab_request.request_id }}">
-                                <input class="form-control form-control-sm" id="formFileSm" type="file" name="file">
+                                <input class="form-control form-control-sm" id="formFileSm" type="file" name="file" multiple>
                                 <input type="submit" class="btn btn-reversed my-1" value="Upload">
                             </div>
                         </form>

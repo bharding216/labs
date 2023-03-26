@@ -16,4 +16,5 @@ PyYAML==6.0
 requests==2.27.1
 shippo==2.1.2
 SQLAlchemy==1.4.39
+stripe==5.2.0
 Werkzeug==2.2.2
