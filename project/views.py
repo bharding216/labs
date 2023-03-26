@@ -897,6 +897,11 @@ def shipping():
             )
 
         rates = shipment.rates
+
+        # Set your shipping label markup here:
+        for rate in rates:
+            rate.amount *= 1.15
+
         sorted_rates = sorted(rates, key=lambda resp: float(resp['amount']))
      
         lab_name = session.get('lab_name_for_shipping_label')
@@ -1020,7 +1025,7 @@ def success():
     stripe.checkout.Session.retrieve(stripe_session.id)
     # The docs: https://stripe.com/docs/api/checkout/sessions/retrieve
 
-    if stripe_session.payment_status == 'unpaid':
+    if stripe_session.payment_status == 'paid':
         label_purchase = request.args.get('label_purchase')
         if label_purchase == 'yes':
             selected_rate_object = session.get('selected_rate_object')
