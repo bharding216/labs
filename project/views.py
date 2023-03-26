@@ -2,7 +2,8 @@ from flask import Blueprint, render_template, request, redirect, flash, url_for,
     session, send_file, jsonify, make_response, Response, send_from_directory
 from sqlalchemy import func
 from flask_login import login_required, current_user, login_user
-from project.models import tests, labs, labs_tests, individuals_login, labs_login, test_requests
+from project.models import tests, labs, labs_tests, individuals_login, labs_login, test_requests, \
+    email_subscribers
 import datetime
 from flask_mail import Message
 from . import db, mail
@@ -380,12 +381,17 @@ def confirmation_returning_user():
 @login_required
 def new_email_subscriber():
     if request.method == 'POST':
-        # The logic to add the user's email to the 'email_subscribers' db table.
+        subscriber_email_input = request.form['subscriber_email_input']
 
-        flash("You're in! You should receive a confirmation email shortly.", 'success')
-        return render_template('index.html', 
-                                user = current_user
-                                )
+        email_to_add = email_subscribers(email = subscriber_email_input)
+        with db.session() as db_session:
+            db_session.add(email_to_add)
+            db_session.commit()
+
+            flash("You're in! You should receive a confirmation email shortly.", 'success')
+            return render_template('index.html', 
+                                    user = current_user
+                                    )
 
 
 
@@ -1014,7 +1020,7 @@ def success():
     stripe.checkout.Session.retrieve(stripe_session.id)
     # The docs: https://stripe.com/docs/api/checkout/sessions/retrieve
 
-    if stripe_session.payment_status == 'paid':
+    if stripe_session.payment_status == 'unpaid':
         label_purchase = request.args.get('label_purchase')
         if label_purchase == 'yes':
             selected_rate_object = session.get('selected_rate_object')

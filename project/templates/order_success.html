@@ -26,7 +26,7 @@
 
 <div class="container my-5">
 
-    <h3>Everything looks good, {{ user.first_name }}!</h3>
+    <h3 class="mb-4">Everything looks good, {{ user.first_name }}!</h3>
 
     {% if label_purchase == 'yes' %}
     <p>
@@ -40,11 +40,11 @@
     <p>You should receive a confirmation email shortly with instructions for next steps.</p>
 
     <p>
-        The email we have on file for you is: <b>{{ user.email }}</b>. If this is not correct, 
+        The email we have on file for you is <b>{{ user.email }}</b>. If this is not correct, 
         please <a href="{{ url_for('contact.contact_function') }}">contact us</a>.
     </p>
 
-    <div class="row align-items-center">
+    <div class="row align-items-center mt-5">
         <div class="col-12">
             <a href="{{ url_for('views.index') }}">
                 <button type="button" class="btn btn-primary">Return to homepage</button>
@@ -52,6 +52,36 @@
         </div>
     </div>
 
+
+</div>
+
+<div style="background-image:linear-gradient(#11296b, #1e96fc);">
+    <div class="container py-5">
+        <div class="row" style="height: 300px">
+            <div class="col-md-12 text-center d-flex flex-column justify-content-center"> 
+                
+                <h1 class="mb-5" style="color: white;">Get Exclusive Access to the Latest Lab Testing Breakthroughs</h1>
+
+                <form action="{{ url_for('views.new_email_subscriber') }}" method="POST">
+                    <div class="row justify-content-center mb-4">
+                        <div class="col-8 col-md-6 col-lg-4">
+                            <input type="text" class="form-control" id="subscriber_email_input" name="subscriber_email_input"
+                                placeholder="{{ user.email }}" value="{{ user.email }}">
+                        </div>
+                    </div>
+
+                    <div class="row justify-content-center">
+                        <div class="col-4 col-md-2">
+                            <input type="submit" class="btn btn-primary" value="I'm in">
+                        </div>
+                    </div>
+
+
+                </form>
+                
+            </div>
+        </div>
+    </div>
 </div>
 
 {% endblock %}
