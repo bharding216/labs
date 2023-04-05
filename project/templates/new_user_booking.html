@@ -94,6 +94,17 @@
             <label for="sample_description">Sample description</label>
         </div>
 
+        <div class="form-floating mb-2 col-md-4 col-lg-3">
+            <input type="number" class="form-control" id="sample-number-input" 
+                name="sample-number-input" placeholder="Number of Samples" value="1">
+            <label for="sample-number-input">Number of Samples</label>
+        </div>
+
+        <p class="mb-3">
+            Note: Please only include samples that will be mailed together. Create a separate request 
+            for samples that you intend to mail separately.
+        </p>
+
         <div class="form-floating mb-5 col-md-12 col-lg-8">
             <textarea style="height: 100px;" class="form-control" name="extra_requirements"
                 placeholder="Your specific testing requirements" value="{{ extra_requirements }}"></textarea>

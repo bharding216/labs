@@ -60,6 +60,7 @@ class individuals_login(db.Model, UserMixin):
 class test_requests(db.Model):
     request_id = db.Column(db.Integer, primary_key=True)
     requestor_id = db.Column(db.Integer, db.ForeignKey('individuals_login.id'), nullable=False)
+    number_of_samples = db.Column(db.Integer)
     sample_description = db.Column(db.String(16000000))
     extra_requirements = db.Column(db.String(16000000))
     test_name = db.Column(db.String(100), nullable=False)

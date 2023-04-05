@@ -28,6 +28,7 @@
             <tr>
                 <th class="text-center align-middle" scope="col">Test Name</th>
                 <th class="text-center align-middle" scope="col">Sample Description</th>
+                <th class="text-center align-middle" scope="col"># of Samples</th>
                 <th class="text-center align-middle" scope="col">Additional Notes</th>
                 <th class="text-center align-middle" scope="col">Lab Name</th>
                 <th class="text-center align-middle" scope="col" style="width: 15%;">Date/Time Submitted</th>
@@ -41,6 +42,7 @@
                 <tr>
                     <td class="text-center align-middle">{{ my_request.test_name }}</td>
                     <td class="text-center align-middle">{{ my_request.sample_description }}</td>
+                    <td class="text-center align-middle">{{ my_request.number_of_samples }}</td>                    
                     <td class="text-center align-middle">{{ my_request.extra_requirements }}</td>
                     <td class="text-center align-middle">{{ name }}</td>
                     <td class="text-center align-middle">{{ my_request.datetime_submitted }}</td>
@@ -52,11 +54,13 @@
                             <form action="{{ url_for('views.user_requests') }}" method="POST">
                                 <input type="hidden" name="lab_name" value="{{ name }}">
                                 <input type="hidden" name="test_name" value="{{ my_request.test_name }}">
+                                <input type="hidden" name="number_of_samples" value="{{ my_request.number_of_samples }}">
                                 <input type="submit" class="btn btn-primary mt-3 mb-1 btn-sm" value="Buy Shipping Label & Test">
                             </form>
 
                             <form action="{{ url_for('views.checkout', lab_name = name, test_name = my_request.test_name) }}" method="POST">
                                 <input type="hidden" name="label_purchase" value="no">
+                                <input type="hidden" name="number_of_samples" value="{{ my_request.number_of_samples }}">
                                 <input type="submit" class="btn btn-primary mb-3 mt-1 btn-sm" value="Purchase Test Only">
                             </form>
 

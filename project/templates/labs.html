@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}USL | Provider Results{% endblock %}
+{% block title %}Unified Science Labs | Provider Results{% endblock %}
 
 {% block head %}
 {% endblock %}
@@ -12,13 +12,14 @@
     <br>
     <p>Here is a list of labs in your area that can perform this test: 
         <b>{{ selected_test }}</b>
-
     </p>
+
+    <p>All prices are <i>per sample</i>.</p>
 </div>
 
 
 
-<div class="container py-5" style="overflow-x: auto;">
+<div class="container pb-5 pt-3" style="overflow-x: auto;">
     <table class="mx-auto" id="lab_choice_table">
         <thead>
             <tr>
@@ -38,7 +39,7 @@
             {% for row, distance in combined_data %}
             <tr>
                 <td class="text-center">{{ row.name }}</td>
-                <td class="text-center">{{ row.price }}</td>
+                <td class="text-center" data-bs-toggle="tooltip" data-bs-placement="right" title="Tooltip text">{{ row.price }}</td>
                 <td class="text-center">{{ row.turnaround }}</td>
                 <td class="text-center">{{ distance }}</td>
                 <td class="text-center">{{ row.city }}</td>
@@ -63,8 +64,8 @@
 
 
 <script>
-
-
+const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 </script>
 
 

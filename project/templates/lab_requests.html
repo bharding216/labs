@@ -46,6 +46,7 @@
                 <th class="text-center" scope="col" style="width: 10%;">Test Name</th>
                 <th class="text-center" scope="col" style="width: 15%;">Date/Time Submitted</th>
                 <th class="text-center" scope="col" style="width: 10%;">Sample Description</th>
+                <th class="text-center" scope="col" style="width: 4%;"># of Samples</th>
                 <th class="text-center" scope="col" style="width: 15%;">Extra Notes</th>
                 <th class="text-center" scope="col" style="width: 3%;">Approval Status</th>
                 <th class="text-center" scope="col" style="width: 5%;">Edit Approval Status</th>
@@ -63,6 +64,7 @@
                     <td class="text-center">{{ lab_request.test_name }}</td>
                     <td class="text-center">{{ lab_request.datetime_submitted }}</td>
                     <td class="text-center">{{ lab_request.sample_description }}</td>
+                    <td class="text-center">{{ lab_request.number_of_samples }}</td>
                     <td class="text-center">{{ lab_request.extra_requirements }}</td>
                     <td class="text-center">{{ lab_request.approval_status }}</td>
 

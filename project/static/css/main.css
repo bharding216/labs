@@ -15,6 +15,14 @@ PEACH: #FFCBA4
   position: unset !important;
 }
 
+.tooltip {
+  display: none;
+}
+
+.tooltip-trigger {
+  cursor: pointer;
+}
+
 
 .wrapper {
   min-height: 100vh;

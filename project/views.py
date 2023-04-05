@@ -157,11 +157,13 @@ def new_user_booking():
         phone = request.form['phone']
         password = request.form['password']
         sample_description = request.form['sample_description']
+        number_of_samples = request.form['sample-number-input']
         extra_requirements = request.form['extra_requirements']
 
         session['first_name'] = first_name
         session['sample_description'] = sample_description
         session['extra_requirements'] = extra_requirements
+        session['number_of_samples'] = number_of_samples
 
         # If the phone number string has 10 characters, add '+1' to make it 
         # in the correct format for `phonenumbers`. 
@@ -263,8 +265,6 @@ def returning_user_login():
                                         user = current_user, 
                                         email = email)
 
-    #return render_template('returning_user_login.html', user = current_user)
-
 
 
 
@@ -290,6 +290,7 @@ def confirmation_new_user():
     first_name = session.get('first_name', None)
     sample_description = session.get('sample_description')
     extra_requirements = session.get('extra_requirements')
+    number_of_samples = session.get('number_of_samples')
 
     selected_lab_name = session.get('selected_lab_name')
     with db.session() as db_session:
@@ -306,6 +307,7 @@ def confirmation_new_user():
 
         # Save the testing info to the requests table.
         new_request = test_requests(sample_description = sample_description,
+                                    number_of_samples = number_of_samples,
                                     extra_requirements = extra_requirements,
                                     test_name = selected_test,
                                     lab_id = lab_id,
@@ -323,7 +325,8 @@ def confirmation_new_user():
                                 selected_test = selected_test,
                                 first_name = first_name,
                                 lab_choice = lab_choice,
-                                user = current_user
+                                user = current_user,
+                                number_of_samples = number_of_samples
                                 )
 
 
@@ -333,6 +336,7 @@ def confirmation_returning_user():
     if request.method == 'POST':
         sample_description = request.form['sample_description']
         extra_requirements = request.form['extra_requirements']
+        number_of_samples = request.form['sample-number-input']
 
         selected_test = session.get('selected_test')
         selected_lab_id = session.get('selected_lab_id')
@@ -354,6 +358,7 @@ def confirmation_returning_user():
 
             # Save the testing info to the test_requests db table.
             new_request = test_requests(sample_description = sample_description,
+                                        number_of_samples = number_of_samples,
                                         extra_requirements = extra_requirements,
                                         test_name = selected_test,
                                         approval_status = 'Pending',
@@ -372,7 +377,8 @@ def confirmation_returning_user():
                                 selected_test = selected_test,
                                 first_name = name,
                                 lab_choice = lab_choice,
-                                user = current_user
+                                user = current_user,
+                                number_of_samples = number_of_samples
                                 )
 
 
@@ -567,8 +573,12 @@ def user_requests():
         # If the user wants to get a shipping label with their test.
         lab_name = request.form['lab_name']
         test_name = request.form['test_name']
+        number_of_samples = request.form['number_of_samples']
+
         session['lab_name_for_shipping_label'] = lab_name
         session['test_name_for_shipping_label'] = test_name
+        session['number_of_samples_for_shipping_label'] = number_of_samples
+
         return redirect(url_for('views.shipping'))
        
     else:   
@@ -911,7 +921,8 @@ def shipping():
                                user = current_user,
                                rates = sorted_rates,
                                lab_name = lab_name,
-                               test_name = test_name)
+                               test_name = test_name
+                               )
 
 
     lab_name = session.get('lab_name_for_shipping_label')
@@ -959,6 +970,7 @@ def checkout(lab_name, test_name):
         if label_purchase == 'yes':
             selected_rate_object = json.loads(request.form.get('selected_rate'))
             session['selected_rate_object'] = selected_rate_object
+            number_of_samples = session.get('number_of_samples_for_shipping_label')
 
             stripe_session = stripe.checkout.Session.create(
                 payment_method_types = ['card'],
@@ -969,7 +981,7 @@ def checkout(lab_name, test_name):
                             'product_data': {
                                 'name': test_name,
                                 },
-                            }, 'quantity': 1,
+                            }, 'quantity': number_of_samples,
                         },
 
                     {'price_data': {
@@ -996,6 +1008,8 @@ def checkout(lab_name, test_name):
 
         
         else: # If the user is not purchasing a label.
+            number_of_samples = request.form['number_of_samples']
+
             stripe_session = stripe.checkout.Session.create(
                 payment_method_types = ['card'],
                 line_items = [{
@@ -1006,7 +1020,7 @@ def checkout(lab_name, test_name):
                             'name': test_name,
                         },
                     },
-                    'quantity': 1,
+                    'quantity': number_of_samples,
                 }],
                 mode = 'payment',
                 success_url = url_for('views.success', _external = True),
