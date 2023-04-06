@@ -910,7 +910,7 @@ def shipping():
 
         # Set your shipping label markup here:
         for rate in rates:
-            rate.amount *= 1.15
+            rate.amount = round(float(rate.amount) * 1.15, 2)
 
         sorted_rates = sorted(rates, key=lambda resp: float(resp['amount']))
      
