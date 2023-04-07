@@ -74,3 +74,10 @@ class test_requests(db.Model):
 class email_subscribers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(200))
+
+class test_results(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    request_id = db.Column(db.Integer)
+    lab_id = db.Column(db.Integer)
+    date_time_stamp = db.Column(db.String(45))
+    filename = db.Column(db.String(150))

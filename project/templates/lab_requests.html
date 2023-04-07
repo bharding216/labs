@@ -52,8 +52,7 @@
                 <th class="text-center" scope="col" style="width: 5%;">Edit Approval Status</th>
                 <th class="text-center" scope="col" style="width: 5%;">Payment Status</th>
                 <th class="text-center" scope="col" style="width: 4%;">Transit Status</th>
-                <th class="text-center" scope="col" style="width: 25%;">Upload Results (PDF)</th>
-                <th class="text-center" scope="col" style="width: 5%;">Download Results</th>
+                <th class="text-center" scope="col" style="width: 5%;">Manage Results</th>
             </tr>
         </thead>
 
@@ -108,28 +107,13 @@
                     <td class="text-center">{{ lab_request.transit_status }}</td>
 
 
-                    <!-- Upload test results -->
+                    <!-- Manage test results -->
                     <td class="text-center">
-
-                        <form action="{{ url_for('views.upload') }}" method="POST" enctype="multipart/form-data">
-                            <div>
-                                <input type="hidden" name="id" value="{{ lab_request.request_id }}">
-                                <input class="form-control form-control-sm" id="formFileSm" type="file" name="file" multiple>
-                                <input type="submit" class="btn btn-reversed my-1" value="Upload">
-                            </div>
+                        <form action="{{ url_for('views.manage_results') }}" method="POST">
+                            <input type="hidden" name="test_name" value="{{ lab_request.test_name }}">
+                            <input type="hidden" name="request_id" value="{{ lab_request.request_id }}">
+                            <input type="submit" class="btn btn-primary my-1" value="Select">
                         </form>
-
-
-                    </td>
-
-                    <td class="text-center align-items-center">
-                    {% if lab_request.results %}
-                        <a href="{{ url_for('views.download', request_id=lab_request.request_id) }}"
-                            class="btn btn-primary my-1">Download</a>
-                    
-                    {% else %}
-                        <p>No results uploaded</p>  
-                    {% endif %}                    
                     </td>
 
                 </tr>

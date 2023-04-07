@@ -1,9 +1,9 @@
 from flask import Blueprint, render_template, request, redirect, flash, url_for, \
-    session, send_file, jsonify, make_response, Response, send_from_directory
+    session, send_file, jsonify, make_response, Response, send_from_directory, current_app
 from sqlalchemy import func
 from flask_login import login_required, current_user, login_user
 from project.models import tests, labs, labs_tests, individuals_login, labs_login, test_requests, \
-    email_subscribers
+    email_subscribers, test_results
 import datetime
 from flask_mail import Message
 from . import db, mail
@@ -19,8 +19,7 @@ import os
 import stripe
 from markupsafe import Markup
 import json
-
-
+import uuid
 
 
 views = Blueprint('views', __name__)
@@ -472,7 +471,6 @@ def lab_requests():
 
 
 
-
 @views.route('/submit_details', methods = ['GET', 'POST'])
 @login_required
 def submit_details():
@@ -522,44 +520,81 @@ def submit_details():
 
 
 
+@views.route('/manage_results', methods = ['GET', 'POST'])
+@login_required
+def manage_results():
+    test_name = request.form['test_name']
+    request_id = request.form['request_id']
+
+    with db.session() as db_session:
+        test_results_query = db_session.query(test_results) \
+                                       .filter(test_results.request_id == request_id) \
+                                        .all()
+
+    return render_template('manage_results.html',
+                           user = current_user,
+                           test_name = test_name,
+                           request_id = request_id,
+                           test_results_query = test_results_query)
 
 
 
 @views.route('/upload', methods = ['GET', 'POST'])
 @login_required
 def upload():
-    if request.method == 'POST':
-        request_id = request.form['id']
-        file = request.files['file']
-        if file:
-            file_data = file.read()
-
-            db.session.query(test_requests).filter_by(request_id = request_id).update({'results': file_data})
-            db.session.commit()
-            db.session.close()
-            flash('File was successfully uploaded!', 'success')
-            return redirect(url_for('views.lab_requests'))
-        else:
-            flash('There was an error handling your upload.', 'error')
-            return redirect(url_for('views.lab_requests'))
-
-
-
-
-@views.route('/download/<int:request_id>')
-def download(request_id):
-    result = db.session.query(test_requests).filter_by(request_id=request_id).first()
-
-    if result:
-        file_data = result.results
-
-        response = Response(file_data, mimetype='application/octet-stream')
-        response.headers.set('Content-Disposition', 'attachment', filename='results.pdf')
-        return response
+    file = request.files['file']
+    request_id = request.form['request_id']
+    lab_user_id = current_user.id
+    now = datetime.datetime.now()
+    date_time_stamp = now.strftime("%m-%d-%Y-%H-%M-%S")
     
-    else:
-        flash("Error: Request not found or no results available.", "error")
-        return redirect(url_for("views.lab_requests"))
+    UPLOAD_FOLDER = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'uploads')
+    upload_dir = os.path.join(UPLOAD_FOLDER, str(lab_user_id), str(request_id), date_time_stamp)
+    os.makedirs(upload_dir, exist_ok=True)
+
+    filename = str(uuid.uuid4())
+    filepath = os.path.join(upload_dir, filename)
+    file.save(filepath)
+
+    new_metadata_record = {
+        'request_id': request_id,
+        'lab_id': lab_user_id,
+        'date_time_stamp': date_time_stamp,
+        'filename': filename
+    }
+
+    with db.session() as db_session:
+        test_result = test_results(**new_metadata_record)
+        db_session.add(test_result)
+        db_session.commit()
+
+    flash('File uploaded successfully', 'success')
+    return redirect(url_for('views.lab_requests'))
+
+
+
+
+@views.route('/download', methods = ['GET', 'POST'])
+@login_required
+def download():
+    flash('You clicked the download button', 'success')
+    return redirect(url_for('views.lab_requests'))
+
+
+
+
+
+
+
+@views.route('/delete', methods = ['GET', 'POST'])
+@login_required
+def delete():
+    flash('You clicked the delete button', 'success')
+    return redirect(url_for('views.lab_requests'))
+
+
+
+
 
 
 

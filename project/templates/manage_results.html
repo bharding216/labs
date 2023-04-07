@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Your Requests | Unified Science Labs{% endblock %}
+
+
+{% block head %}
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="pb-5">
+        <a class="btn btn-primary mx-auto" 
+            href="{{ url_for('views.lab_requests') }}" role="button"
+            style="width: auto">
+            Back to all requests
+        </a>
+    </div>
+
+
+    <div>
+    <p>You are editing Request #{{ request_id }} for your {{ test_name }} test.</p>
+
+    <h1 class="pb-3">Upload Results</h1>
+
+    <form action="{{ url_for('views.upload') }}" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="request_id" value="{{ request_id }}">
+        <input type="hidden" name="test_name" value="{{ test_name }}">
+        <input type="file" name="file">
+        <input type="submit" value="Upload">
+    </form>
+    </div>
+
+
+    <div class="pt-5">
+        <h1 class="pb-3">View Results</h1>
+
+        <table>
+            <th class="text-center">Filename</th>
+            <th class="text-center">Download</th>
+            <th class="text-center">Delete</th>
+            {% for record in test_results_query %}
+            <tr>
+                <td>{{ record.filename }}</td>
+
+                <td>
+                    <form action="{{ url_for('views.download') }}" method="POST">
+                        <input type="hidden" name="request_id" value="{{ request_id }}">
+                        <input type="hidden" name="filename" value="{{ filename }}">
+                        <input type="submit" value="Download">
+                    </form>
+                </td>
+
+                <td>
+                    <form action="{{ url_for('views.delete') }}" method="POST">
+                        <input type="hidden" name="request_id" value="{{ request_id }}">
+                        <input type="hidden" name="filename" value="{{ filename }}">
+                        <input type="submit" value="Delete">
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+
+</div>
+
+{% endblock %}
+
