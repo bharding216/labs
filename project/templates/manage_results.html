@@ -23,7 +23,7 @@
     <div>
     <p>You are editing Request #{{ request_id }} for your {{ test_name }} test.</p>
 
-    <h1 class="pb-3">Upload Results</h1>
+    <h1 class="pb-3">Upload Results (PDF Only)</h1>
 
     <form action="{{ url_for('views.upload') }}" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="request_id" value="{{ request_id }}">
@@ -48,7 +48,7 @@
                 <td>
                     <form action="{{ url_for('views.download') }}" method="POST">
                         <input type="hidden" name="request_id" value="{{ request_id }}">
-                        <input type="hidden" name="filename" value="{{ filename }}">
+                        <input type="hidden" name="filename" value="{{ record.filename }}">
                         <input type="submit" value="Download">
                     </form>
                 </td>
@@ -56,7 +56,7 @@
                 <td>
                     <form action="{{ url_for('views.delete') }}" method="POST">
                         <input type="hidden" name="request_id" value="{{ request_id }}">
-                        <input type="hidden" name="filename" value="{{ filename }}">
+                        <input type="hidden" name="filename" value="{{ record.filename }}">
                         <input type="submit" value="Delete">
                     </form>
                 </td>

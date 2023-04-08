@@ -529,7 +529,7 @@ def manage_results():
     with db.session() as db_session:
         test_results_query = db_session.query(test_results) \
                                        .filter(test_results.request_id == request_id) \
-                                        .all()
+                                       .all()
 
     return render_template('manage_results.html',
                            user = current_user,
@@ -577,11 +577,22 @@ def upload():
 @views.route('/download', methods = ['GET', 'POST'])
 @login_required
 def download():
-    flash('You clicked the download button', 'success')
-    return redirect(url_for('views.lab_requests'))
+    request_id = request.form['request_id']
+    filename = request.form['filename']
+    lab_user_id = current_user.id
 
+    with db.session() as db_session:
+        date_time_stamp = db_session.query(test_results.date_time_stamp) \
+            .filter(test_results.filename == filename) \
+            .scalar()
 
+    UPLOAD_FOLDER = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'uploads')
+    upload_dir = os.path.join(UPLOAD_FOLDER, str(lab_user_id), str(request_id), str(date_time_stamp))
 
+    # Force download as a PDF.
+    response = make_response(send_from_directory(upload_dir, filename, as_attachment=True, mimetype='application/pdf'))
+    response.headers["Content-Disposition"] = f"attachment; filename={filename}.pdf"
+    return response
 
 
 
@@ -589,7 +600,29 @@ def download():
 @views.route('/delete', methods = ['GET', 'POST'])
 @login_required
 def delete():
-    flash('You clicked the delete button', 'success')
+    request_id = request.form['request_id']
+    filename = request.form['filename']
+    lab_user_id = current_user.id
+
+    with db.session() as db_session:
+        result = db_session.query(test_results) \
+            .filter(test_results.filename == filename) \
+            .first()
+        date_time_stamp = result.date_time_stamp
+        file_id = result.id
+
+    UPLOAD_FOLDER = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'uploads')
+    upload_dir = os.path.join(UPLOAD_FOLDER, str(lab_user_id), str(request_id), str(date_time_stamp))
+
+    os.remove(os.path.join(upload_dir, filename))
+    os.rmdir(upload_dir)
+
+    with db.session() as db_session:
+        obj = db_session.query(test_results).get(file_id)
+        db_session.delete(obj)
+        db_session.commit()
+    
+    flash('File deleted successfully', 'success')
     return redirect(url_for('views.lab_requests'))
 
 
