@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Request - Confirmation</title>
+</head>
+
+<body>
+    <h1>Hey {{ first_name }}! Thanks for placing your request with Unified Labs.</h1>
+
+    <hr>
+
+    <h2>Your Request Info</h2>
+
+        <ul>
+            <li><strong>Lab Name:</strong> {{ lab_name }}</li>
+            <li><strong>Test Name:</strong> {{ selected_test }}</li>
+            <li><strong>Number of Samples:</strong> {{ number_of_samples }}</li>
+            <li><strong>Sample Description:</strong> {{ sample_description }}</li>
+            <li><strong>Extra Requirements:</strong> {{ extra_requirements }}</li>
+            <li><strong>Approval Status:</strong> {{ approval_status }}</li>
+        </ul>
+
+    <hr>
+
+    <p>We'll get back to you via email once the lab approves your request.</p>
+
+    <p>Sent from Unified Science Labs LLC (https://www.unifiedsl.com)</p>
+</body>
+</html>

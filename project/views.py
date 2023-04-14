@@ -313,7 +313,7 @@ def confirmation_new_user():
                                     approval_status = 'Pending',
                                     requestor_id = current_user_id,
                                     payment_status = 'Not Paid',
-                                    transit_status = 'Not Shippied',
+                                    transit_status = 'Not Shipped',
                                     datetime_submitted = date_to_string
                                     )
 
@@ -343,13 +343,15 @@ def confirmation_returning_user():
         with db.session() as db_session:
             lab_choice = db_session.query(labs).get_or_404(selected_lab_id)
             lab_id = lab_choice.id
+            lab_name = lab_choice.name
 
             # May not need this code block. On the HTML page, you could probably just use 
             # {{ user.first_name }} to get the first name (assuming you pass 'user = current_user'
             # to the HTML template).
             current_user_id = current_user.id
             logged_in_user = db_session.query(individuals_login).filter_by(id = current_user_id).first()
-            name = logged_in_user.first_name
+            first_name = logged_in_user.first_name
+            user_email = logged_in_user.email
 
             submitted_datetime = datetime.datetime.now()
             formatted_date = submitted_datetime.strftime("%Y-%m-%d %H:%M:%S")
@@ -364,7 +366,7 @@ def confirmation_returning_user():
                                         lab_id = lab_id,
                                         requestor_id = current_user_id,
                                         payment_status = 'Not Paid',
-                                        transit_status = 'Not Shippied',
+                                        transit_status = 'Not Shipped',
                                         datetime_submitted = date_to_string
                                         )
 
@@ -372,9 +374,31 @@ def confirmation_returning_user():
             db.session.add(new_request)
             db.session.commit()
 
+
+            # Send a confirmation email.
+            msg = Message("We've received your lab testing request",
+                sender = ("Brandon from USL", 'hello@unifiedsl.com'),
+                recipients = ['team@unifiedsl.com',
+                              user_email
+                              ]
+                )
+        
+            msg.html = render_template('returning_user_request_confirmation.html',
+                                    first_name = first_name,
+                                    lab_name = lab_name,
+                                    selected_test = selected_test,
+                                    number_of_samples = number_of_samples,
+                                    sample_description = sample_description,
+                                    extra_requirements = extra_requirements,
+                                    approval_status = 'Pending'
+                                    )
+
+            mail.send(msg)
+
+            # Lastly, render the 'request confirmation' page. 
             return render_template('confirmation.html', 
                                 selected_test = selected_test,
-                                first_name = name,
+                                first_name = first_name,
                                 lab_choice = lab_choice,
                                 user = current_user,
                                 number_of_samples = number_of_samples
@@ -1095,6 +1119,15 @@ def checkout(lab_name, test_name):
                 cancel_url = url_for('views.index', _external = True)
             )
             session['stripe_session'] = stripe_session
+
+
+            # Send receipt to the customer
+            # customer_email = current_user.email
+            # receipt_url = stripe_session.payment_intent.receipt_url
+            # send_receipt_email(customer_email, receipt_url)
+
+
+
             return redirect(stripe_session.url)
 
 
