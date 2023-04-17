@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Request Status Has Been Changed</title>
+</head>
+
+<body>
+    <h1>Hey {{ first_name }}! Your request status has been updated by {{ lab_name }}.</h1>
+
+    <hr>
+
+    <h2>Your Request Info</h2>
+
+        <ul>
+            <li><mark><strong>Approval Status:</strong> {{ approval_status }}</mark></li>
+
+            {% if approval_status == 'Need more details' %}
+            <li><mark><strong>Lab's Response:</strong> {{ new_details }}</mark></li>
+            {% endif %}
+
+            <li><strong>Lab Name:</strong> {{ lab_name }}</li>
+            <li><strong>Test Name:</strong> {{ selected_test }}</li>
+            <li><strong>Request ID:</strong> {{ request_id }}</li>
+            <li><strong>Number of Samples:</strong> {{ number_of_samples }}</li>
+            <li><strong>Sample Description:</strong> {{ sample_description }}</li>
+            <li><strong>Extra Requirements:</strong> {{ extra_requirements }}</li>
+        </ul>
+
+    <hr>
+
+    <p>Please log in to manage your request: https://www.unifiedsl.com/auth/individual</p>
+
+    <p>Sent from Unified Science Laboratories LLC (https://www.unifiedsl.com)</p>
+</body>
+</html>

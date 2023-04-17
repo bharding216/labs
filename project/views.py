@@ -222,6 +222,7 @@ def new_user_booking():
             flash('New account successfully created.', category = 'success')
             return redirect(url_for('views.confirmation_new_user'))
 
+    # Handle GET request
     else:
         selected_lab_name = session.get('selected_lab_name')
         with db.session() as db_session:
@@ -298,8 +299,11 @@ def confirmation_new_user():
             .scalar()
         lab_choice = labs.query.get_or_404(selected_lab_id)
         lab_id = lab_choice.id
+        lab_name = lab_choice.name
+        lab_email = lab_choice.email
 
         current_user_id = current_user.id
+        user_email = current_user.email
         submitted_datetime = datetime.datetime.now()
         formatted_date = submitted_datetime.strftime("%Y-%m-%d %H:%M:%S")
         date_to_string = str(formatted_date)
@@ -320,6 +324,51 @@ def confirmation_new_user():
         db.session.add(new_request)
         db.session.commit()
 
+        new_request_id = new_request.request_id
+
+        # Send a confirmation email to the customer.
+        msg = Message("We've received your lab testing request",
+            sender = ("Unified Science Labs", 'team@unifiedsl.com'),
+            recipients = ['team@unifiedsl.com',
+                            user_email
+                            ]
+            )
+    
+        msg.html = render_template('request_confirmation_email.html',
+                                first_name = first_name,
+                                lab_name = lab_name,
+                                selected_test = selected_test,
+                                number_of_samples = number_of_samples,
+                                sample_description = sample_description,
+                                extra_requirements = extra_requirements,
+                                approval_status = 'Pending',
+                                new_request_id = new_request_id
+                                )
+
+        mail.send(msg)
+
+        # Send an email to the lab notifying them of the new request.
+        msg = Message("You've received a new request",
+            sender = ("Unified Science Labs", 'team@unifiedsl.com'),
+            recipients = ['team@unifiedsl.com',
+                            lab_email
+                            ]
+            )
+    
+        msg.html = render_template('lab_request_email_notification.html',
+                                lab_name = lab_name,
+                                selected_test = selected_test,
+                                number_of_samples = number_of_samples,
+                                sample_description = sample_description,
+                                extra_requirements = extra_requirements,
+                                approval_status = 'Pending',
+                                new_request_id = new_request_id
+                                )
+
+        mail.send(msg)
+
+
+        # Lastly, render the 'request confirmation' page. 
         return render_template('confirmation.html', 
                                 selected_test = selected_test,
                                 first_name = first_name,
@@ -344,6 +393,7 @@ def confirmation_returning_user():
             lab_choice = db_session.query(labs).get_or_404(selected_lab_id)
             lab_id = lab_choice.id
             lab_name = lab_choice.name
+            lab_email = lab_choice.email
 
             # May not need this code block. On the HTML page, you could probably just use 
             # {{ user.first_name }} to get the first name (assuming you pass 'user = current_user'
@@ -374,26 +424,50 @@ def confirmation_returning_user():
             db.session.add(new_request)
             db.session.commit()
 
+            new_request_id = new_request.request_id
 
-            # Send a confirmation email.
+            # Send a confirmation email to the customer.
             msg = Message("We've received your lab testing request",
-                sender = ("Brandon from USL", 'hello@unifiedsl.com'),
+                sender = ("Unified Science Labs", 'team@unifiedsl.com'),
                 recipients = ['team@unifiedsl.com',
                               user_email
                               ]
                 )
         
-            msg.html = render_template('returning_user_request_confirmation.html',
+            msg.html = render_template('request_confirmation_email.html',
                                     first_name = first_name,
                                     lab_name = lab_name,
                                     selected_test = selected_test,
                                     number_of_samples = number_of_samples,
                                     sample_description = sample_description,
                                     extra_requirements = extra_requirements,
-                                    approval_status = 'Pending'
+                                    approval_status = 'Pending',
+                                    new_request_id = new_request_id
                                     )
 
             mail.send(msg)
+
+            # Send an email to the lab notifying them of the new request.
+            msg = Message("You've received a new request",
+                sender = ("Unified Science Labs", 'team@unifiedsl.com'),
+                recipients = ['team@unifiedsl.com',
+                                lab_email
+                                ]
+                )
+        
+            msg.html = render_template('lab_request_email_notification.html',
+                                    lab_name = lab_name,
+                                    selected_test = selected_test,
+                                    number_of_samples = number_of_samples,
+                                    sample_description = sample_description,
+                                    extra_requirements = extra_requirements,
+                                    approval_status = 'Pending',
+                                    new_request_id = new_request_id
+                                    )
+
+            mail.send(msg)
+
+
 
             # Lastly, render the 'request confirmation' page. 
             return render_template('confirmation.html', 
@@ -435,16 +509,68 @@ def lab_requests():
 
                 if action == 'approve':
                     status = 'Approved'
+
+                # you can probably remove this elif and else part
                 elif action == 'deny':
                     status = 'Need more details'
                 else:
                     status = None
         
+
                 if status:
                     with db.session() as db_session:
                         db_session.query(test_requests).filter_by(request_id = request_id).update({'approval_status': status})
                         db.session.commit()
                     
+
+
+
+
+                        request_object = db_session.query(test_requests) \
+                                            .filter_by(request_id = request_id) \
+                                            .first()
+                        if request_object:    
+                            selected_test = request_object.test_name
+                            number_of_samples = request_object.number_of_samples
+                            sample_description = request_object.sample_description
+                            extra_requirements = request_object.extra_requirements
+                            lab = db_session.query(labs) \
+                                    .filter_by(id = request_object.lab_id) \
+                                    .first()
+                            lab_name = lab.name
+
+                            individual_id = request_object.requestor_id
+                            individual = db_session.query(individuals_login) \
+                                            .filter_by(id = individual_id).first()
+                            first_name = individual.first_name
+                            user_email = individual.email
+
+
+                    # Send an email to the customer letting them know 
+                    # that the provider is requesting additional details.
+                    msg = Message("Test Request Approved",
+                        sender = ("Unified Science Labs", 'team@unifiedsl.com'),
+                        recipients = ['team@unifiedsl.com',
+                                        user_email
+                                        ]
+                        )
+                
+                    msg.html = render_template('request_status_changed_email.html',
+                                            first_name = first_name,
+                                            lab_name = lab_name,
+                                            selected_test = selected_test,
+                                            number_of_samples = number_of_samples,
+                                            sample_description = sample_description,
+                                            extra_requirements = extra_requirements,
+                                            approval_status = 'Approved',
+                                            request_id = request_id
+                                            )
+
+                    mail.send(msg)
+
+
+
+
                     flash('Status updated successfully', 'success')
                 else:
                     flash('Invalid action.', 'error')
@@ -461,6 +587,11 @@ def lab_requests():
             except Exception as e:
                 flash('An error occurred: ' + str(e), 'error')
                 return redirect(url_for('views.lab_requests'))
+
+
+
+
+
 
         # Handle any exceptions that might occur when retrieving the lab information 
         # and test requests from the database. It catches any AttributeError exceptions 
@@ -508,39 +639,65 @@ def submit_details():
         # uses indexing to access the first (and only) value in this list 
         # (list(my_list[0].values())[0]), which is the string "7". This 
         # value is then assigned to the variable value and printed out.
-        request_id = list(data[0].values())[0]
+        request_id_from_ajax = list(data[0].values())[0]
         new_details = list(data[2].values())[0]
         status = 'Need more details'
 
         with db.session() as db_session:
             db_session.query(test_requests) \
-                .filter_by(request_id = request_id) \
-                .update({'approval_status': status})
+                .filter_by(request_id = request_id_from_ajax) \
+                .update({'approval_status': status,
+                         'labs_response': new_details
+                         })
             db_session.commit()
 
-        # SEND AN EMAIL TO THE CUSTOMER
+            request_object = db_session.query(test_requests) \
+                                .filter_by(request_id = request_id_from_ajax) \
+                                .first()
+            if request_object:    
+                selected_test = request_object.test_name
+                number_of_samples = request_object.number_of_samples
+                sample_description = request_object.sample_description
+                extra_requirements = request_object.extra_requirements
+                lab = db_session.query(labs) \
+                        .filter_by(id = request_object.lab_id) \
+                        .first()
+                lab_name = lab.name
+
+                individual_id = request_object.requestor_id
+                individual = db_session.query(individuals_login) \
+                                .filter_by(id = individual_id).first()
+                first_name = individual.first_name
+                user_email = individual.email
+
+
+        # Send an email to the customer letting them know 
+        # that the provider is requesting additional details.
+        msg = Message("Order On Hold: Additional Details Needed",
+            sender = ("Unified Science Labs", 'team@unifiedsl.com'),
+            recipients = ['team@unifiedsl.com',
+                            user_email
+                            ]
+            )
+    
+        msg.html = render_template('request_status_changed_email.html',
+                                first_name = first_name,
+                                lab_name = lab_name,
+                                selected_test = selected_test,
+                                number_of_samples = number_of_samples,
+                                sample_description = sample_description,
+                                extra_requirements = extra_requirements,
+                                approval_status = 'Need more details',
+                                new_details = new_details,
+                                request_id = request_id_from_ajax
+                                )
+
+        mail.send(msg)
 
         return data
     
-    # THIS CAN PROBABLY BE REMOVED
-    # Handle GET requests
-    # else:
-    #     lab_info_id = labs_login.query.filter_by(id = current_user.id).first().lab_id # this is an integer type
-    #     lab_requests = test_requests.query.filter_by(lab_id = lab_info_id).all() # this is a list type
 
-    #     request_dicts = []
-    #     for each in lab_requests:
-    #         request_dict = {
-    #             'test_name': each.test_name,
-    #             'sample_name': each.sample_name,
-    #             'sample_description': each.sample_description,
-    #             'turnaround': each.turnaround,
-    #             'status': each.status
-    #         }
-    #         request_dicts.append(request_dict)
 
-    #     json_data = jsonify(request_dicts)
-    #     return json_data
 
 
 
@@ -685,6 +842,109 @@ def user_requests():
                                     user = current_user,
                                     my_requests = my_requests
                                     )
+
+
+
+@views.route("/user_more_details", methods=['GET', 'POST'])
+@login_required
+def user_more_details():
+    if request.method == 'POST':
+        request_id = request.form['request_id']
+        labs_response = request.form['labs_response']
+        extra_requirements = request.form['extra_requirements']
+        lab_name = request.form['lab_name']
+        return render_template('user_more_details.html',
+                               user = current_user,
+                               labs_response = labs_response,
+                               extra_requirements = extra_requirements,
+                               lab_name = lab_name,
+                               request_id = request_id)
+
+
+@views.route("/update_request", methods=['GET', 'POST'])
+@login_required
+def update_request():
+    if request.method == 'POST':
+        request_id = request.form['request_id']
+        extra_requirements = request.form['extra_requirements']
+
+        with db.session() as db_session:
+            db_session.query(test_requests) \
+                .filter_by(request_id = request_id) \
+                .update({'extra_requirements': extra_requirements})
+            db_session.commit()
+
+            request_object = db_session.query(test_requests) \
+                                .filter_by(request_id = request_id) \
+                                .first()
+            if request_object:    
+                selected_test = request_object.test_name
+                number_of_samples = request_object.number_of_samples
+                sample_description = request_object.sample_description
+                extra_requirements = request_object.extra_requirements
+                labs_response = request_object.labs_response
+                lab = db_session.query(labs) \
+                        .filter_by(id = request_object.lab_id) \
+                        .first()
+                lab_name = lab.name
+                lab_email = lab.email
+
+                individual_id = request_object.requestor_id
+                individual = db_session.query(individuals_login) \
+                                .filter_by(id = individual_id).first()
+                first_name = individual.first_name
+                user_email = individual.email
+
+
+        # Send an email to the customer with their updated request info.
+        msg = Message("New Details Added To Request",
+            sender = ("Unified Science Labs", 'team@unifiedsl.com'),
+            recipients = ['team@unifiedsl.com',
+                            user_email
+                            ]
+            )
+    
+        msg.html = render_template('request_details_updated_email_to_customer.html',
+                                    first_name = first_name,
+                                    lab_name = lab_name,
+                                    selected_test = selected_test,
+                                    number_of_samples = number_of_samples,
+                                    sample_description = sample_description,
+                                    extra_requirements = extra_requirements,
+                                    approval_status = 'Need more details',
+                                    new_details = extra_requirements,
+                                    request_id = request_id,
+                                    labs_response = labs_response
+                                    )
+
+        mail.send(msg)
+
+        # Send an email to the lab notifying them of the new request.
+        msg = Message("A Request Has Been Updated",
+            sender = ("Unified Science Labs", 'team@unifiedsl.com'),
+            recipients = ['team@unifiedsl.com',
+                            lab_email
+                            ]
+            )
+    
+        msg.html = render_template('request_details_updated_email_to_lab.html',
+                                    lab_name = lab_name,
+                                    selected_test = selected_test,
+                                    number_of_samples = number_of_samples,
+                                    sample_description = sample_description,
+                                    extra_requirements = extra_requirements,
+                                    approval_status = 'Pending',
+                                    request_id = request_id,
+                                    labs_response = labs_response
+                                    )
+
+        mail.send(msg)
+
+
+        flash("Your request has been successfully updated! We've notified \
+              the lab, and we will get back to you via email shortly.", 'success')
+
+        return redirect(url_for('views.user_requests'))
 
 
 @views.route("/customer_settings", methods=['GET', 'POST'])

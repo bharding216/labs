@@ -99,6 +99,17 @@ p, .nav-link, .btn-primary, .footer,
   color:black;
 }
 
+.btn-more-details {
+  color: white;
+  background-color: red;
+  border-color: black;
+}
+
+.btn-more-details:hover {
+  color: white;
+  background-color: #11296b;
+  border-color: #11296b;
+}
 
 .footer {
   background-color: #1E96FC;
@@ -158,8 +169,9 @@ p, .nav-link, .btn-primary, .footer,
     width: 600px;
   }
 
+
   #lab_requests_table {
-    width: 1200px;
+    width: 1500px;
   }
 
   #user_requests_table {
@@ -194,8 +206,9 @@ p, .nav-link, .btn-primary, .footer,
     width: 600px;
   }
 
+
   #lab_requests_table {
-    width: 1200px;
+    width: 1500px;
   }
 
   #user_requests_table {
@@ -234,8 +247,9 @@ p, .nav-link, .btn-primary, .footer,
     width: 700px;
   }
 
+
   #lab_requests_table {
-    width: 1200px;
+    width: 1500px;
   }
 
   #user_requests_table {
@@ -288,8 +302,9 @@ p, .nav-link, .btn-primary, .footer,
     width: 1000px;
   }
 
+
   #lab_requests_table {
-    width: 1200px;
+    width: 1500px;
   }
 
   #user_requests_table {

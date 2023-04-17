@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Provide More Details | Unified Science Labs{% endblock %}
+
+{% block content %}
+
+<div class="container my-5">
+    {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+            {% for category, message in messages %}
+                {% if category == 'success' %}
+                    <div class="alert alert-success mx-5" role="alert">
+                        {{ message }}
+                    </div>
+                {% else %}
+                    <div class="alert alert-danger mx-5" role="alert">
+                        {{ message }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <div class="container mt-5">
+        <div class="row mb-5">
+            <div class="col">
+                <h2>Please add more details to your request</h2>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <h4>{{ lab_name }}'s Response:</h4>
+                <p><i>{{ labs_response }}</i></p>
+            </div>
+        </div>
+    </div>
+    
+    
+    <div class="container my-5">
+
+        <form action="{{ url_for('views.update_request') }}" method="POST">
+                
+            <div class="form-floating mb-4 col-md-8 col-lg-6">
+
+                <textarea class="form-control" name="extra_requirements" 
+                placeholder="Customer's Response" 
+                style="height: 150px">{{ extra_requirements }}</textarea>
+
+                <label for="extra_requirements">Customer's Response</label>
+
+            </div>
+
+            <input type="hidden" name="request_id" value="{{ request_id }}">
+            <input type="submit" class="btn btn-primary" value="Send your response">
+    
+        </form>
+    
+    </div>
+
+{% endblock %}

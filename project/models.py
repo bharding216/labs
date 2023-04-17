@@ -70,6 +70,7 @@ class test_requests(db.Model):
     payment_status = db.Column(db.String(10))
     transit_status = db.Column(db.String(100))
     datetime_submitted = db.Column(DateTime)
+    labs_response = db.Column(db.String(16000000))
 
 class email_subscribers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
