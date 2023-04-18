@@ -823,10 +823,12 @@ def user_requests():
         lab_name = request.form['lab_name']
         test_name = request.form['test_name']
         number_of_samples = request.form['number_of_samples']
+        request_id = request.form['request_id']
 
         session['lab_name_for_shipping_label'] = lab_name
         session['test_name_for_shipping_label'] = test_name
         session['number_of_samples_for_shipping_label'] = number_of_samples
+        session['request_id'] = request_id
 
         return redirect(url_for('views.shipping'))
        
@@ -1326,6 +1328,7 @@ def checkout(lab_name, test_name):
 
             stripe_session = stripe.checkout.Session.create(
                 payment_method_types = ['card'],
+                invoice_creation={"enabled": True}, # https://stripe.com/docs/payments/checkout/post-payment-invoices
                 line_items = [
                     {'price_data': {
                             'currency': 'usd',
@@ -1361,9 +1364,13 @@ def checkout(lab_name, test_name):
         
         else: # If the user is not purchasing a label.
             number_of_samples = request.form['number_of_samples']
+            request_id = request.form['request_id']
+            session['request_id'] = request_id
+
 
             stripe_session = stripe.checkout.Session.create(
                 payment_method_types = ['card'],
+                invoice_creation={"enabled": True}, # https://stripe.com/docs/payments/checkout/post-payment-invoices
                 line_items = [{
                     'price_data': {
                         'currency': 'usd',
@@ -1380,15 +1387,7 @@ def checkout(lab_name, test_name):
             )
             session['stripe_session'] = stripe_session
 
-
-            # Send receipt to the customer
-            # customer_email = current_user.email
-            # receipt_url = stripe_session.payment_intent.receipt_url
-            # send_receipt_email(customer_email, receipt_url)
-
-
-
-            return redirect(stripe_session.url)
+            return redirect(stripe_session.url) # Goes to views.success
 
 
 
@@ -1411,6 +1410,54 @@ def success():
                                                     )
 
             if transaction.status == "SUCCESS":
+
+                # Send an email notification to the lab
+                request_id = session.get('request_id')
+
+                with db.session() as db_session:
+                    db_session.query(test_requests) \
+                        .filter_by(request_id = request_id) \
+                        .update({'payment_status': 'Paid',
+                                 'transit_status': 'In Transit'})
+                    db_session.commit()
+
+                    request_object = db_session.query(test_requests) \
+                                        .filter_by(request_id = request_id) \
+                                        .first()
+                    if request_object:    
+                        selected_test = request_object.test_name
+                        number_of_samples = request_object.number_of_samples
+                        sample_description = request_object.sample_description
+                        extra_requirements = request_object.extra_requirements
+                        payment_status = request_object.payment_status
+                        approval_status = request_object.approval_status
+                        lab = db_session.query(labs) \
+                                .filter_by(id = request_object.lab_id) \
+                                .first()
+                        lab_name = lab.name
+                        lab_email = lab.email
+
+
+                msg = Message("Payment Completed",
+                    sender = ("Unified Science Labs", 'team@unifiedsl.com'),
+                    recipients = ['team@unifiedsl.com',
+                                    lab_email
+                                    ]
+                    )
+            
+                msg.html = render_template('successful_payment_email_to_lab.html',
+                                            lab_name = lab_name,
+                                            selected_test = selected_test,
+                                            number_of_samples = number_of_samples,
+                                            sample_description = sample_description,
+                                            extra_requirements = extra_requirements,
+                                            approval_status = approval_status,
+                                            payment_status = payment_status,
+                                            request_id = request_id
+                                            )
+
+                mail.send(msg)
+
                 return render_template('order_success.html',
                                         user = current_user,
                                         transaction = transaction,
@@ -1426,7 +1473,54 @@ def success():
                                            error_message_list = error_message_list)
 
         else:
-            # If the user chose not to buy a label.
+            # If the user chose not to buy a label, just take them to the success page.
+
+            # Send an email notification to the lab
+            request_id = session.get('request_id')
+
+            with db.session() as db_session:
+                db_session.query(test_requests) \
+                    .filter_by(request_id = request_id) \
+                    .update({'payment_status': 'Paid'})
+                db_session.commit()
+
+                request_object = db_session.query(test_requests) \
+                                    .filter_by(request_id = request_id) \
+                                    .first()
+                if request_object:    
+                    selected_test = request_object.test_name
+                    number_of_samples = request_object.number_of_samples
+                    sample_description = request_object.sample_description
+                    extra_requirements = request_object.extra_requirements
+                    payment_status = request_object.payment_status
+                    approval_status = request_object.approval_status
+                    lab = db_session.query(labs) \
+                            .filter_by(id = request_object.lab_id) \
+                            .first()
+                    lab_name = lab.name
+                    lab_email = lab.email
+
+
+            msg = Message("Payment Completed",
+                sender = ("Unified Science Labs", 'team@unifiedsl.com'),
+                recipients = ['team@unifiedsl.com',
+                                lab_email
+                                ]
+                )
+        
+            msg.html = render_template('successful_payment_email_to_lab.html',
+                                        lab_name = lab_name,
+                                        selected_test = selected_test,
+                                        number_of_samples = number_of_samples,
+                                        sample_description = sample_description,
+                                        extra_requirements = extra_requirements,
+                                        approval_status = approval_status,
+                                        payment_status = payment_status,
+                                        request_id = request_id
+                                        )
+
+            mail.send(msg)
+
             return render_template('order_success.html',
                                     user = current_user
                                     )

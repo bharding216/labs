@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Successful Payment</title>
+</head>
+
+<body>
+    <h1>Hey {{ lab_name }}! A new test has been paid for.</h1>
+
+    <hr>
+
+    <h2>Test Request Info</h2>
+
+        <ul>
+            <li><strong>Test Name:</strong> {{ selected_test }}</li>
+            <li><strong>Request ID:</strong> {{ request_id }}</li>
+            <li><strong>Number of Samples:</strong> {{ number_of_samples }}</li>
+            <li><strong>Sample Description:</strong> {{ sample_description }}</li>
+            <li><strong>Customer Notes:</strong> {{ extra_requirements }}</li>
+            <li><strong>Approval Status:</strong> {{ approval_status }}</li>
+            <li><strong>Payment Status:</strong> {{ payment_status }}</li>
+        </ul>
+
+    <hr>
+
+    <p>Once testing is complete, please log in to upload your results: https://www.unifiedsl.com/auth/lab.</p>
+
+    <p>Sent from Unified Science Laboratories LLC (https://www.unifiedsl.com)</p>
+</body>
+</html>

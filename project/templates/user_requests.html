@@ -32,7 +32,7 @@
                 <th class="text-center align-middle" scope="col">Request ID</th>
                 <th class="text-center align-middle" scope="col">Sample Description</th>
                 <th class="text-center align-middle" scope="col"># of Samples</th>
-                <th class="text-center align-middle" scope="col">Customer Notes</th>
+                <th class="text-center align-middle" scope="col" style="width: 30%">Customer Notes</th>
                 <th class="text-center align-middle" scope="col">Lab Name</th>
                 <th class="text-center align-middle" scope="col" style="width: 15%;">Date/Time Submitted</th>
                 <th class="text-center align-middle" scope="col">Purchase</th>
@@ -73,12 +73,14 @@
                                 <input type="hidden" name="lab_name" value="{{ name }}">
                                 <input type="hidden" name="test_name" value="{{ my_request.test_name }}">
                                 <input type="hidden" name="number_of_samples" value="{{ my_request.number_of_samples }}">
+                                <input type="hidden" name="request_id" value="{{ my_request.request_id }}">
                                 <input type="submit" class="btn btn-primary mt-3 mb-1 btn-sm" value="Buy Shipping Label & Test">
                             </form>
 
                             <form action="{{ url_for('views.checkout', lab_name = name, test_name = my_request.test_name) }}" method="POST">
                                 <input type="hidden" name="label_purchase" value="no">
                                 <input type="hidden" name="number_of_samples" value="{{ my_request.number_of_samples }}">
+                                <input type="hidden" name="request_id" value="{{ my_request.request_id }}">
                                 <input type="submit" class="btn btn-primary mb-3 mt-1 btn-sm" value="Purchase Test Only">
                             </form>
 
