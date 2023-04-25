@@ -76,14 +76,17 @@ def lab_contact():
                                    phone = phone,
                                    user_message = user_message,
                                    customer_type = 'Provider')
+        try:
+            mail.send(msg)
 
-        mail.send(msg)
+            return render_template('lab_contact_success.html',
+                                user = current_user,
+                                first_name = first_name,
+                                lab_name = lab_name
+                                )
 
-        return render_template('lab_contact_success.html',
-                               user = current_user,
-                               first_name = first_name,
-                               lab_name = lab_name
-                               )
+        except Exception as e:
+            return str(e)
 
     return render_template('lab_contact.html', 
                            user = current_user)
