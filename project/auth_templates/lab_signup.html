@@ -18,57 +18,81 @@
 
 <div class="container my-5">
 
-    <h1>Lab Signup Form</h1>
+    <h3>Lab Sign Up Form</h3>
 
     <br>
 
     <form action="{{ url_for('auth.lab_signup') }}" method="POST">
-        <div class="form-floating mb-3 col-md-8 col-lg-6">
+        <div class="form-floating mb-4 col-md-8 col-lg-6">
             <input type="text" class="form-control" id="name" name="name"
                 placeholder="Name">
             <label for="name">Company Name</label>
         </div>
 
-        <div class="form-floating mb-3 col-md-8 col-lg-6">
+        <div class="form-floating mb-4 col-md-8 col-lg-6">
             <input type="email" class="form-control" id="email" name="email"
                 placeholder="Email">
             <label for="email">Email</label>
         </div>
 
-        <div class="form-floating mb-3 col-md-8 col-lg-6">
+        <div class="form-floating mb-4 col-md-8 col-lg-6">
             <input type="tel" class="form-control" name="phone" id="phone" 
-                placeholder="Phone Number" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" maxlength="12"/> 
+                placeholder="Phone Number" maxlength="12"/> 
             <label for="phone">Phone Number</label>
-            <p class="mx-1"><small>Format: 123-456-7890</small></p>
         </div>
 
+        <div class="form-floating mb-4 col-md-8 col-lg-6">
+            <input type="text" class="form-control" name="street_address_1" id="street_address_1" 
+                placeholder="Street Address 1"/> 
+            <label for="street_address_1">Street Address 1</label>
+        </div>
 
-        <div class="form-floating mb-3 col-md-8 col-lg-6">
+        <div class="form-floating mb-4 col-md-8 col-lg-6">
+            <input type="text" class="form-control" name="street_address_2" id="street_address_2" 
+                placeholder="Street Address 2"/> 
+            <label for="street_address_2">Street Address 2</label>
+        </div>
+
+        <div class="form-floating mb-4 col-md-8 col-lg-6">
+            <input type="text" class="form-control" name="city" id="city" 
+                placeholder="City"/> 
+            <label for="city">City</label>
+        </div>
+
+        <div class="form-floating mb-4 col-md-8 col-lg-6">
+            <input type="text" class="form-control" name="state" id="state" 
+                placeholder="State"/> 
+            <label for="state">State</label>
+        </div>
+
+        <div class="form-floating mb-4 col-md-8 col-lg-6">
+            <input type="text" class="form-control" name="zip" id="zip" 
+                placeholder="Zip Code"/> 
+            <label for="zip">Zip Code</label>
+        </div>
+
+        <div class="form-floating mb-4 col-md-8 col-lg-6">
+            <input type="text" class="form-control" name="poc" id="poc" 
+                placeholder="Business Point of Contact"/> 
+            <label for="poc">Business Point of Contact</label>
+        </div>
+
+        <div class="form-floating mb-4 col-md-8 col-lg-6">
             <input type="text" class="form-control" name="password1"
                 placeholder="Password">
             <label for="password1">Password</label>
         </div>
 
-        <div class="form-floating mb-3 col-md-8 col-lg-6">
+        <div class="form-floating mb-4 col-md-8 col-lg-6">
             <input type="text" class="form-control" name="password2"
-                placeholder="Password">
-            <label for="password2">Password</label>
+                placeholder="Confirm Password">
+            <label for="password2">Confirm Password</label>
         </div>
 
-
-
-
-        <button type="submit" class="btn btn-outline-primary">Submit</button>
+        <button type="submit" class="btn btn-primary">Submit</button>
     </form>
   
 </div>
-
-
-
-
-
-
-
 
 
 

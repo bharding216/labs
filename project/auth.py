@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-from .models import individuals_login, labs_login
+from .models import individuals_login, labs_login, labs
 import datetime
 from . import db
 from flask_login import login_user, logout_user, login_required, current_user
@@ -70,23 +70,53 @@ def lab_signup():
         lab_name = request.form['name']
         lab_email = request.form['email']
         lab_phone = request.form['phone']
+        street_address_1 = request.form['street_address_1']
+        street_address_2 = request.form['street_address_2']
+        city = request.form['city']
+        state = request.form['state']
+        zip_code = request.form['zip']
+        poc = request.form['poc']
         password1 = request.form['password1']
         password2 = request.form['password2']
 
         if password1 != password2:
-            flash('Passwords do not match.', category='error')
+            flash('Passwords do not match. Please try again.', category='error')
 
         else:
             hashed_password = generate_password_hash(password1)
-            new_lab = labs_login(lab_name = lab_name,
-                                 password = hashed_password,
-                                 phone = lab_phone, 
-                                 email = lab_email,
-                                 type = 'lab'
-                                 )
-            db.session.add(new_lab)
+
+            # Add the new record in 'labs' and commit.
+            # Get the 'id' of the record you just created.
+            # Add the new record in 'labs_login' and use 
+            # the id of the record you just created in 'labs'.
+            # Commit once more for the 'labs_login' changes.
+            # This is done to ensure you're using the same id (lab_id)
+            # in both tables. 
+
+            new_lab_details = labs(name = lab_name,
+                                   phone = lab_phone,
+                                   street_address_1 = street_address_1,
+                                   street_address_2 = street_address_2,
+                                   city = city,
+                                   state = state,
+                                   zip_code = zip_code,
+                                   point_of_contact = poc
+                                   )
+            db.session.add(new_lab_details)
             db.session.commit()
-            flash('Lab successfully added to database.', category='success')
+
+            new_lab_id = new_lab_details.id
+
+            new_lab_login = labs_login(password = hashed_password,
+                                       email = lab_email,
+                                       type = 'lab',
+                                       lab_id = new_lab_id
+                                       )
+
+            db.session.add(new_lab_login)
+            db.session.commit()
+
+            flash('New lab account successfully created!', category='success')
             return redirect(url_for('views.index'))
 
     return render_template('lab_signup.html', user=current_user)

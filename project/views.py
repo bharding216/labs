@@ -1550,40 +1550,51 @@ def privacy_policy():
 
 
 
-@views.route("/reset_password", methods=["GET", "POST"])
-def reset_password_request():
+@views.route("/reset_password_request/<string:user_type>", methods=['GET', 'POST'])
+def reset_password_request(user_type):
     if request.method == "POST":
         email = request.form.get("email")
-        session['email'] = email
-        user = individuals_login.query.filter_by(email=email).first()
+        
+        if user_type == 'individual':
+            user = individuals_login.query.filter_by(email=email).first()
+        else: # user_type is 'lab'
+            user = labs_login.query.filter_by(email=email).first()
+
         if user:
             current_time = datetime.datetime.now().time()
             current_time_str = current_time.strftime('%H:%M:%S')
-            with open('project/db.yaml', 'r') as file:
-                test = yaml.load(file, Loader=yaml.FullLoader)
 
-            s = URLSafeSerializer(test['secret_key'])
-            # dumps => take in a list and create a serialize it into a string representation.
-            # returns a string representation of the data - encoded using the secret key.
+            s = URLSafeSerializer(os.getenv('secret_key'))
+
+            # 'dumps' takes a list as input and serializes it into a string representation.
+            # This returns a string representation of the data - encoded using your secret key.
             token = s.dumps([email, current_time_str])
 
-            reset_password_url = url_for('views.reset_password', token = token, _external=True)
+            reset_password_url = url_for('views.reset_password', 
+                                          token = token, 
+                                          _external=True
+                                          )
 
-            msg = Message('New Password Request', 
-                sender = 'hello@carbonfree.dev', 
-                recipients = ['bharding@carbonfree.cc'],
+            msg = Message('Password Reset Request', 
+                sender = ("Unified Science Labs", 'hello@unifiedsl.com'),
+                recipients = [email],
                 body=f'Reset your password by visiting the following link: {reset_password_url}')
 
             mail.send(msg) 
-            flash('Email successfully sent.', category = 'success')
+            flash('Success! We sent you an email containing a link where you can reset your password.', category = 'success')
+            return redirect(url_for('views.index'))
 
         else:
-            flash('That email does not exist in our system.', category = 'error')
-            return redirect(url_for('views.reset_password_request'))
-        return redirect(url_for('views.reset_password_request'))
+            flash('That email does not exist in our system. Please try again.', category = 'error')
+            return redirect(url_for('views.reset_password_request',
+                                     user_type = user_type,
+                                     user = current_user
+                                     )
+                            )
     
     else:
         return render_template("reset_password_form.html", 
+                               user_type = user_type,
                                user = current_user)
 
 
@@ -1594,30 +1605,29 @@ def reset_password_request():
 def reset_password(token):
     if request.method == "POST":
 
-        with open('project/db.yaml', 'r') as file:
-            test = yaml.load(file, Loader=yaml.FullLoader)
-
-        s = URLSafeSerializer(test['secret_key'])
-        
-        original_email = session.get('email')
+        s = URLSafeSerializer(os.getenv('secret_key'))
 
         try: 
-            # loads => take in a serialized string and generate the original string inputs.
-            token_email = (s.loads(token))[0]
+            # loads => take in a serialized string and generate the original list of string inputs.
+            # The first element in the list is the user's email.
+            user_email_from_token = (s.loads(token))[0]
 
         except BadSignature:
-            flash('You do not have permission to change the password for this email.', category = 'error')
+            flash('You do not have permission to change the password for this email. Please contact us if you continue to have issues.', category = 'error')
             return redirect(url_for('views.reset_password', token = token))
 
-        if token_email == original_email:
-            new_password = request.form.get("new_password")
-            hashed_password = generate_password_hash(new_password)
-            user = individuals_login.query.filter_by(email = token_email).first()
-            user.password = hashed_password
+        new_password = request.form.get("new_password")
+        hashed_password = generate_password_hash(new_password)
+        
+        user = individuals_login.query.filter_by(email = user_email_from_token).first()
+        if user is None: # it must have been a lab requesting a new password
+            user = labs_login.query.filter_by(email = user_email_from_token).first()
 
-            #db.session.commit()
-            flash('Your password has been successfully updated!', category = 'success')
-            return redirect(url_for('views.reset_password', token = token))
+        user.password = hashed_password
+        db.session.commit()
+
+        flash('Your password has been successfully updated! Please login.', category = 'success')
+        return redirect(url_for('views.index'))
 
     else:
         return render_template("reset_password.html", 

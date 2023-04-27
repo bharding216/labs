@@ -44,21 +44,23 @@
 
         <button type="submit" class="btn btn-primary">Login</button>
 
+        <div class="my-3">
+            <a href="{{ url_for('views.reset_password_request', user_type = 'individual') }}">I forgot my password</a>
+        </div>
+
     </form>
 
 </div>
 
 
 <div class="container my-5">
-
         <h3 class="my-3">First Time Here?</h3>
 
         <a class="btn btn-primary mx-auto" 
         href="{{ url_for('auth.user_signup') }}" role="button"
         style="width: auto">
-        Let's Get Started
+        Create an account
         </a>
-
 </div>
 
 
