@@ -63,7 +63,7 @@ def lab_contact():
 
         msg = Message('New Contact Form Submission',
                         sender = ("Brandon from USL", 'hello@unifiedsl.com'),
-                        recipients = ['team@unifiedsl.com'
+                        recipients = ['team@unifiedsl.com,'
                                       ]
                         )
         
