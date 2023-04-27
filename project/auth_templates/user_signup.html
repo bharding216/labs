@@ -18,59 +18,55 @@
 
 <div class="container my-5">
 
-    <h1>User Signup Form</h1>
+    <h3>New User Sign Up</h3>
     
     <br>
 
     <form action="{{ url_for('auth.user_signup') }}" method="POST">
-        <div class="form-floating mb-3 col-md-8 col-lg-6">
+        <div class="form-floating mb-3 col-md-6">
             <input type="text" class="form-control" name="first_name"
                 placeholder="Name">
             <label for="first_name">First Name</label>
         </div>
 
-
-        <div class="form-floating mb-3 col-md-8 col-lg-6">
+        <div class="form-floating mb-3 col-md-6">
             <input type="text" class="form-control" name="last_name"
                 placeholder="Name">
             <label for="last_name">Last Name</label>
         </div>
 
-        <div class="form-floating mb-3 col-md-8 col-lg-6">
+        <div class="form-floating mb-3 col-md-6">
             <input type="email" class="form-control" id="email" name="email"
                 placeholder="Email">
             <label for="email">Email</label>
         </div>
 
-        <div class="form-floating mb-3 col-md-8 col-lg-6">
+        <div class="form-floating mb-3 col-md-6">
             <input type="tel" class="form-control" name="phone" id="phone" 
-                placeholder="Phone Number" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" maxlength="12"/> 
+                placeholder="Phone Number" maxlength="12"/> 
             <label for="phone">Phone Number</label>
-            <p class="mx-1"><small>Format: 123-456-7890</small></p>
+
         </div>
 
-        <div class="form-floating mb-3 col-md-8 col-lg-6">
+        <div class="form-floating mb-3 col-md-6">
             <input type="text" class="form-control" name="company_name"
                 placeholder="Company Name">
             <label for="company_name">Company Name</label>
         </div>
 
-        <div class="form-floating mb-3 col-md-8 col-lg-6">
+        <div class="form-floating mb-3 col-md-6">
             <input type="text" class="form-control" name="password1"
                 placeholder="Password">
             <label for="password1">Password</label>
         </div>
 
-        <div class="form-floating mb-3 col-md-8 col-lg-6">
+        <div class="form-floating mb-3 col-md-6">
             <input type="text" class="form-control" name="password2"
-                placeholder="Password">
-            <label for="password2">Password</label>
+                placeholder="Confirm Password">
+            <label for="password2">Confirm Password</label>
         </div>
 
-
-
-
-        <button type="submit" class="btn btn-outline-primary">Submit</button>
+        <button type="submit" class="btn btn-primary">Submit</button>
     </form>
   
 </div>

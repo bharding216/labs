@@ -120,10 +120,13 @@ def user_signup():
                                          )
             db.session.add(new_user)
             db.session.commit()
-            flash('User successfully added to database.', category='success')
+            flash('Account successfully created!', category='success')
             return redirect(url_for('views.index'))
 
-    return render_template('user_signup.html', user=current_user)
+    else:
+        return render_template('user_signup.html', 
+                                user=current_user
+                                )
 
 
 

@@ -17,7 +17,6 @@
 </div>
 
 
-<!--LOGIN-->
 <div class="container my-5">
 
     <form action="{{ url_for('auth.customer_login') }}" method="POST">
@@ -50,13 +49,12 @@
 </div>
 
 
-<!--REQUEST TEST-->
 <div class="container my-5">
 
         <h3 class="my-3">First Time Here?</h3>
 
         <a class="btn btn-primary mx-auto" 
-        href="{{ url_for('views.index') }}" role="button"
+        href="{{ url_for('auth.user_signup') }}" role="button"
         style="width: auto">
         Let's Get Started
         </a>
