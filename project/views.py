@@ -1040,8 +1040,6 @@ def add_new_test():
                 db_session.add(new_test)
                 db_session.commit()
 
-            current_user_lab_id = current_user.lab_id
-
             # You're going to create a list of the tests that are currently offered by
             # the 'logged in lab'.
             joined_data = db_session.query(labs_tests, tests).join(tests, labs_tests.test_id == tests.id)
@@ -1062,9 +1060,9 @@ def add_new_test():
                                        test_names = test_names
                                        )
 
-            test = tests.query.filter_by(name = test_name).first()
-            if test:
-                test_id = test.id
+            test_to_add = tests.query.filter_by(name = test_name).first()
+            if test_to_add:
+                test_id = test_to_add.id
 
             # Add the test to the labs_tests table for the 'logged in lab'.
             new_lab_test = labs_tests(lab_id = current_user_lab_id, 
