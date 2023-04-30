@@ -55,7 +55,7 @@
         <form action="{{ url_for('views.index') }}" method="POST">
 
             <!-- A ROW FOR THE FORM INPUTS -->
-            <div class="row d-flex align-items-center justify-content-center homepage-input-padding">
+            <div class="row d-flex align-items-start justify-content-center homepage-input-padding">
 
                 <!-- align-items-center is to vertically center elements within a container -->
                 <!-- justify-content-center is to horizontally center elements within a container -->
@@ -73,7 +73,7 @@
 
                             </select>
 
-                            <div class="pt-2">
+                            <div class="pt-2 d-flex justify-content-center">
                                 <a href="{{ url_for('contact.new_test_request') }}"
                                 style="color: rgb(183, 188, 251);">
                                 Need a different test?</a>

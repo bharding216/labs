@@ -45,7 +45,7 @@
 
         <!--Read the docs (https://getbootstrap.com/docs/4.0/components/navbar/)
         for more details on these classes-->
-        <nav class="navbar sticky-top navbar-expand-sm navbar-custom static-top">
+        <nav class="navbar sticky-top navbar-expand-md navbar-custom static-top">
             <div class="container">
 
 
@@ -74,24 +74,45 @@
                             </a>
                         </li>
 
+                        {% if not user.is_authenticated %}
 
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" 
-                            href="#"
-                            id="navbarDropdownMenuLink"
-                            role="button"
-                            data-toggle="dropdown" 
-                            aria-haspopup="true" aria-expanded="false">
-                            Contact
-                            </a>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" 
+                                href="#"
+                                id="navbarDropdownMenuLink"
+                                role="button"
+                                data-toggle="dropdown" 
+                                aria-haspopup="true" aria-expanded="false">
+                                Contact
+                                </a>
 
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <a class="dropdown-item" href="{{ url_for('contact.contact_function') }}">I'm a Customer</a>
-                                <a class="dropdown-item" href="{{ url_for('contact.lab_contact') }}">I'm a Provider</a>
-                            </div>
-                        </li>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                    <a class="dropdown-item" href="{{ url_for('contact.contact_function') }}">I'm a Customer</a>
+                                    <a class="dropdown-item" href="{{ url_for('contact.lab_contact_question') }}">I'm a Provider</a>
+                                </div>
+                            </li>
 
+                        {% else %}
+                        
+                            {% if user.type == "customer" %}
+                                <li class="nav-item">
+                                    <a class="nav-link" aria-current="page" 
+                                        href="{{ url_for('contact.contact_function') }}">
+                                        Contact
+                                    </a>
+                                </li>
+                            {% endif %}
 
+                            {% if user.type == "lab" %}
+                                <li class="nav-item">
+                                    <a class="nav-link" aria-current="page" 
+                                        href="{{ url_for('contact.lab_contact_question') }}">
+                                        Contact
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                        {% endif %}
 
 
 
@@ -105,18 +126,6 @@
                                     Requests
                                 </a>
                             </li>
-                            {% endif %}
-
-                            {% if user.type == "customer" %}
-                            <li class="nav-item">
-                                <a class="nav-link" aria-current="page" 
-                                    href="{{ url_for('views.user_requests') }}">
-                                    Requests
-                                </a>
-                            </li>
-                            {% endif %}
-
-
 
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" 
@@ -129,17 +138,34 @@
                                 </a>
     
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                    {% if user.type == "lab" %}
-                                        <a class="dropdown-item" href="{{ url_for('views.provider_settings') }}">Edit Profile</a>
-                                    {% elif user.type == "customer" %}
-                                        <a class="dropdown-item" href="{{ url_for('views.customer_settings') }}">Edit Profile</a>
-                                    {% endif %}
-
-                                        <a class="dropdown-item" href="{{ url_for('auth.logout') }}">Logout</a>
+                                    <a class="dropdown-item" href="{{ url_for('views.provider_settings') }}">Edit Profile</a>
+                                    <a class="dropdown-item" href="{{ url_for('views.provider_settings') }}#services_offered">Manage Services</a>
                                 </div>
                             </li>
+                            {% endif %}
 
+                            {% if user.type == "customer" %}
+                            <li class="nav-item">
+                                <a class="nav-link" aria-current="page" 
+                                    href="{{ url_for('views.user_requests') }}">
+                                    Requests
+                                </a>
+                            </li>
 
+                            <li class="nav-item">
+                                <a class="nav-link" aria-current="page" 
+                                    href="{{ url_for('views.customer_settings') }}">
+                                    Edit Profile
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            <li class="nav-item">
+                                <a class="nav-link" aria-current="page" 
+                                    href="{{ url_for('auth.logout') }}">
+                                    Log Out
+                                </a>
+                            </li>
 
                         {% else %}
                         <li class="nav-item dropdown">
