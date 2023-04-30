@@ -90,3 +90,9 @@ def lab_contact():
 
     return render_template('lab_contact.html', 
                            user = current_user)
+
+
+@contact_bp.route('/new_test_request', methods=['GET', 'POST'])
+def new_test_request():
+    return render_template('contact_new_test_request.html',
+                           user = current_user)

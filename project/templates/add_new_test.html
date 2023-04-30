@@ -34,9 +34,7 @@
 
 <div class="container my-5">
 
-
-    <form action="{{ url_for('views.add_new_test') }}" 
-            method="POST">
+    <form action="{{ url_for('views.add_new_test') }}" method="POST">
 
             <div class="mb-1 col-md-8 col-lg-6" id="test_dropdown">
                 <select name="test_name" class="form-select" 
@@ -49,17 +47,17 @@
                     {% endfor %}
 
                 </select>
-                <input type="hidden" name="test_input_source" value="dropdown">
+                <input type="hidden" name="test_input_source" value="">
             </div>
-
 
             <div class="form-floating mb-3 col-md-8 col-lg-6" id="test_text" style="display: none;">
                 <input type="text" 
                         class="form-control"
                         name="test_name" 
-                        placeholder="Enter a New Test Name">
+                        placeholder="Enter a New Test Name"
+                        onfocus="document.getElementsByName('test_input_source')[0].value = 'text_input';">
                 <label for="test_name">Enter a New Test Name</label>
-                <input type="hidden" name="test_input_source" value="text_input">
+                <input type="hidden" name="test_input_source" value="dropdown">
             </div>
         
             <div class="mb-3 ">

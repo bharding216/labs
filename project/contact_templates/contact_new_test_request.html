@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact Support{% endblock %}
+
+{% block content %}
+
+
+<div class="py-5" style="background-image:linear-gradient(#1e96fc, #11296b);">
+    <div class="container">
+        <div class="row mb-3 text-center">   
+            <h1 class="mb-3" style="color: white;">Request an Unlisted Test</h1>
+            <p style="color: white;">Let us know the specifics of your testing
+            needs. We'll check with our network of labs to identify the best partner for you.</p>
+        </div>
+    </div>
+</div>
+
+<!--fill in the fields with the user info if they are logged in-->
+
+<div class="container my-5">
+
+    <form action="{{ url_for('contact.new_test_request') }}" method="POST">
+
+        <div class="form-floating mb-3 col-md-8 col-lg-6">
+            <input type="text" class="form-control" id="first_name" name="first_name"
+                placeholder="First Name">
+            <label for="first_name">First Name</label>
+        </div>
+
+        <div class="form-floating mb-3 col-md-8 col-lg-6">
+            <input type="text" class="form-control" id="last_name" name="last_name"
+                placeholder="Last Name">
+            <label for="last_name">Last Name</label>
+        </div>
+
+        <div class="form-floating mb-3 col-md-8 col-lg-6">
+            <input type="email" class="form-control" id="email" name="email"
+                placeholder="Email">
+            <label for="email">Email</label>
+        </div>
+
+        <div class="form-floating mb-3 col-md-8 col-lg-6">
+            <input type="tel" class="form-control" name="phone" id="phone" 
+                placeholder="Phone Number" maxlength="15"/> 
+            <label for="phone">Phone Number</label>
+        </div>
+
+        <div class="form-floating mb-3 col-md-12 col-lg-8">
+            <textarea class="form-control" id="message" name="message"
+                placeholder="Please describe your testing needs" style="height: 100px;"></textarea>
+            <label for="message">Please describe your testing needs</label>
+        </div>        
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+
+    </form>
+
+</div>
+
+{% endblock %}
