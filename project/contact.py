@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash, current_app
 from flask_login import login_required, current_user
 from .models import tests, labs, labs_tests
 from flask_mail import Mail, Message
@@ -15,16 +15,17 @@ contact_bp = Blueprint('contact', __name__,
 @contact_bp.route('/', methods=['GET', 'POST'])
 def contact_function():
     if request.method == 'POST':
+        VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify'
+        secret_key = os.getenv('recaptcha_secret_key')
+        recaptcha_site_key = os.getenv('recaptcha_site_key')
+
         # Get the reCAPTCHA response from the form
         recaptcha_response = request.form.get('g-recaptcha-response')
         if recaptcha_response:
             # Verify the reCAPTCHA response using the Google reCAPTCHA API
-            response = requests.post('https://www.google.com/recaptcha/api/siteverify',
-                                    data={'secret': os.getenv('recaptcha_secret_key'), 
-                                        'response': recaptcha_response,
-                                        'action': 'contact'})
+            response = requests.post(url=VERIFY_URL + '?secret=' + secret_key + '&response=' + recaptcha_response).json()
 
-            if response.json()['success']:
+            if response['success'] == True:
                 # Process the form data
                 first_name = request.form['first_name']
                 last_name = request.form['last_name']
@@ -34,7 +35,7 @@ def contact_function():
 
                 msg = Message('New Contact Form Submission',
                                 sender = ("USL Contact Form", 'hello@unifiedsl.com'),
-                                recipients = ['team@unifiedsl.com'
+                                recipients = ['bharding80@gmail.com'
                                             ]
                                 )
                 
@@ -57,8 +58,11 @@ def contact_function():
 
             else:
                 flash('Invalid reCAPTCHA. Please try again.')
+                return redirect(url_for('contact.contact_function'))
         else:
             flash('Please complete the reCAPTCHA.')
+            return redirect(url_for('contact.contact_function'))
+
 
 
     recaptcha_site_key = os.getenv('recaptcha_site_key')

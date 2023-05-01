@@ -20,6 +20,9 @@ def create_app():
 
     app.config['STRIPE_PUBLIC_KEY'] = os.getenv('stripe_public_key')
     app.config['STRIPE_SECRET_KEY'] = os.getenv('stripe_secret_key')
+    app.config['RECAPTCHA_SITE_KEY']= os.getenv('recaptcha_site_key')
+    app.config['RECAPTCHA_SECRET_KEY'] = os.getenv('recaptcha_secret_key')
+
 
     load_dotenv()
     # Create my_enumerate function and make it available globally.
