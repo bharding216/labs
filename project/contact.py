@@ -20,7 +20,10 @@ def contact_function():
         if recaptcha_response:
             # Verify the reCAPTCHA response using the Google reCAPTCHA API
             response = requests.post('https://www.google.com/recaptcha/api/siteverify',
-                                     data={'secret': os.getenv('recaptcha_secret_key'), 'response': recaptcha_response})
+                                    data={'secret': os.getenv('recaptcha_secret_key'), 
+                                        'response': recaptcha_response,
+                                        'action': 'contact'})
+
             if response.json()['success']:
                 # Process the form data
                 first_name = request.form['first_name']
