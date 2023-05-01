@@ -5,46 +5,63 @@ from flask_mail import Mail, Message
 from project import mail
 import datetime
 import phonenumbers
+import os
+import requests
 
 contact_bp = Blueprint('contact', __name__, 
     template_folder='contact_templates', static_folder='static')
 
 
-
 @contact_bp.route('/', methods=['GET', 'POST'])
 def contact_function():
     if request.method == 'POST':
-        first_name = request.form['first_name']
-        last_name = request.form['last_name']
-        user_email = request.form['email']
-        phone = request.form['phone']
-        user_message = request.form['message']
+        # Get the reCAPTCHA response from the form
+        recaptcha_response = request.form.get('g-recaptcha-response')
+        if recaptcha_response:
+            # Verify the reCAPTCHA response using the Google reCAPTCHA API
+            response = requests.post('https://www.google.com/recaptcha/api/siteverify',
+                                     data={'secret': os.getenv('recaptcha_secret_key'), 'response': recaptcha_response})
+            if response.json()['success']:
+                # Process the form data
+                first_name = request.form['first_name']
+                last_name = request.form['last_name']
+                user_email = request.form['email']
+                phone = request.form['phone']
+                user_message = request.form['message']
 
-        msg = Message('New Contact Form Submission',
-                        sender = ("USL Contact Form", 'hello@unifiedsl.com'),
-                        recipients = ['team@unifiedsl.com'
-                                      ]
-                        )
-        
-        msg.html = render_template('contact_email.html',
-                                   first_name = first_name,
-                                   last_name = last_name,
-                                   user_email = user_email,
-                                   phone = phone,
-                                   user_message = user_message,
-                                   customer_type = 'Customer')
+                msg = Message('New Contact Form Submission',
+                                sender = ("USL Contact Form", 'hello@unifiedsl.com'),
+                                recipients = ['team@unifiedsl.com'
+                                            ]
+                                )
+                
+                msg.html = render_template('contact_email.html',
+                                        first_name = first_name,
+                                        last_name = last_name,
+                                        user_email = user_email,
+                                        phone = phone,
+                                        user_message = user_message,
+                                        customer_type = 'Customer')
 
-        mail.send(msg)
+                mail.send(msg)
 
-        return render_template('contact_success.html', 
-                                first_name = first_name,
-                                email = user_email, 
-                                phone = phone, 
-                                message = user_message,
-                                user = current_user)
+                return render_template('contact_success.html', 
+                                        first_name = first_name,
+                                        email = user_email, 
+                                        phone = phone, 
+                                        message = user_message,
+                                        user = current_user)
 
+            else:
+                flash('Invalid reCAPTCHA. Please try again.')
+        else:
+            flash('Please complete the reCAPTCHA.')
+
+
+    recaptcha_site_key = os.getenv('recaptcha_site_key')
     return render_template('contact.html', 
-                           user = current_user)
+                           user = current_user,
+                           recaptcha_site_key = recaptcha_site_key)
 
 
 
