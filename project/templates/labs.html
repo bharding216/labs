@@ -39,7 +39,7 @@
             {% for row, distance in combined_data %}
             <tr>
                 <td class="text-center">{{ row.name }}</td>
-                <td class="text-center" data-bs-toggle="tooltip" data-bs-placement="right" title="Tooltip text">{{ row.price }}</td>
+                <td class="text-center">{{ row.price }}</td>
                 <td class="text-center">{{ row.turnaround }}</td>
                 <td class="text-center">{{ distance }}</td>
                 <td class="text-center">{{ row.city }}</td>
@@ -62,11 +62,6 @@
 
 </div>
 
-
-<script>
-const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
-</script>
 
 
 {% endblock %}

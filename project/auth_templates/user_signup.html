@@ -1,6 +1,33 @@
 {% extends "base.html" %}
 
-{% block title %}User Signup{% endblock %}
+{% block title %}Customer Sign Up{% endblock %}
+
+{% block head %}
+<style>
+    .password-toggle-icon {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    padding-right: 5px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    }
+
+    #password {
+    padding-right: 40px; /* Ensure enough space for the icon */
+    }
+
+    #togglePassword1 {
+    font-size: 1.25rem;
+    color: gray;
+    }
+    #togglePassword2 {
+    font-size: 1.25rem;
+    color: gray;
+    }
+</style>
+
+{% endblock %}
 
 {% block content %}
 
@@ -18,7 +45,7 @@
 
 <div class="container my-5">
 
-    <h3>New User Sign Up</h3>
+    <h3>New Customer Sign Up</h3>
     
     <br>
 
@@ -55,14 +82,20 @@
         </div>
 
         <div class="form-floating mb-3 col-md-6">
-            <input type="text" class="form-control" name="password1"
+            <input type="password" class="form-control" name="password1"
                 placeholder="Password">
+            <span class="password-toggle-icon toggle-password">
+                <i class="fa-solid fa-eye" id="togglePassword1"></i>
+            </span>
             <label for="password1">Password</label>
         </div>
 
         <div class="form-floating mb-3 col-md-6">
-            <input type="text" class="form-control" name="password2"
+            <input type="password" class="form-control" name="password2"
                 placeholder="Confirm Password">
+            <span class="password-toggle-icon toggle-password">
+                <i class="fa-solid fa-eye" id="togglePassword2"></i>
+            </span>
             <label for="password2">Confirm Password</label>
         </div>
 
@@ -72,9 +105,30 @@
 </div>
 
 
+<script>
+    const togglePassword1 = document.querySelector('#togglePassword1');
+    const password1 = document.querySelector('[name="password1"]');
 
+    togglePassword1.addEventListener('click', function (e) {
+        // toggle the type attribute
+        const type = password1.getAttribute('type') === 'password' ? 'text' : 'password';
+        password1.setAttribute('type', type);
+        // toggle the eye icon
+        this.classList.toggle('fa-eye-slash');
+    });
 
+    const togglePassword2 = document.querySelector('#togglePassword2');
+    const password2 = document.querySelector('[name="password2"]');
 
+    togglePassword2.addEventListener('click', function (e) {
+        // toggle the type attribute
+        const type = password2.getAttribute('type') === 'password' ? 'text' : 'password';
+        password2.setAttribute('type', type);
+        // toggle the eye icon
+        this.classList.toggle('fa-eye-slash');
+    });
+
+</script>
 
 
 

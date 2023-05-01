@@ -154,10 +154,32 @@ def new_user_booking():
         company_name = request.form['company_name']
         email = request.form['email']
         phone = request.form['phone']
-        password = request.form['password']
+        password1 = request.form['password1']
+        password2 = request.form['password2']
         sample_description = request.form['sample_description']
         number_of_samples = request.form['sample-number-input']
         extra_requirements = request.form['extra_requirements']
+
+        if password1 != password2:
+            flash('Those passwords do not match. Please try again.', category='error')
+            selected_lab_id = session.get('selected_lab_id')
+            with db.session() as db_session:
+                lab_choice = db_session.query(labs).get_or_404(selected_lab_id)
+            
+            return render_template('new_user_booking.html', 
+                                   user = current_user,
+                                   lab_choice = lab_choice,
+                                   first_name = first_name,
+                                   last_name = last_name,
+                                   company_name = company_name,
+                                   email = email,
+                                   phone = phone,
+                                   password1 = password1,
+                                   password2 = password2,
+                                   sample_description = sample_description,
+                                   extra_requirements = extra_requirements
+                                   )
+
 
         session['first_name'] = first_name
         session['sample_description'] = sample_description
@@ -194,12 +216,13 @@ def new_user_booking():
                                    company_name = company_name,
                                    email = email,
                                    phone = phone,
-                                   password = password,
+                                   password1 = password1,
+                                   password2 = password2,
                                    sample_description = sample_description,
                                    extra_requirements = extra_requirements
                                    )
         else:
-            hashed_password = generate_password_hash(password)
+            hashed_password = generate_password_hash(password1)
             new_user = individuals_login(
                 first_name = first_name, 
                 last_name = last_name, 
@@ -1605,21 +1628,27 @@ def reset_password(token):
     if request.method == "POST":
 
         s = URLSafeSerializer(os.getenv('secret_key'))
-
         try: 
             # loads => take in a serialized string and generate the original list of string inputs.
             # The first element in the list is the user's email.
             user_email_from_token = (s.loads(token))[0]
-
         except BadSignature:
             flash('You do not have permission to change the password for this email. Please contact us if you continue to have issues.', category = 'error')
-            return redirect(url_for('views.reset_password', token = token))
+            return redirect(url_for('views.reset_password', 
+                                    token = token))
 
         new_password = request.form.get("new_password")
+        confirm_password = request.form.get("confirm_password")
+
+        if new_password != confirm_password:
+            flash('Those passwords do not match. Please try again.', category='error')
+            return redirect(url_for('views.reset_password', 
+                                    token = token))
+
         hashed_password = generate_password_hash(new_password)
         
         user = individuals_login.query.filter_by(email = user_email_from_token).first()
-        if user is None: # it must have been a lab requesting a new password
+        if user is None: # Then it must have been a lab requesting a new password
             user = labs_login.query.filter_by(email = user_email_from_token).first()
 
         user.password = hashed_password
