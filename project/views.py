@@ -1424,6 +1424,14 @@ def success():
     stripe.checkout.Session.retrieve(stripe_session.id)
     # The docs: https://stripe.com/docs/api/checkout/sessions/retrieve
 
+
+    # Check if the payment went through. 
+    # If it went through, then check if a shipping label was included in their order.
+        # If they got a shipping label, buy the label and send confirmation email.
+        # If they only ordered a test, set the request_object payment status to 'paid'.
+            # Send a payment confirmation email
+
+
     if stripe_session.payment_status == 'paid':
         label_purchase = request.args.get('label_purchase')
         if label_purchase == 'yes':
@@ -1443,7 +1451,7 @@ def success():
                     db_session.query(test_requests) \
                         .filter_by(request_id = request_id) \
                         .update({'payment_status': 'Paid',
-                                 'transit_status': 'In Transit'})
+                                'transit_status': 'In Transit'})
                     db_session.commit()
 
                     request_object = db_session.query(test_requests) \
@@ -1463,42 +1471,39 @@ def success():
                         lab_email = lab.email
 
 
-                msg = Message("Payment Completed",
-                    sender = ("Unified Science Labs", 'team@unifiedsl.com'),
-                    recipients = ['team@unifiedsl.com',
-                                    lab_email
-                                    ]
-                    )
-            
-                msg.html = render_template('successful_payment_email_to_lab.html',
-                                            lab_name = lab_name,
-                                            selected_test = selected_test,
-                                            number_of_samples = number_of_samples,
-                                            sample_description = sample_description,
-                                            extra_requirements = extra_requirements,
-                                            approval_status = approval_status,
-                                            payment_status = payment_status,
-                                            request_id = request_id
+                    msg = Message("Payment Completed",
+                        sender = ("Unified Science Labs", 'hello@unifiedsl.com'),
+                        recipients = ['team@unifiedsl.com']
+                        )
+                
+                    msg.html = render_template('successful_payment_email_to_lab.html',
+                                                lab_name = lab_name,
+                                                selected_test = selected_test,
+                                                number_of_samples = number_of_samples,
+                                                sample_description = sample_description,
+                                                extra_requirements = extra_requirements,
+                                                approval_status = approval_status,
+                                                payment_status = payment_status,
+                                                request_id = request_id
+                                                )
+
+                    mail.send(msg)
+
+                    return render_template('order_success.html',
+                                            user = current_user,
+                                            transaction = transaction,
+                                            label_purchase = label_purchase
                                             )
-
-                mail.send(msg)
-
-                return render_template('order_success.html',
-                                        user = current_user,
-                                        transaction = transaction,
-                                        label_purchase = label_purchase
-                                        )
             else:
                 error_message_list = []
                 for message in transaction.messages:
                     error_message_list.append(message)
                     return render_template('order_error.html', 
-                                           user = current_user,
-                                           transaction = transaction,
-                                           error_message_list = error_message_list)
+                                        user = current_user,
+                                        transaction = transaction,
+                                        error_message_list = error_message_list)
 
-        else:
-            # If the user chose not to buy a label, just take them to the success page.
+        else: # If the user chose not to buy a label, just take them to the success page.
 
             # Send an email notification to the lab
             request_id = session.get('request_id')
@@ -1526,34 +1531,34 @@ def success():
                     lab_email = lab.email
 
 
-            msg = Message("Payment Completed",
-                sender = ("Unified Science Labs", 'team@unifiedsl.com'),
-                recipients = ['team@unifiedsl.com',
-                                lab_email
-                                ]
-                )
-        
-            msg.html = render_template('successful_payment_email_to_lab.html',
-                                        lab_name = lab_name,
-                                        selected_test = selected_test,
-                                        number_of_samples = number_of_samples,
-                                        sample_description = sample_description,
-                                        extra_requirements = extra_requirements,
-                                        approval_status = approval_status,
-                                        payment_status = payment_status,
-                                        request_id = request_id
-                                        )
+                    msg = Message("Payment Completed",
+                        sender = ("Unified Science Labs", 'team@unifiedsl.com'),
+                        recipients = ['team@unifiedsl.com',
+                                        lab_email
+                                        ]
+                        )
+                
+                    msg.html = render_template('successful_payment_email_to_lab.html',
+                                                lab_name = lab_name,
+                                                selected_test = selected_test,
+                                                number_of_samples = number_of_samples,
+                                                sample_description = sample_description,
+                                                extra_requirements = extra_requirements,
+                                                approval_status = approval_status,
+                                                payment_status = payment_status,
+                                                request_id = request_id
+                                                )
 
-            mail.send(msg)
+                    mail.send(msg)
 
-            return render_template('order_success.html',
-                                    user = current_user
-                                    )
-    
+                    return render_template('order_success.html',
+                                            user = current_user
+                                            )
+
     else:
         # Payment was not successful, show error page
         return render_template('order_error.html',
-                               user = current_user)
+                            user = current_user)
 
 
 
