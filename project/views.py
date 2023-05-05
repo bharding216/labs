@@ -1555,8 +1555,7 @@ def success():
                                             user = current_user
                                             )
 
-    else:
-        # Payment was not successful, show error page
+    else: # Payment was not successful, show error page
         return render_template('order_error.html',
                             user = current_user)
 
