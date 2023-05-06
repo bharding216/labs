@@ -35,7 +35,7 @@ def contact_function():
 
                 msg = Message('New Contact Form Submission',
                                 sender = ("USL Contact Form", 'hello@unifiedsl.com'),
-                                recipients = ['bharding80@gmail.com'
+                                recipients = ['team@unifiedsl.com'
                                             ]
                                 )
                 

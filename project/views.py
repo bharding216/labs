@@ -1416,6 +1416,30 @@ def checkout(lab_name, test_name):
 
 
 
+
+@views.route('/stripe/webhook', methods=['POST'])
+def stripe_webhook():
+    stripe.api_key = os.getenv('stripe_secret_key')
+    payload = request.data.decode('utf-8')
+    sig_header = request.headers.get('Stripe-Signature')
+    event = None
+    try:
+        event = stripe.Event.construct_from(
+            json.loads(payload), stripe.api_key, sig_header
+        )
+    except ValueError as e:
+        return Response(status=400)
+
+    if event.type == 'checkout.session.completed':
+        session_id = event.data.object.id
+        session = stripe.checkout.Session.retrieve(session_id)
+
+        if session.payment_status == 'paid':
+            return redirect(url_for('views.success'))
+
+    return Response(status=200)
+
+
 @views.route('/order/success')
 @login_required
 def success():
@@ -1425,85 +1449,23 @@ def success():
     # The docs: https://stripe.com/docs/api/checkout/sessions/retrieve
 
 
-    # Check if the payment went through. 
+    # Check if the checkout session is complete. 
     # If it went through, then check if a shipping label was included in their order.
         # If they got a shipping label, buy the label and send confirmation email.
         # If they only ordered a test, set the request_object payment status to 'paid'.
             # Send a payment confirmation email
 
 
-    if stripe_session.payment_status == 'paid':
-        label_purchase = request.args.get('label_purchase')
-        if label_purchase == 'yes':
-            selected_rate_object = session.get('selected_rate_object')
-            
-            shippo.config.api_key = os.getenv('shippo_api_key')
-            transaction = shippo.Transaction.create(rate=selected_rate_object['object_id'], 
-                                                    asynchronous=False
-                                                    )
-
-            if transaction.status == "SUCCESS":
-
-                # Send an email notification to the lab
-                request_id = session.get('request_id')
-
-                with db.session() as db_session:
-                    db_session.query(test_requests) \
-                        .filter_by(request_id = request_id) \
-                        .update({'payment_status': 'Paid',
-                                'transit_status': 'In Transit'})
-                    db_session.commit()
-
-                    request_object = db_session.query(test_requests) \
-                                        .filter_by(request_id = request_id) \
-                                        .first()
-                    if request_object:    
-                        selected_test = request_object.test_name
-                        number_of_samples = request_object.number_of_samples
-                        sample_description = request_object.sample_description
-                        extra_requirements = request_object.extra_requirements
-                        payment_status = request_object.payment_status
-                        approval_status = request_object.approval_status
-                        lab = db_session.query(labs) \
-                                .filter_by(id = request_object.lab_id) \
-                                .first()
-                        lab_name = lab.name
-                        lab_email = lab.email
-
-
-                    msg = Message("Payment Completed",
-                        sender = ("Unified Science Labs", 'hello@unifiedsl.com'),
-                        recipients = ['team@unifiedsl.com']
-                        )
-                
-                    msg.html = render_template('successful_payment_email_to_lab.html',
-                                                lab_name = lab_name,
-                                                selected_test = selected_test,
-                                                number_of_samples = number_of_samples,
-                                                sample_description = sample_description,
-                                                extra_requirements = extra_requirements,
-                                                approval_status = approval_status,
-                                                payment_status = payment_status,
-                                                request_id = request_id
+    label_purchase = request.args.get('label_purchase')
+    if label_purchase == 'yes':
+        selected_rate_object = session.get('selected_rate_object')
+        
+        shippo.config.api_key = os.getenv('shippo_api_key')
+        transaction = shippo.Transaction.create(rate=selected_rate_object['object_id'], 
+                                                asynchronous=False
                                                 )
 
-                    mail.send(msg)
-
-                    return render_template('order_success.html',
-                                            user = current_user,
-                                            transaction = transaction,
-                                            label_purchase = label_purchase
-                                            )
-            else:
-                error_message_list = []
-                for message in transaction.messages:
-                    error_message_list.append(message)
-                    return render_template('order_error.html', 
-                                        user = current_user,
-                                        transaction = transaction,
-                                        error_message_list = error_message_list)
-
-        else: # If the user chose not to buy a label, just take them to the success page.
+        if transaction.status == "SUCCESS":
 
             # Send an email notification to the lab
             request_id = session.get('request_id')
@@ -1511,7 +1473,8 @@ def success():
             with db.session() as db_session:
                 db_session.query(test_requests) \
                     .filter_by(request_id = request_id) \
-                    .update({'payment_status': 'Paid'})
+                    .update({'payment_status': 'Paid',
+                            'transit_status': 'In Transit'})
                 db_session.commit()
 
                 request_object = db_session.query(test_requests) \
@@ -1531,33 +1494,90 @@ def success():
                     lab_email = lab.email
 
 
-                    msg = Message("Payment Completed",
-                        sender = ("Unified Science Labs", 'team@unifiedsl.com'),
-                        recipients = ['team@unifiedsl.com',
-                                        lab_email
-                                        ]
-                        )
-                
-                    msg.html = render_template('successful_payment_email_to_lab.html',
-                                                lab_name = lab_name,
-                                                selected_test = selected_test,
-                                                number_of_samples = number_of_samples,
-                                                sample_description = sample_description,
-                                                extra_requirements = extra_requirements,
-                                                approval_status = approval_status,
-                                                payment_status = payment_status,
-                                                request_id = request_id
-                                                )
-
-                    mail.send(msg)
-
-                    return render_template('order_success.html',
-                                            user = current_user
+                msg = Message("Payment Completed",
+                    sender = ("Unified Science Labs", 'hello@unifiedsl.com'),
+                    recipients = ['team@unifiedsl.com']
+                    )
+            
+                msg.html = render_template('successful_payment_email_to_lab.html',
+                                            lab_name = lab_name,
+                                            selected_test = selected_test,
+                                            number_of_samples = number_of_samples,
+                                            sample_description = sample_description,
+                                            extra_requirements = extra_requirements,
+                                            approval_status = approval_status,
+                                            payment_status = payment_status,
+                                            request_id = request_id
                                             )
 
-    else: # Payment was not successful, show error page
-        return render_template('order_error.html',
-                            user = current_user)
+                mail.send(msg)
+
+                return render_template('order_success.html',
+                                        user = current_user,
+                                        transaction = transaction,
+                                        label_purchase = label_purchase
+                                        )
+        else:
+            error_message_list = []
+            for message in transaction.messages:
+                error_message_list.append(message)
+                return render_template('order_error.html', 
+                                    user = current_user,
+                                    transaction = transaction,
+                                    error_message_list = error_message_list)
+
+    else: # If the user chose not to buy a label, just take them to the success page.
+
+        # Send an email notification to the lab
+        request_id = session.get('request_id')
+
+        with db.session() as db_session:
+            db_session.query(test_requests) \
+                .filter_by(request_id = request_id) \
+                .update({'payment_status': 'Paid'})
+            db_session.commit()
+
+            request_object = db_session.query(test_requests) \
+                                .filter_by(request_id = request_id) \
+                                .first()
+            if request_object:    
+                selected_test = request_object.test_name
+                number_of_samples = request_object.number_of_samples
+                sample_description = request_object.sample_description
+                extra_requirements = request_object.extra_requirements
+                payment_status = request_object.payment_status
+                approval_status = request_object.approval_status
+                lab = db_session.query(labs) \
+                        .filter_by(id = request_object.lab_id) \
+                        .first()
+                lab_name = lab.name
+                lab_email = lab.email
+
+
+                msg = Message("Payment Completed",
+                    sender = ("Unified Science Labs", 'team@unifiedsl.com'),
+                    recipients = ['team@unifiedsl.com',
+                                    lab_email
+                                    ]
+                    )
+            
+                msg.html = render_template('successful_payment_email_to_lab.html',
+                                            lab_name = lab_name,
+                                            selected_test = selected_test,
+                                            number_of_samples = number_of_samples,
+                                            sample_description = sample_description,
+                                            extra_requirements = extra_requirements,
+                                            approval_status = approval_status,
+                                            payment_status = payment_status,
+                                            request_id = request_id
+                                            )
+
+                mail.send(msg)
+
+                return render_template('order_success.html',
+                                        user = current_user
+                                        )
+
 
 
 
