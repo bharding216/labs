@@ -1420,13 +1420,13 @@ def checkout(lab_name, test_name):
 @views.route('/stripe/webhook', methods=['POST'])
 def stripe_webhook():
     stripe.api_key = os.getenv('stripe_secret_key')
-    stripe_signature = os.getenv('stripe_webhook_sig')
+    stripe_signing_secret = os.getenv('stripe_signing_secret')
     payload = request.data.decode('utf-8')
     sig_header = request.headers.get('Stripe-Signature')
     event = None
     try:
         event = stripe.Webhook.construct_event(
-            payload, sig_header, stripe_signature
+            payload, sig_header, stripe_signing_secret
         )
     except ValueError as e:
         return Response(status=400)
