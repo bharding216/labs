@@ -1420,24 +1420,19 @@ def checkout(lab_name, test_name):
 @views.route('/stripe/webhook', methods=['POST'])
 def stripe_webhook():
     stripe.api_key = os.getenv('stripe_secret_key')
+    stripe_signature = os.getenv('stripe_webhook_sig')
     payload = request.data.decode('utf-8')
     sig_header = request.headers.get('Stripe-Signature')
     event = None
     try:
-        event = stripe.Event.construct_from(
-            json.loads(payload), stripe.api_key, sig_header
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, stripe_signature
         )
     except ValueError as e:
         return Response(status=400)
 
-    if event.type == 'checkout.session.completed':
-        session_id = event.data.object.id
-        session = stripe.checkout.Session.retrieve(session_id)
-
-        if session.payment_status == 'paid':
-            return redirect(url_for('views.success'))
-
-    return Response(status=200)
+    if event and event['type'] == 'payment_intent.succeeded':
+        return jsonify(success=True)
 
 
 @views.route('/order/success')
@@ -1447,14 +1442,6 @@ def success():
     stripe_session = session.get('stripe_session')
     stripe.checkout.Session.retrieve(stripe_session.id)
     # The docs: https://stripe.com/docs/api/checkout/sessions/retrieve
-
-
-    # Check if the checkout session is complete. 
-    # If it went through, then check if a shipping label was included in their order.
-        # If they got a shipping label, buy the label and send confirmation email.
-        # If they only ordered a test, set the request_object payment status to 'paid'.
-            # Send a payment confirmation email
-
 
     label_purchase = request.args.get('label_purchase')
     if label_purchase == 'yes':
@@ -1466,8 +1453,6 @@ def success():
                                                 )
 
         if transaction.status == "SUCCESS":
-
-            # Send an email notification to the lab
             request_id = session.get('request_id')
 
             with db.session() as db_session:
@@ -1493,7 +1478,6 @@ def success():
                     lab_name = lab.name
                     lab_email = lab.email
 
-
                 msg = Message("Payment Completed",
                     sender = ("Unified Science Labs", 'hello@unifiedsl.com'),
                     recipients = ['team@unifiedsl.com']
@@ -1509,7 +1493,6 @@ def success():
                                             payment_status = payment_status,
                                             request_id = request_id
                                             )
-
                 mail.send(msg)
 
                 return render_template('order_success.html',
@@ -1527,8 +1510,6 @@ def success():
                                     error_message_list = error_message_list)
 
     else: # If the user chose not to buy a label, just take them to the success page.
-
-        # Send an email notification to the lab
         request_id = session.get('request_id')
 
         with db.session() as db_session:
@@ -1553,7 +1534,6 @@ def success():
                 lab_name = lab.name
                 lab_email = lab.email
 
-
                 msg = Message("Payment Completed",
                     sender = ("Unified Science Labs", 'team@unifiedsl.com'),
                     recipients = ['team@unifiedsl.com',
@@ -1571,7 +1551,6 @@ def success():
                                             payment_status = payment_status,
                                             request_id = request_id
                                             )
-
                 mail.send(msg)
 
                 return render_template('order_success.html',
