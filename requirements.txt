@@ -1,3 +1,4 @@
+boto3==1.26.131
 Flask==2.2.2
 flask_login==0.6.2
 flask_mail==0.9.1

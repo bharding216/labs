@@ -116,9 +116,8 @@
 
                             <!-- Manage test results -->
                             <td class="text-center">
-                                <form action="{{ url_for('views.manage_results') }}" method="POST">
+                                <form action="{{ url_for('views.manage_results', request_id = lab_request.request_id) }}" method="POST">
                                     <input type="hidden" name="test_name" value="{{ lab_request.test_name }}">
-                                    <input type="hidden" name="request_id" value="{{ lab_request.request_id }}">
                                     <input type="submit" class="btn btn-primary my-1" value="Select">
                                 </form>
                             </td>

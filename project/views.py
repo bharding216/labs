@@ -11,6 +11,7 @@ from helpers import generate_sitemap, get_lat_long_from_zipcode, distance_calcul
 from itsdangerous.url_safe import URLSafeSerializer
 import yaml
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 from itsdangerous.exc import BadSignature
 import shippo
 import phonenumbers
@@ -20,6 +21,10 @@ import stripe
 from markupsafe import Markup
 import json
 import uuid
+import boto3
+import requests
+from io import BytesIO
+from werkzeug.datastructures import Headers
 
 # This is a test
 
@@ -725,56 +730,63 @@ def submit_details():
 
 
 
-@views.route('/manage_results', methods = ['GET', 'POST'])
+@views.route('/manage_results/<int:request_id>', methods = ['GET', 'POST'])
 @login_required
-def manage_results():
-    test_name = request.form['test_name']
-    request_id = request.form['request_id']
+def manage_results(request_id):
+    lab_id = current_user.id
+    test_request = test_requests.query.filter_by(request_id=request_id).first()
+    test_name = test_request.test_name
 
     with db.session() as db_session:
         test_results_query = db_session.query(test_results) \
-                                       .filter(test_results.request_id == request_id) \
+                                       .filter_by(request_id=request_id, lab_id=lab_id) \
                                        .all()
 
-    return render_template('manage_results.html',
-                           user = current_user,
-                           test_name = test_name,
-                           request_id = request_id,
-                           test_results_query = test_results_query)
+        return render_template('manage_results.html',
+                            user = current_user,
+                            test_name = test_name,
+                            request_id = request_id,
+                            test_results_query = test_results_query)
 
 
 
 @views.route('/upload', methods = ['GET', 'POST'])
 @login_required
 def upload():
-    file = request.files['file']
-    request_id = request.form['request_id']
-    lab_user_id = current_user.id
+
+    files = request.files.getlist('file[]')
     now = datetime.datetime.now()
-    date_time_stamp = now.strftime("%m-%d-%Y-%H-%M-%S")
+    date_time_stamp = now.strftime("%Y-%m-%d %H:%M:%S")
+    secure_date_time_stamp = secure_filename(date_time_stamp)
+    request_id = request.form['request_id']
+    lab_id = current_user.id
+   
+    # Configure S3 credentials
+    s3 = boto3.client('s3', region_name='us-east-1',
+                    aws_access_key_id=os.getenv('s3_access_key_id'),
+                    aws_secret_access_key=os.getenv('s3_secret_access_key'))
     
-    UPLOAD_FOLDER = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'uploads')
-    upload_dir = os.path.join(UPLOAD_FOLDER, str(lab_user_id), str(request_id), date_time_stamp)
-    os.makedirs(upload_dir, exist_ok=True)
+    # Set the name of your S3 bucket
+    S3_BUCKET = 'usl-results-bucket'
 
-    filename = str(uuid.uuid4())
-    filepath = os.path.join(upload_dir, filename)
-    file.save(filepath)
+    for file in files:
+        s3_filename = f"{secure_date_time_stamp}_{secure_filename(file.filename)}"
+        s3.upload_fileobj(file, S3_BUCKET, s3_filename)
 
-    new_metadata_record = {
-        'request_id': request_id,
-        'lab_id': lab_user_id,
-        'date_time_stamp': date_time_stamp,
-        'filename': filename
-    }
+        new_test_results_record = {
+            'filename': file.filename,
+            'request_id': request_id,
+            'date_time_stamp': date_time_stamp,
+            'lab_id': lab_id
+        }
 
-    with db.session() as db_session:
-        test_result = test_results(**new_metadata_record)
-        db_session.add(test_result)
-        db_session.commit()
+        with db.session() as db_session:
+            new_results = test_results(**new_test_results_record)
+            db_session.add(new_results)
+            db_session.commit()
 
-    flash('File uploaded successfully', 'success')
-    return redirect(url_for('views.lab_requests'))
+    flash('File(s) uploaded successfully', 'success')
+    return redirect(url_for('views.manage_results', request_id=request_id))
 
 
 
@@ -782,22 +794,37 @@ def upload():
 @views.route('/download', methods = ['GET', 'POST'])
 @login_required
 def download():
-    request_id = request.form['request_id']
     filename = request.form['filename']
-    lab_user_id = current_user.id
+    date_time_stamp = request.form['date_time_stamp']
+    secure_date_time_stamp = secure_filename(date_time_stamp)
 
-    with db.session() as db_session:
-        date_time_stamp = db_session.query(test_results.date_time_stamp) \
-            .filter(test_results.filename == filename) \
-            .scalar()
+    s3_filename = f"{secure_date_time_stamp}_{secure_filename(filename)}"
+    print(s3_filename)
 
-    UPLOAD_FOLDER = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'uploads')
-    upload_dir = os.path.join(UPLOAD_FOLDER, str(lab_user_id), str(request_id), str(date_time_stamp))
+    s3 = boto3.client('s3', region_name='us-east-1',
+                    aws_access_key_id=os.getenv('s3_access_key_id'),
+                    aws_secret_access_key=os.getenv('s3_secret_access_key'))
 
-    # Force download as a PDF.
-    response = make_response(send_from_directory(upload_dir, filename, as_attachment=True, mimetype='application/pdf'))
-    response.headers["Content-Disposition"] = f"attachment; filename={filename}.pdf"
-    return response
+    S3_BUCKET = 'usl-results-bucket'
+
+    url = s3.generate_presigned_url(
+        ClientMethod='get_object',
+        Params={
+            'Bucket': S3_BUCKET,
+            'Key': s3_filename
+        },
+        ExpiresIn=3600
+    )
+
+    response = requests.get(url)
+
+    download_filename = secure_filename(filename)
+
+    headers = Headers()
+    headers.add('Content-Disposition', 'attachment', filename=download_filename)
+    response.headers['Content-Disposition'] = 'attachment; filename=' + download_filename
+
+    return Response(BytesIO(response.content), headers=headers)
 
 
 
@@ -807,28 +834,27 @@ def download():
 def delete():
     request_id = request.form['request_id']
     filename = request.form['filename']
-    lab_user_id = current_user.id
+    date_time_stamp = request.form['date_time_stamp']
+    secure_date_time_stamp = secure_filename(date_time_stamp)
+
+    s3_filename = f"{secure_date_time_stamp}_{secure_filename(filename)}"
+    print(s3_filename)
+
+    s3 = boto3.client('s3', region_name='us-east-1',
+                    aws_access_key_id=os.getenv('s3_access_key_id'),
+                    aws_secret_access_key=os.getenv('s3_secret_access_key'))
+
+    S3_BUCKET = 'usl-results-bucket'
+
+    s3.delete_object(Bucket=S3_BUCKET, Key=s3_filename)
 
     with db.session() as db_session:
-        result = db_session.query(test_results) \
-            .filter(test_results.filename == filename) \
-            .first()
-        date_time_stamp = result.date_time_stamp
-        file_id = result.id
-
-    UPLOAD_FOLDER = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'uploads')
-    upload_dir = os.path.join(UPLOAD_FOLDER, str(lab_user_id), str(request_id), str(date_time_stamp))
-
-    os.remove(os.path.join(upload_dir, filename))
-    os.rmdir(upload_dir)
-
-    with db.session() as db_session:
-        obj = db_session.query(test_results).get(file_id)
+        obj = db_session.query(test_results).filter_by(filename=filename).first()
         db_session.delete(obj)
         db_session.commit()
-    
+
     flash('File deleted successfully', 'success')
-    return redirect(url_for('views.lab_requests'))
+    return redirect(url_for('views.manage_results', request_id=request_id))
 
 
 
