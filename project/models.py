@@ -3,7 +3,7 @@ from sqlalchemy.dialects.mysql import BLOB
 from flask_login import UserMixin
 from itsdangerous import URLSafeTimedSerializer as Serializer
 from flask import Flask
-from sqlalchemy import DateTime
+from sqlalchemy import DateTime, Text
 
 
 class tests(db.Model):
@@ -82,3 +82,9 @@ class test_results(db.Model):
     lab_id = db.Column(db.Integer)
     date_time_stamp = db.Column(db.String(45))
     filename = db.Column(db.String(150))
+
+class chat_history(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    author_type = db.Column(db.Integer)
+    datetime_submitted = db.Column(DateTime)
+    comment = db.Column(Text(length=2**24-1))

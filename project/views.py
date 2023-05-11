@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, request, redirect, flash, url_for,
 from sqlalchemy import func
 from flask_login import login_required, current_user, login_user
 from project.models import tests, labs, labs_tests, individuals_login, labs_login, test_requests, \
-    email_subscribers, test_results
+    email_subscribers, test_results, chat_history
 import datetime
 from flask_mail import Message
 from . import db, mail
