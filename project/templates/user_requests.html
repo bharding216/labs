@@ -22,79 +22,44 @@
     {% endwith %}
 </div>
 
-<div class="container my-5" style="overflow-x: auto;">
-    <table id="user_requests_table">
-        <thead>
-            <tr>
-                <th class="text-center align-middle" scope="col">Test Name</th>
-                <th class="text-center align-middle" scope="col">Current Status</th>
-                <th class="text-center align-middle" scope="col">Lab's Response</th>
-                <th class="text-center align-middle" scope="col">Request ID</th>
-                <th class="text-center align-middle" scope="col">Sample Description</th>
-                <th class="text-center align-middle" scope="col"># of Samples</th>
-                <th class="text-center align-middle" scope="col" style="width: 30%">Customer Notes</th>
-                <th class="text-center align-middle" scope="col">Lab Name</th>
-                <th class="text-center align-middle" scope="col" style="width: 15%;">Date/Time Submitted</th>
-                <th class="text-center align-middle" scope="col">Purchase</th>
-            </tr>
-        </thead>
+<div class="container my-5" style="overflow-x: auto">
+    <div class="text-center py-4">
+        <h3>{{ user.first_name }}'s Lab Requests</h3>
+    </div>
 
-        <tbody>
-            {% for my_request, name in my_requests %}
+    <div style="width: 800px; overflow-x: auto;" class="mx-auto">
+        <table style="width: 100%">
+            <thead>
                 <tr>
-                    <td class="text-center align-middle">{{ my_request.test_name }}</td>
-
-                    {% if my_request.approval_status == 'Need more details' %}
-                    <td>
-                        <form action="{{ url_for('views.user_more_details') }}" method="POST">
-                            <input type="hidden" name="request_id" value="{{ my_request.request_id }}">
-                            <input type="hidden" name="lab_name" value="{{ name }}">
-                            <input type="hidden" name="extra_requirements" value="{{ my_request.extra_requirements }}">
-                            <input type="hidden" name="labs_response" value="{{ my_request.labs_response }}">
-                            <input type="submit" class="btn btn-more-details" value="Need more details" style="white-space: normal;">
-                        </form>
-                    </td> 
-                    {% else %}
-                    <td class="text-center align-middle">{{ my_request.approval_status }}</td>
-                    {% endif %}
-
-                    <td class="text-center align-middle">{{ my_request.labs_response }}</td>
-                    <td class="text-center align-middle">{{ my_request.request_id }}</td>
-                    <td class="text-center align-middle">{{ my_request.sample_description }}</td>
-                    <td class="text-center align-middle">{{ my_request.number_of_samples }}</td>                    
-                    <td class="text-center align-middle">{{ my_request.extra_requirements }}</td>
-                    <td class="text-center align-middle">{{ name }}</td>
-                    <td class="text-center align-middle">{{ my_request.datetime_submitted }}</td>
-                    <td class="text-center align-middle">
-
-                        {% if my_request.approval_status == 'Approved' %}
-
-                            <form action="{{ url_for('views.user_requests') }}" method="POST">
-                                <input type="hidden" name="lab_name" value="{{ name }}">
-                                <input type="hidden" name="test_name" value="{{ my_request.test_name }}">
-                                <input type="hidden" name="number_of_samples" value="{{ my_request.number_of_samples }}">
-                                <input type="hidden" name="request_id" value="{{ my_request.request_id }}">
-                                <input type="submit" class="btn btn-primary mt-3 mb-1 btn-sm" value="Buy Shipping Label & Test">
-                            </form>
-
-                            <form action="{{ url_for('views.checkout', lab_name = name, test_name = my_request.test_name) }}" method="POST">
-                                <input type="hidden" name="label_purchase" value="no">
-                                <input type="hidden" name="number_of_samples" value="{{ my_request.number_of_samples }}">
-                                <input type="hidden" name="request_id" value="{{ my_request.request_id }}">
-                                <input type="submit" class="btn btn-primary mb-3 mt-1 btn-sm" value="Purchase Test Only">
-                            </form>
-
-                        {% else %}
-
-                            Request not yet approved
-
-                        {% endif %}
-
-                    </td>
+                    <th class="text-center align-middle" scope="col" style="width: 100px; padding-left: 10px;">Request ID</th>
+                    <th class="text-center align-middle" scope="col" style="width: 200px; padding: 0px 20px;">Test Name</th>
+                    <th class="text-center align-middle" scope="col" style="width: 200px; padding: 0px 20px;">Current Status</th>
+                    <th class="text-center align-middle" scope="col" style="width: 250px; padding: 0px 0px;">Date/Time Submitted (CST)</th>
+                    <th class="text-center align-middle" scope="col" style="padding-right: 0px;">Manage Request</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+
+            <tbody>
+                {% for my_request, name in my_requests %}
+                    <tr>
+                        <td class="text-center align-middle" style="width: 100px; padding-left: 10px;">{{ my_request.request_id }}</td>
+                        <td class="text-center align-middle" style="width: 200px; padding: 0px 20px;">{{ my_request.test_name }}</td>
+                        <td class="text-center align-middle" style="width: 200px; padding: 0px 20px;">{{ my_request.approval_status }}</td>
+                        <td class="text-center align-middle" style="width: 250px; padding: 0px 20px;">{{ my_request.datetime_submitted.strftime('%b-%d-%Y %I:%M %p') }}</td>
+                        <td class="text-center align-middle" style="padding-right: 20px;">
+                            <form action="{{ url_for('views.view_request_details', request_id = my_request.request_id) }}" method="POST">
+                                <button type="submit" 
+                                    class="btn btn-primary"
+                                    style="width:auto">
+                                    Select
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
 {% endblock %}

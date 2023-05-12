@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, flash, url_for, \
     session, send_file, jsonify, make_response, Response, send_from_directory, current_app
 from sqlalchemy import func
+from sqlalchemy.orm import joinedload
 from flask_login import login_required, current_user, login_user
 from project.models import tests, labs, labs_tests, individuals_login, labs_login, test_requests, \
     email_subscribers, test_results, chat_history
@@ -25,8 +26,6 @@ import boto3
 import requests
 from io import BytesIO
 from werkzeug.datastructures import Headers
-
-# This is a test
 
 views = Blueprint('views', __name__)
 
@@ -530,127 +529,19 @@ def new_email_subscriber():
 @views.route('/lab_requests', methods=['GET', 'POST'])
 @login_required
 def lab_requests():
-    try:
-        if request.method == 'POST':
-            try:
-                request_id = request.form['id']
-                action = request.form['action']
+    with db.session() as db_session:
+        lab_object = current_user.labs
+        lab_id = lab_object.id
 
-                if action == 'approve':
-                    status = 'Approved'
-
-                # you can probably remove this elif and else part
-                elif action == 'deny':
-                    status = 'Need more details'
-                else:
-                    status = None
-        
-
-                if status:
-                    with db.session() as db_session:
-                        db_session.query(test_requests).filter_by(request_id = request_id).update({'approval_status': status})
-                        db.session.commit()
-                    
-
-
-
-
-                        request_object = db_session.query(test_requests) \
-                                            .filter_by(request_id = request_id) \
-                                            .first()
-                        if request_object:    
-                            selected_test = request_object.test_name
-                            number_of_samples = request_object.number_of_samples
-                            sample_description = request_object.sample_description
-                            extra_requirements = request_object.extra_requirements
-                            lab = db_session.query(labs) \
-                                    .filter_by(id = request_object.lab_id) \
-                                    .first()
-                            lab_name = lab.name
-
-                            individual_id = request_object.requestor_id
-                            individual = db_session.query(individuals_login) \
-                                            .filter_by(id = individual_id).first()
-                            first_name = individual.first_name
-                            user_email = individual.email
-
-
-                    # Send an email to the customer letting them know 
-                    # that the provider is requesting additional details.
-                    msg = Message("Test Request Approved",
-                        sender = ("Unified Science Labs", 'team@unifiedsl.com'),
-                        recipients = ['team@unifiedsl.com',
-                                        user_email
-                                        ]
-                        )
-                
-                    msg.html = render_template('request_status_changed_email.html',
-                                            first_name = first_name,
-                                            lab_name = lab_name,
-                                            selected_test = selected_test,
-                                            number_of_samples = number_of_samples,
-                                            sample_description = sample_description,
-                                            extra_requirements = extra_requirements,
-                                            approval_status = 'Approved',
-                                            request_id = request_id
-                                            )
-
-                    mail.send(msg)
-
-
-
-
-                    flash('Status updated successfully', 'success')
-                else:
-                    flash('Invalid action.', 'error')
-
-                return redirect(url_for('views.lab_requests'))
-
-            # Handle any exceptions that might occur when processing the POST request. It 
-            # catches any KeyError exceptions that might occur if the 'id' or 'action' 
-            # keys are not present in the request form.
-            except KeyError:
-                flash('Invalid request.', 'error')
-                return redirect(url_for('views.lab_requests'))
-
-            except Exception as e:
-                flash('An error occurred: ' + str(e), 'error')
-                return redirect(url_for('views.lab_requests'))
-
-
-
-
-
-
-        # Handle any exceptions that might occur when retrieving the lab information 
-        # and test requests from the database. It catches any AttributeError exceptions 
-        # that might occur if the user information is invalid, and catches any other 
-        # exceptions that might occur.
-        try:
-            with db.session() as db_session:
-                lab_info_id = db_session.query(labs_login).filter_by(id = current_user.id).first().lab_id # this is an integer type
-                lab_requests = db_session.query(test_requests) \
-                                        .filter_by(lab_id = lab_info_id) \
-                                        .order_by(test_requests.datetime_submitted.desc()) \
-                                        .all() # this is a list type
-
-        except AttributeError:
-            flash('Invalid user information.', 'error')
-            return redirect(url_for('views.lab_requests'))
-
-        # Catch any other exceptions that might occur while running the code, 
-        # and displays an error message to the user.
-        except Exception as e:
-            flash('An error occurred: ' + str(e), 'error')
-            return redirect(url_for('views.lab_requests'))
+        lab_requests = db_session.query(test_requests) \
+                                .filter_by(lab_id = lab_id) \
+                                .order_by(test_requests.datetime_submitted.desc()) \
+                                .all() 
 
         return render_template('lab_requests.html', 
                                 user = current_user,
                                 lab_requests = lab_requests)
 
-    except Exception as e:
-        flash('An error occurred: ' + str(e), 'error')
-        return redirect(url_for('views.lab_requests'))
 
 
 
@@ -733,7 +624,9 @@ def submit_details():
 @views.route('/manage_results/<int:request_id>', methods = ['GET', 'POST'])
 @login_required
 def manage_results(request_id):
-    lab_id = current_user.id
+    lab_object = current_user.labs
+    lab_id = lab_object.id
+
     test_request = test_requests.query.filter_by(request_id=request_id).first()
     test_name = test_request.test_name
 
@@ -759,8 +652,10 @@ def upload():
     date_time_stamp = now.strftime("%Y-%m-%d %H:%M:%S")
     secure_date_time_stamp = secure_filename(date_time_stamp)
     request_id = request.form['request_id']
-    lab_id = current_user.id
-   
+    
+    lab_object = current_user.labs
+    lab_id = lab_object.id
+
     # Configure S3 credentials
     s3 = boto3.client('s3', region_name='us-east-1',
                     aws_access_key_id=os.getenv('s3_access_key_id'),
@@ -786,7 +681,7 @@ def upload():
             db_session.commit()
 
     flash('File(s) uploaded successfully', 'success')
-    return redirect(url_for('views.manage_results', request_id=request_id))
+    return redirect(url_for('views.view_request_details', request_id=request_id))
 
 
 
@@ -799,7 +694,6 @@ def download():
     secure_date_time_stamp = secure_filename(date_time_stamp)
 
     s3_filename = f"{secure_date_time_stamp}_{secure_filename(filename)}"
-    print(s3_filename)
 
     s3 = boto3.client('s3', region_name='us-east-1',
                     aws_access_key_id=os.getenv('s3_access_key_id'),
@@ -838,7 +732,6 @@ def delete():
     secure_date_time_stamp = secure_filename(date_time_stamp)
 
     s3_filename = f"{secure_date_time_stamp}_{secure_filename(filename)}"
-    print(s3_filename)
 
     s3 = boto3.client('s3', region_name='us-east-1',
                     aws_access_key_id=os.getenv('s3_access_key_id'),
@@ -854,7 +747,7 @@ def delete():
         db_session.commit()
 
     flash('File deleted successfully', 'success')
-    return redirect(url_for('views.manage_results', request_id=request_id))
+    return redirect(url_for('views.view_request_details', request_id=request_id))
 
 
 
@@ -894,6 +787,85 @@ def user_requests():
                                     user = current_user,
                                     my_requests = my_requests
                                     )
+
+
+
+@views.route('/view_request_details/<int:request_id>', methods=['GET', 'POST'])
+@login_required
+def view_request_details(request_id):
+    with db.session() as db_session:
+        request_object = db_session.query(test_requests) \
+            .filter_by(request_id = request_id) \
+            .order_by(test_requests.datetime_submitted.desc()) \
+            .first()
+
+        test_result_records = db_session.query(test_results) \
+            .filter_by(request_id = request_id) \
+            .order_by(test_results.date_time_stamp.desc()) \
+            .all()
+
+        chat_query = db.session.query(chat_history).\
+            join(test_requests, (chat_history.lab_id == test_requests.lab_id) & 
+                                (chat_history.customer_id == test_requests.requestor_id)).\
+            options(joinedload(chat_history.customer), joinedload(chat_history.lab)).\
+            filter(test_requests.request_id == request_id)
+
+        chat_history_records = chat_query.all()
+
+        return render_template('view_request_details.html',
+                            user = current_user,
+                            request_object = request_object,
+                            chat_history_records = chat_history_records,
+                            test_result_records = test_result_records
+                            )
+
+
+
+@views.route('/post_chat_message', methods=['GET', 'POST'])
+@login_required
+def post_chat_message():
+    message = request.form['message']
+    request_id = request.form['request_id']
+    now = datetime.datetime.now()
+    date_time_stamp = now.strftime("%Y-%m-%d %H:%M:%S")
+
+    with db.session() as db_session:
+        request_object = db_session.query(test_requests) \
+            .filter_by(request_id = request_id) \
+            .first()
+
+        lab_id = request_object.lab_id
+        customer_id = request_object.requestor_id
+
+        if session['type'] == 'customer':
+            author_type = 'customer'
+        elif session['type'] == 'lab':
+            author_type = 'lab'
+        else:
+            return 'Error: Session user_type not set'
+
+        new_comment = chat_history(author_type = author_type, 
+                                datetime_submitted = date_time_stamp, 
+                                comment = message, 
+                                lab_id = lab_id,
+                                customer_id = customer_id
+                                )
+        
+        db.session.add(new_comment)
+        db.session.commit()
+
+        flash('New comment successfully added!', category='success')
+
+        return redirect(url_for('views.view_request_details', 
+                        request_id = request_id))
+
+
+
+@views.route('/change_request_status/<int:request_id>', methods=['GET', 'POST'])
+@login_required
+def change_request_status(request_id):
+    return 'request status changed!'
+
 
 
 

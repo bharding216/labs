@@ -88,3 +88,7 @@ class chat_history(db.Model):
     author_type = db.Column(db.Integer)
     datetime_submitted = db.Column(DateTime)
     comment = db.Column(Text(length=2**24-1))
+    lab_id = db.Column(db.Integer, db.ForeignKey('labs.id'))
+    lab = db.relationship('labs', backref='chat_history')
+    customer_id = db.Column(db.Integer, db.ForeignKey('individuals_login.id'))
+    customer = db.relationship('individuals_login', backref='chat_history')

@@ -29,110 +29,49 @@
 </div>
 
 
-<div class="container mt-5">
-    <h1>Provider Requests</h1>
-    <br>
-    <p>Showing test requests for: <b>{{ user.lab_name }}</b></p>
-    <p>Note that this table is horizontally scrollable.</p>
-
-    <div style="text-align: right;">
-        <a href="#" onclick="scrollToRight()">Scroll to Right -></a>
+<div class="container my-5" style="overflow-x: auto">
+    <div class="text-center py-4">
+        <h3>Test Requests for {{ user.lab_name }}</h3>
     </div>
-</div>
+
+    <div style="width: 800px; overflow-x: auto;" class="mx-auto">
+        <table style="width: 100%">
+            <thead>
+                <tr>
+                    <th class="text-center align-middle" scope="col" style="width: 100px; padding-left: 10px;">Request ID</th>
+                    <th class="text-center align-middle" scope="col" style="width: 200px; padding: 0px 20px;">Test Name</th>
+                    <th class="text-center align-middle" scope="col" style="width: 200px; padding: 0px 20px;">Current Status</th>
+                    <th class="text-center align-middle" scope="col" style="width: 250px; padding: 0px 0px;">Date/Time Submitted (CST)</th>
+                    <th class="text-center align-middle" scope="col" style="padding-right: 0px;">Manage Request</th>
+                </tr>
+            </thead>
 
 
-
-        <div class="container py-5" style="overflow-x: auto;" id="table_container">
-            <table id="lab_requests_table">
-                <thead>
+            <tbody>
+                {% for request in lab_requests %}
                     <tr>
-                        <th class="text-center" scope="col" style="width: 5%;">Test Name</th>
-                        <th class="text-center" scope="col" style="width: 5%;">Request ID</th>
-                        <th class="text-center" scope="col" style="width: 15%;">Date/Time Submitted by Customer</th>
-                        <th class="text-center" scope="col" style="width: 10%;">Sample Description</th>
-                        <th class="text-center" scope="col" style="width: 4%;"># of Samples</th>
-                        <th class="text-center" scope="col" style="width: 25%;">Customer Notes</th>
-                        <th class="text-center" scope="col" style="width: 15%;">Your Responses</th>
-                        <th class="text-center" scope="col" style="width: 3%;">Approval Status</th>
-                        <th class="text-center" scope="col" style="width: 5%;">Edit Approval Status</th>
-                        <th class="text-center" scope="col" style="width: 5%;">Payment Status</th>
-                        <th class="text-center" scope="col" style="width: 4%;">Transit Status</th>
-                        <th class="text-center" scope="col" style="width: 5%;">Manage Results</th>
+                        <td class="text-center align-middle" style="width: 100px; padding-left: 10px;">{{ request.request_id }}</td>
+                        <td class="text-center align-middle" style="width: 200px; padding: 0px 20px;">{{ request.test_name }}</td>
+                        <td class="text-center align-middle" style="width: 200px; padding: 0px 20px;">{{ request.approval_status }}</td>
+                        <td class="text-center align-middle" style="width: 250px; padding: 0px 20px;">{{ request.datetime_submitted.strftime('%b-%d-%Y %I:%M %p') }}</td>
+                        <td class="text-center align-middle" style="padding-right: 20px;">
+                            <form action="{{ url_for('views.view_request_details', request_id = request.request_id) }}" method="POST">
+                                <button type="submit" 
+                                    class="btn btn-primary"
+                                    style="width:auto">
+                                    Select
+                                </button>
+                            </form>
+                        </td>
                     </tr>
-                </thead>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
 
 
-                <tbody>
-                    {% for lab_request in lab_requests %}
-                        <tr>
-                            <td class="text-center">{{ lab_request.test_name }}</td>
-                            <td class="text-center">{{ lab_request.request_id }}</td>
-                            <td class="text-center">{{ lab_request.datetime_submitted }}</td>
-                            <td class="text-center">{{ lab_request.sample_description }}</td>
-                            <td class="text-center">{{ lab_request.number_of_samples }}</td>
-                            <td class="text-center">{{ lab_request.extra_requirements }}</td>
-                            <td class="text-center">{{ lab_request.labs_response }}</td>
-                            <td class="text-center">{{ lab_request.approval_status }}</td>
-
-                            <td class="text-center">
-                                
-                                <!-- Hide/Show Approved button -->
-                                {% if lab_request.approval_status|lower != "approved" %}
-
-                                    <!--Note that the "return" keyword is important. It ensures that the form
-                                        is only submitted if the function returns true.-->
-                                    <form action="{{ url_for('views.lab_requests') }}" 
-                                        method="POST"
-                                        onsubmit="return confirmApproval()">
-
-                                        <!--pass extra data to the Flask route-->
-                                        <input type="hidden" name="id" value="{{ lab_request.request_id }}">
-                                        <input type="hidden" name="action" value="approve">
-
-                                        <input type="submit" class="btn btn-outline-success mt-2 mb-1 btn-sm" value="Approve">
-                                    </form>
-
-                                {% endif %}
-
-                                <!-- Hide/Show 'Need More Details' button -->
-                                <!--{% if "need more details" not in lab_request.approval_status|lower %}-->
-
-                                    <button type="button" class="btn btn-outline-danger mt-1 mb-2 btn-sm" 
-                                        data-bs-toggle="modal" data-bs-target="#exampleModal" 
-                                        data-myvar="{{ lab_request.request_id }}"
-                                        data-testname-var="{{ lab_request.test_name }}">
-
-                                        Need more details
-
-                                    </button>
-
-                                <!--{% endif %}-->
-
-                            </td>
-
-                            <td class="text-center">{{ lab_request.payment_status }}</td>
-                            <td class="text-center">{{ lab_request.transit_status }}</td>
-
-
-                            <!-- Manage test results -->
-                            <td class="text-center">
-                                <form action="{{ url_for('views.manage_results', request_id = lab_request.request_id) }}" method="POST">
-                                    <input type="hidden" name="test_name" value="{{ lab_request.test_name }}">
-                                    <input type="submit" class="btn btn-primary my-1" value="Select">
-                                </form>
-                            </td>
-
-                        </tr>
-
-                    {% endfor %}
-                </tbody>
-
-            </table>
-
-
-
-
-    <!-- Modal -->
+    <!--
     <div class="modal fade" 
             id="exampleModal" 
             tabindex="-1" 
@@ -174,8 +113,7 @@
             </div>
         </div>
 
-    <!-- END OF MODAL -->
-    </div>
+    </div>-->
 
 
 
@@ -188,12 +126,7 @@
 
 <script>
 
-function scrollToRight() {
-var myElement = document.getElementById("table_container");
-myElement.scrollLeft = myElement.scrollWidth;
-}
-
-
+/*
     function confirmApproval() {
         var result = confirm("Are you sure you want to change the status to 'Approved'?");
     
@@ -262,7 +195,7 @@ myElement.scrollLeft = myElement.scrollWidth;
             }
         });
 
-        });
+        });*/
 
 
 

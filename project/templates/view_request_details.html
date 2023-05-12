@@ -1,0 +1,299 @@
+{% extends 'base.html' %}
+
+{% block title %}Request Details | Unified Science Labs{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container my-5">
+    {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+            {% for category, message in messages %}
+                {% if category == 'success' %}
+                    <div class="alert alert-success mx-5" role="alert">
+                        {{ message }}
+                    </div>
+                {% else %}
+                    <div class="alert alert-danger mx-5" role="alert">
+                        {{ message }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+    {% endif %}
+    {% endwith %}
+</div>
+
+
+
+
+<div class="container my-5" style="overflow-x: auto">
+
+
+
+    <div class="text-center py-4">
+        <h3>Viewing request details for Request ID: {{ request_object.request_id }}</h3>
+    </div>
+
+    <div class="container my-5">
+        <h4>Request Details</h4>
+        <ul>
+            <li>Request ID: {{ request_object.request_id }}</li>
+            <li>Test Name: {{ request_object.test_name }}</li>
+            <li>Current Status: {{ request_object.approval_status }}  <a href="#" onclick="showDropdown()">Edit</a></li>
+            <div class="mb-3 mb-md-0" id="div-dropdown" style="display: none;">
+                <form action="{{ url_for('views.change_request_status', request_id = request_object.request_id) }}" method="POST">
+
+                    <select name="status-dropdown" class="form-select my-3" 
+                            style="width: auto;" id="status-dropdown">
+
+                        <option value="" selected disabled="disabled">Choose a new status</option>
+                        <option value="approved">Approved</option>
+                        <option value="need more details">Need more details</option>
+                    </select>
+
+                    <button type="submit" 
+                        id="change-status-button"
+                        class="btn btn-primary btn-sm mb-3"
+                        style="width:auto" disabled>
+                        Change status
+                    </button>
+
+                </form>
+            </div>
+
+
+
+            <li>Date/Time Submitted (CST): {{ request_object.datetime_submitted.strftime('%b-%d-%Y %I:%M %p') }}</li>
+            <li># of Samples: {{ request_object.number_of_samples }}</li>
+            <li>Sample Description: {{ request_object.sample_description }}</li>
+            <li>Payment Status: {{ request_object.payment_status }}</li>
+        </ul>
+    </div>
+
+
+
+
+    <div class="container my-5" >
+        <h4 class="pb-3">Chat History</h4>
+
+        {% if chat_history_records|length == 0 %}
+
+            <p>Use our chat tool to directly message your lab provider.</p>
+
+        {% else %}
+
+            <button type="button" 
+                    class="btn btn-primary"
+                    style="width:auto"
+                    onclick="toggleChatHistory()"
+                    id="chat_button">
+                    Hide
+            </button>
+
+            <div id="chat_history">
+                <div style="width: 800px; overflow-x: auto;" class="mx-auto">
+                    <table style="width: 100%">
+                        <thead>
+                            <tr>
+                                <th class="text-center align-middle" scope="col" style="width: 100px;">Author</th>
+                                <th class="text-center align-middle" scope="col" style="width: 300px; padding: 0px 20px;">Comment</th>
+                                <th class="text-center align-middle" scope="col" style="width: 250px; padding: 0px 0px;">Date/Time (CST)</th>
+                            </tr>
+                        </thead>
+            
+                        <tbody>
+                            {% for record in chat_history_records %}
+                                <tr>
+                                    <td class="text-center align-middle" style="width: 100px; padding-left: 10px;">{{ record.author_type }}</td>
+                                    <td class="text-center align-middle" style="width: 200px; padding: 0px 20px;">{{ record.comment }}</td>
+                                    <td class="text-center align-middle" style="width: 200px; padding: 0px 20px;">{{ record.datetime_submitted.strftime('%b-%d-%Y %I:%M %p') }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {% endif %}
+
+
+                <div class="container my-5" style="width: 800px;">
+                    <form action="{{ url_for('views.post_chat_message') }}" method="POST">
+                        <div class="row justify-content-center">
+                            <div class="col-6">
+                                <textarea class="form-control" placeholder="Message" aria-label="Message" aria-describedby="basic-addon2" name="message" required></textarea>
+                            </div>       
+
+                            <input type="hidden" name="request_id" value="{{ request_object.request_id }}">
+
+                            <div class="col-4 d-flex justify-content-center align-items-center">
+                                <button class="btn btn-primary" 
+                                        type="submit" style="height: auto;">Add message</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+
+        
+    </div>
+
+
+
+
+
+
+    <div class="container my-5">
+        <div style="overflow-x: auto;">
+            <h4>Results</h4>
+
+            {% if session['type'] == 'lab' %}
+            <div class="container my-5">
+                <form action="{{ url_for('views.upload') }}" method="POST" enctype="multipart/form-data" onsubmit="return confirmUpload()">
+        
+                    <div class="mb-4 col-md-8 col-lg-6">
+                        <input type="file" name="file[]" class="form-control" multiple required>
+                        <p>To submit multiple files, hold down the control key (Ctrl)</p>
+                    </div>
+        
+                    <input type="hidden" name="request_id" value="{{ request_object.request_id }}">
+        
+                    <button type="submit" 
+                        class="btn btn-primary"
+                        style="width:auto">
+                        Upload
+                    </button>
+        
+                </form>
+            </div>
+            {% endif %}
+
+            {% if test_result_records|length == 0 %}
+
+                <p>No results have been uploaded yet.</p>
+
+            {% else %}
+
+
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="text-center align-middle" scope="col" 
+                                style="width: 300px; padding: 0px 20px;">
+                                Document Title
+                            </th>
+                
+                            {% if session['type'] == 'customer' %}
+                            <th class="text-center align-middle" scope="col" 
+                                style="width: 200px; padding: 0px 20px;">
+                                View Results
+                            </th>
+                            {% elif session['type'] == 'lab' %}
+                            <th class="text-center align-middle" scope="col" 
+                                style="width: 200px; padding: 0px 20px;" colspan="2">
+                                Manage Results
+                            </th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+            
+                    <tbody>
+                        {% for record in test_result_records %}
+                            <tr>
+                                <td class="text-center align-middle" style="padding-left: 10px;">{{ record.filename }}</td>
+        
+                                <td class="text-center align-middle" style="padding: 0px 20px;">
+                                    <form action="{{ url_for('views.download') }}" method="POST">
+                                        <input type="hidden" name="filename" value="{{ record.filename }}">
+                                        <input type="hidden" name="date_time_stamp" value="{{ record.date_time_stamp }}">
+                                        <button type="submit" 
+                                            class="btn btn-primary"
+                                            style="width:auto">
+                                            Download
+                                        </button>
+                                    </form>
+                                </td>
+                                {% if session['type'] == 'lab' %}
+                                <td class="text-center align-middle" style="padding: 0px 20px;">
+                                    <form action="{{ url_for('views.delete') }}" method="POST">
+                                        <input type="hidden" name="filename" value="{{ record.filename }}">
+                                        <input type="hidden" name="date_time_stamp" value="{{ record.date_time_stamp }}">
+                                        <input type="hidden" name="request_id" value="{{ request_object.request_id }}">
+                                        <button type="submit" 
+                                            class="btn btn-primary"
+                                            style="width:auto">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            {% endif %}
+
+        </div>
+    </div>
+
+
+
+
+
+</div>
+
+
+
+
+<script>
+
+    function toggleChatHistory() {
+      var div = document.getElementById("chat_history");
+      var button = document.getElementById("chat_button")
+      if (div.style.display === "none") {
+        div.style.display = "block";
+        button.innerHTML = "Hide";
+      } else {
+        div.style.display = "none";
+        button.innerHTML = "Show";
+      }
+    }
+
+
+    function confirmUpload() {
+        const confirmation = window.confirm("Are you sure you've attached all your files? A confirmation email will be sent to the customer once you upload.");
+        if (confirmation) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    function showDropdown() {
+        var dropdownMenu = document.getElementById("div-dropdown");
+        if (dropdownMenu.style.display === "none") {
+            dropdownMenu.style.display = "block";
+        } else {
+            dropdownMenu.style.display = "none";
+        }
+        }
+
+        const dropdown = document.getElementById('status-dropdown');
+        const button = document.getElementById('change-status-button');
+
+    dropdown.addEventListener('change', () => {
+        if (dropdown.value !== '') {
+            button.disabled = false;
+        } else {
+            button.disabled = true;
+        }
+    });
+
+</script>
+
+{% endblock %}
