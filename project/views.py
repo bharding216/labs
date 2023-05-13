@@ -864,8 +864,19 @@ def post_chat_message():
 @views.route('/change_request_status/<int:request_id>', methods=['GET', 'POST'])
 @login_required
 def change_request_status(request_id):
-    return 'request status changed!'
+    if request.method == 'POST':
+        new_status = request.form['status-dropdown']
 
+        with db.session() as db_session:
+            request_object = db_session.query(test_requests) \
+                .filter_by(request_id = request_id) \
+                .first()
+
+            request_object.approval_status = new_status
+            db_session.commit()
+
+            flash('Request status updated!', category='success')
+            return redirect(url_for('views.view_request_details', request_id=request_id))
 
 
 
