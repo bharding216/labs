@@ -31,8 +31,6 @@
 
 <div class="container my-5" style="overflow-x: auto">
 
-
-
     <div class="text-center py-4">
         <h3>Viewing request details for Request ID: {{ request_object.request_id }}</h3>
     </div>
@@ -78,14 +76,40 @@
     </div>
 
 
+    {% if request_object.approval_status == 'approved' and user.type == 'customer' %}
+    <div class="container my-5" >
+        <form action="{{ url_for('views.user_requests') }}" method="POST">
+            <input type="hidden" name="lab_name" value="{{ lab_name }}">
+            <input type="hidden" name="test_name" value="{{ request_object.test_name }}">
+            <input type="hidden" name="number_of_samples" value="{{ request_object.number_of_samples }}">
+            <input type="hidden" name="request_id" value="{{ request_object.request_id }}">
+            <input type="submit" class="btn btn-primary mt-3 mb-1 btn-sm" value="Buy Shipping Label & Test">
+        </form>
+
+        <form action="{{ url_for('views.checkout', lab_id = request_object.lab_id, test_name = request_object.test_name) }}" method="POST">
+            <input type="hidden" name="label_purchase" value="no">
+            <input type="hidden" name="number_of_samples" value="{{ request_object.number_of_samples }}">
+            <input type="hidden" name="request_id" value="{{ request_object.request_id }}">
+            <input type="submit" class="btn btn-primary mb-3 mt-1 btn-sm" value="Purchase Test Only">
+        </form>
+
+
+    </div>
+    {% endif %}
+
 
 
     <div class="container my-5" >
         <h4 class="pb-3">Chat History</h4>
 
-        {% if chat_history_records|length == 0 %}
+        {% if chat_history_records|length == 0 and user.type == 'customer' %}
 
             <p>Use our chat tool to directly message your lab provider.</p>
+
+        {% elif chat_history_records|length == 0 and user.type == 'lab' %}
+
+            <p>Use our chat tool to directly message the customer.</p>
+
 
         {% else %}
 

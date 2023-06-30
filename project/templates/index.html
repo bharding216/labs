@@ -68,7 +68,7 @@
 
                                 <option selected disabled="disabled">Choose a lab test</option>
                                 {% for test in tests|sort(attribute = 'name') %}
-                                    <option value="{{ test.name }}">{{ test.name }}</option>
+                                    <option value="{{ test.name }}">{{ test.name|custom_title }}</option>
                                 {% endfor %}
 
                             </select>

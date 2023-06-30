@@ -55,6 +55,17 @@ def index():
                                user = current_user
                                )
 
+# A custom filter for the homepage test dropdown menu.
+@views.app_template_filter('custom_title')
+def custom_title(value):
+    if value == 'GC-MS':
+        return 'GC-MS'
+    elif value == 'metals by ICP':
+        return 'Metals by ICP'
+    else:
+        return value.title()
+
+
 @views.route('/about', methods=['GET'])
 def about():
     return render_template('about.html', user = current_user)
@@ -799,6 +810,9 @@ def view_request_details(request_id):
             .order_by(test_requests.datetime_submitted.desc()) \
             .first()
 
+        lab_record = labs.query.filter_by(id=request_object.lab_id).first()
+        lab_name = lab_record.name
+
         test_result_records = db_session.query(test_results) \
             .filter_by(request_id = request_id) \
             .order_by(test_results.date_time_stamp.desc()) \
@@ -816,7 +830,8 @@ def view_request_details(request_id):
                             user = current_user,
                             request_object = request_object,
                             chat_history_records = chat_history_records,
-                            test_result_records = test_result_records
+                            test_result_records = test_result_records,
+                            lab_name = lab_name
                             )
 
 
@@ -1334,18 +1349,14 @@ def shipping():
 
 
 
-@views.route('/checkout/<string:lab_name>/<string:test_name>', methods=['GET', 'POST'])
+@views.route('/checkout/<int:lab_id>/<string:test_name>', methods=['GET', 'POST'])
 @login_required
-def checkout(lab_name, test_name):
+def checkout(lab_id, test_name):
     if request.method == 'POST':
-        lab_object = labs.query.filter_by(name = lab_name).first()
-        lab_id = lab_object.id
-
-        test_object = tests.query.filter_by(name = test_name).first()
-        test_id = test_object.id
+        test_record = tests.query.filter_by(name = test_name).first()
 
         row_in_labs_tests = labs_tests.query.filter_by(lab_id = lab_id, 
-                                                       test_id = test_id) \
+                                                       test_id = test_record.id) \
                                                        .first()
         price = row_in_labs_tests.price
         stripe_price = int(price * 100)
@@ -1368,7 +1379,7 @@ def checkout(lab_name, test_name):
                             'currency': 'usd',
                             'unit_amount': stripe_price,
                             'product_data': {
-                                'name': test_name,
+                                'name': test_record.name,
                                 },
                             }, 'quantity': number_of_samples,
                         },
@@ -1410,7 +1421,7 @@ def checkout(lab_name, test_name):
                         'currency': 'usd',
                         'unit_amount': stripe_price,
                         'product_data': {
-                            'name': test_name,
+                            'name': test_record.name,
                         },
                     },
                     'quantity': number_of_samples,

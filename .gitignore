@@ -2,3 +2,4 @@
 project/__pycache__/
 .env
 flask_session/
+env
