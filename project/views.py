@@ -1361,6 +1361,12 @@ def checkout(lab_id, test_name):
         row_in_labs_tests = labs_tests.query.filter_by(lab_id = lab_id, 
                                                        test_id = test_record.id) \
                                                        .first()
+        print(lab_id, test_record.id)
+        
+        if not row_in_labs_tests:
+            return ("Sorry, it's not you, it's us. It looks like that lab no longer offers this test."
+                "Please contact Unified Science Labs for further assistance.")
+        
         price = row_in_labs_tests.price
         stripe_price = int(price * 100)
 
