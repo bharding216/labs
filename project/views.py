@@ -1275,7 +1275,7 @@ def shipping():
         lab_name = session.get('lab_name_for_shipping_label')
         lab = labs.query.filter_by(name = lab_name).first()
         formatted_phone = f"{lab.phone[:2]} {lab.phone[2:5]} {lab.phone[5:8]} {lab.phone[8:]}"
-
+        lab_id = lab.id
 
         address_to = {
             "name": lab.name,
@@ -1324,7 +1324,8 @@ def shipping():
                                user = current_user,
                                rates = sorted_rates,
                                lab_name = lab_name,
-                               test_name = test_name
+                               test_name = test_name,
+                               lab_id = lab_id
                                )
 
 
@@ -1354,6 +1355,8 @@ def shipping():
 def checkout(lab_id, test_name):
     if request.method == 'POST':
         test_record = tests.query.filter_by(name = test_name).first()
+        if not test_record:
+            return 'No test record found! Please contact Unified Science Labs for assistance.'
 
         row_in_labs_tests = labs_tests.query.filter_by(lab_id = lab_id, 
                                                        test_id = test_record.id) \
