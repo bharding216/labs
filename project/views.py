@@ -42,6 +42,9 @@ def index():
             zipcode = request.form['zipcode']
             if zipcode:
                 session['zipcode'] = zipcode
+            else:
+                flash('Please enter a valid ZIP Code before submitting the form.')
+                return redirect(url_for('views.index'))
 
             return redirect(url_for('views.lab_function'))
 
