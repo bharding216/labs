@@ -1412,7 +1412,10 @@ def checkout(lab_id, test_name):
                                       ),
                 cancel_url = url_for('views.index', 
                                      _external = True
-                                     )
+                                     ),
+                consent_collection={
+                    'terms_of_service': 'required'
+                },
             )
 
             session['stripe_session'] = stripe_session
@@ -1440,7 +1443,10 @@ def checkout(lab_id, test_name):
                 }],
                 mode = 'payment',
                 success_url = url_for('views.success', _external = True),
-                cancel_url = url_for('views.index', _external = True)
+                cancel_url = url_for('views.index', _external = True),
+                consent_collection={
+                    'terms_of_service': 'required'
+                }
             )
             session['stripe_session'] = stripe_session
 
