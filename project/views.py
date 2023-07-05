@@ -1371,7 +1371,7 @@ def checkout(lab_id, test_name):
                 "Please contact Unified Science Labs for further assistance.")
         
         price = row_in_labs_tests.price
-        stripe_price = int(price * 100)
+        stripe_price = int(price * 110)
 
         stripe.api_key = os.getenv('stripe_secret_key')
 
