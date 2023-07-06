@@ -36,71 +36,86 @@
     </div>
 
     <div class="container my-5">
-        <h4>Request Details</h4>
-        <ul>
-            <li>Request ID: {{ request_object.request_id }}</li>
-            <li>Test Name: {{ request_object.test_name }}</li>
-            <li>Current Status: {{ request_object.approval_status.capitalize() }}  
+        <div class="row">
+            <div class="col-12 col-lg-6 mb-5 mb-lg-0">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center table-header-primary">
+                        <h4 class="m-0">Request Details</h4>
+                    </div>
 
-                {% if session['type'] == 'lab' %}
-                <a href="#" onclick="toggleDropdown()" id="edit-link">Edit</a></li>
-            
-                <div class="mb-3 mb-md-0" id="div-dropdown" style="display: none;">
-                    <form action="{{ url_for('views.change_request_status', request_id = request_object.request_id) }}" method="POST">
-
-                        <select name="status-dropdown" class="form-select my-3" 
-                                style="width: auto;" id="status-dropdown">
-
-                            <option value="" selected disabled="disabled">Choose a new status</option>
-                            <option value="approved">Approved</option>
-                            <option value="need more details">Need more details</option>
-                        </select>
-
-                        <button type="submit" 
-                            id="change-status-button"
-                            class="btn btn-primary btn-sm mb-3"
-                            style="width:auto" disabled>
-                            Change status
-                        </button>
-
-                    </form>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Request ID: {{ request_object.request_id }}</li>
+                            <li class="list-group-item">Test Name: {{ request_object.test_name }}</li>
+                            <li class="list-group-item">Current Status: {{ request_object.approval_status.capitalize() }}  
+                
+                                {% if session['type'] == 'lab' %}
+                                <a href="#" onclick="toggleDropdown()" id="edit-link">Edit</a></li>
+                            
+                                <div class="mb-3 mb-md-0" id="div-dropdown" style="display: none;">
+                                    <form action="{{ url_for('views.change_request_status', request_id = request_object.request_id) }}" method="POST">
+                
+                                        <select name="status-dropdown" class="form-select my-3" 
+                                                style="width: auto;" id="status-dropdown">
+                
+                                            <option value="" selected disabled="disabled">Choose a new status</option>
+                                            <option value="approved">Approved</option>
+                                            <option value="need more details">Need more details</option>
+                                        </select>
+                
+                                        <button type="submit"
+                                            id="change-status-button"
+                                            class="btn btn-primary btn-sm mb-3"
+                                            style="width:auto" disabled>
+                                            Change status
+                                        </button>
+                
+                                    </form>
+                                </div>
+                                {% endif %}
+                
+                            <li class="list-group-item">Date/Time Submitted (CST): {{ request_object.datetime_submitted.strftime('%b-%d-%Y %I:%M %p') }}</li>
+                            <li class="list-group-item"># of Samples: {{ request_object.number_of_samples }}</li>
+                            <li class="list-group-item">Sample Description: {{ request_object.sample_description }}</li>
+                            <li class="list-group-item">Payment Status: {{ request_object.payment_status }}</li>
+                        </ul>
                 </div>
-                {% endif %}
-
-
-            <li>Date/Time Submitted (CST): {{ request_object.datetime_submitted.strftime('%b-%d-%Y %I:%M %p') }}</li>
-            <li># of Samples: {{ request_object.number_of_samples }}</li>
-            <li>Sample Description: {{ request_object.sample_description }}</li>
-            <li>Payment Status: {{ request_object.payment_status }}</li>
-        </ul>
+            </div>
+        </div>
     </div>
 
 
     {% if request_object.approval_status == 'approved' and user.type == 'customer' %}
-    <div class="container my-5" >
-        <form action="{{ url_for('views.user_requests') }}" method="POST">
-            <input type="hidden" name="lab_name" value="{{ lab_name }}">
-            <input type="hidden" name="test_name" value="{{ request_object.test_name }}">
-            <input type="hidden" name="number_of_samples" value="{{ request_object.number_of_samples }}">
-            <input type="hidden" name="request_id" value="{{ request_object.request_id }}">
-            <input type="submit" class="btn btn-primary mt-3 mb-1 btn-sm" value="Buy Shipping Label & Test">
-        </form>
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-12 col-md-6 border pt-3">
+                <h4 class="m-0">Complete Your Order</h4>
 
-        <form action="{{ url_for('views.checkout', lab_id = request_object.lab_id, test_name = request_object.test_name) }}" method="POST">
-            <input type="hidden" name="label_purchase" value="no">
-            <input type="hidden" name="number_of_samples" value="{{ request_object.number_of_samples }}">
-            <input type="hidden" name="request_id" value="{{ request_object.request_id }}">
-            <input type="submit" class="btn btn-primary mb-3 mt-1 btn-sm" value="Purchase Test Only">
-        </form>
+                <form action="{{ url_for('views.user_requests') }}" method="POST">
+                    <input type="hidden" name="lab_name" value="{{ lab_name }}">
+                    <input type="hidden" name="test_name" value="{{ request_object.test_name }}">
+                    <input type="hidden" name="number_of_samples" value="{{ request_object.number_of_samples }}">
+                    <input type="hidden" name="request_id" value="{{ request_object.request_id }}">
+                    <input type="submit" class="btn btn-primary mt-3 mb-1 btn" value="Buy Shipping Label & Test">
+                </form>
 
+                <form action="{{ url_for('views.checkout', lab_id = request_object.lab_id, test_name = request_object.test_name) }}" method="POST">
+                    <input type="hidden" name="label_purchase" value="no">
+                    <input type="hidden" name="number_of_samples" value="{{ request_object.number_of_samples }}">
+                    <input type="hidden" name="request_id" value="{{ request_object.request_id }}">
+                    <input type="submit" class="btn btn-primary mb-3 mt-1 btn" value="Purchase Test Only">
+                </form>
+
+            </div>
+
+        </div>
 
     </div>
     {% endif %}
 
 
 
-    <div class="container my-5" >
-        <h4 class="pb-3">Chat History</h4>
+    <div class="container my-5 border">
+        <h4 class="pb-3 mt-4">Chat History</h4>
 
         {% if chat_history_records|length == 0 and user.type == 'customer' %}
 
