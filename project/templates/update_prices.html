@@ -37,43 +37,73 @@
 
 <div class="container my-5">
 
-        <div class="row">
-            <div class="col">
-                <p><b>Test Name:</b> {{ test_name }}</p>
+    <div class="row">
+        <div class="col">
+            <p><b>Test Name:</b> {{ test_name }}</p>
+        </div>
+    </div>
+
+    <div>
+        <!--these url_for variables were passed from the view function to the template. Adding these
+            variables here allows you to pass them back to another view function. -->
+        <form action="{{ url_for('views.update_prices', id=lab_id, test_name=test_name_encoded) }}" method="POST">
+
+            <div class="form-floating mb-3 col-md-8 col-lg-4">
+                <input type="text" 
+                    class="form-control" 
+                    id="test_price" 
+                    name="test_price" 
+                    value="{{ test_price }}"
+                    placeholder="Test Price [$]">
+                <label for="test_price">Test Price [$]</label>
             </div>
+
+            <div class="form-floating mb-3 col-md-8 col-lg-4">
+                <input type="text" 
+                    class="form-control" 
+                    id="test_turnaround" 
+                    name="test_turnaround" 
+                    value="{{ test_turnaround }}"
+                    placeholder="Turnaround [days]">
+                <label for="test_turnaround">Turnaround [days]</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+
+        </form>
+    </div>
+
+    <div class="row pt-5 pb-3">
+        <div class="col">
+            <h3><b>Delete Test</b></h3>
         </div>
+    </div>
 
-    <!--these url_for variables were passed from the view function to the template. Adding these
-        variables here allows you to pass them back to another view function. -->
-    <form action="{{ url_for('views.update_prices', id=lab_id, test_name=test_name_encoded) }}" method="POST">
-
-        <div class="form-floating mb-3 col-md-8 col-lg-4">
-            <input type="text" 
-                class="form-control" 
-                id="test_price" 
-                name="test_price" 
-                value="{{ test_price }}"
-                placeholder="Test Price [$]">
-            <label for="test_price">Test Price [$]</label>
+    <div class="row">
+        <div class="col">
+            <form action="{{ url_for('views.delete_test', id=lab_id, test_name=test_name_encoded) }}" method="POST" onsubmit="return confirmDeleteTest()">
+                <button type="submit" 
+                    class="btn btn-danger"
+                    style="width:auto">
+                    Delete
+                </button>
+            </form>
         </div>
-
-        <div class="form-floating mb-3 col-md-8 col-lg-4">
-            <input type="text" 
-                class="form-control" 
-                id="test_turnaround" 
-                name="test_turnaround" 
-                value="{{ test_turnaround }}"
-                placeholder="Turnaround [days]">
-            <label for="test_turnaround">Turnaround [days]</label>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Save Changes</button>
-
-    </form>
+    </div>
 
 </div>
 
+<script>
 
+function confirmDeleteTest() {
+    if (confirm("Are you sure you want to delete this test? You cannot undo this action.")) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+</script>
 
 
 {% endblock %}

@@ -26,6 +26,7 @@ import boto3
 import requests
 from io import BytesIO
 from werkzeug.datastructures import Headers
+import logging
 
 views = Blueprint('views', __name__)
 
@@ -1040,11 +1041,20 @@ def provider_settings():
         
         # Check if the user is updating their test offering info.
         if request.form['type'] == "tests_prices":
+            type = request.form['type']
             lab_id = request.form['id']
             test_name = request.form['test_name']
             test_name_encoded = quote(test_name)
             test_price = request.form['test_price']
             test_turnaround = request.form['test_turnaround']
+
+            logging.info('type_from_form: %s', type)
+            logging.info('lab_id: %s', lab_id)
+            logging.info('test_name: %s', test_name)
+            logging.info('test_name_encoded: %s', test_name_encoded)
+            logging.info('test_price: %s', test_price)
+            logging.info('test_turnaround: %s', test_turnaround)
+
             return render_template('update_prices.html',
                                    test_name_encoded = test_name_encoded,
                                    test_name = test_name,
@@ -1165,6 +1175,33 @@ def update_prices(id, test_name):
 
     return redirect(url_for('views.provider_settings'))
 
+
+@views.route("/delete-test/<int:id>/<path:test_name>", methods=['GET', 'POST'])
+@login_required
+def delete_test(id, test_name):
+    try:
+        test_name = unquote(test_name)
+
+        with db.session() as db_session:
+            test_object = db_session.query(tests).filter_by(name = test_name).first()
+            lab_object = db_session.query(labs).get(id)
+
+            labs_tests_object = db_session.query(labs_tests) \
+                .filter_by(lab_id = lab_object.id, test_id = test_object.id) \
+                .first()
+
+            logging.info('test_object: %s', test_object)
+            logging.info('lab_object: %s', lab_object)
+            logging.info('labs_tests_object: %s', labs_tests_object)
+
+            db.session.delete(labs_tests_object)
+            db.session.commit()
+
+            flash('Successfully deleted ' + test_name + ' for ' + lab_object.name)
+            return redirect(url_for('views.provider_settings'))
+    except:
+        return 'Sorry, we seem to be having an issue deleting that test. \
+            Please reach out through our contact form for assistance.'
 
 
 

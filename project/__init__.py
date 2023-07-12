@@ -7,13 +7,11 @@ from itsdangerous import URLSafeTimedSerializer
 import os
 from helpers import my_enumerate, generate_sitemap
 from dotenv import load_dotenv
-
-
+import logging
 
 db = SQLAlchemy()
 login_manager = LoginManager()
 mail = Mail()
-
 
 def create_app():
     app = Flask(__name__)
@@ -22,7 +20,6 @@ def create_app():
     app.config['STRIPE_SECRET_KEY'] = os.getenv('stripe_secret_key')
     app.config['RECAPTCHA_SITE_KEY']= os.getenv('recaptcha_site_key')
     app.config['RECAPTCHA_SECRET_KEY'] = os.getenv('recaptcha_secret_key')
-
 
     load_dotenv()
     # Create my_enumerate function and make it available globally.
@@ -38,7 +35,6 @@ def create_app():
     app.config['SESSION_COOKIE_SECURE'] = True
     Session(app)
 
-
     # Mail config settings:
     app.config['MAIL_SERVER']='live.smtp.mailtrap.io'
     app.config['MAIL_PORT'] = 587
@@ -46,7 +42,6 @@ def create_app():
     app.config['MAIL_PASSWORD'] = os.getenv('mail_password')
     app.config['MAIL_USE_TLS'] = True
     app.config['MAIL_USE_SSL'] = False
-
 
     app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://' + os.getenv('mysql_user') + \
         ':' + os.getenv('mysql_password') + '@' + os.getenv('mysql_host') + '/' + os.getenv('mysql_db')
@@ -87,13 +82,10 @@ def create_app():
         'pool_pre_ping': True,  # enable connection pool pre-ping
     }
 
-
     db.init_app(app)
     mail.init_app(app)
 
-
     with app.app_context():
-
         from .views import views
         from .blog import blog
         from .contact import contact_bp
@@ -137,5 +129,7 @@ def create_app():
             # Ensure that all requests are secure (HTTPS)
             if not request.is_secure and request.host != 'localhost:2000':
                 return redirect(request.url.replace('http://', 'https://'), code=301)
+
+        logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
         return app
