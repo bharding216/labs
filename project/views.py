@@ -1090,11 +1090,11 @@ def add_new_test():
         test_name = request.form['test_name']
         test_price = request.form['test_price']
         turnaround = request.form['turnaround']
+        test_description = request.form['test_description']
+        certifications = request.form['certifications']
         test_input_source = request.form['test_input_source']
 
-
         with db.session() as db_session:
-
             if test_input_source == 'text_input':
                 # If the user typed in a new test name, then add
                 # it to the 'tests' table. 
@@ -1130,23 +1130,25 @@ def add_new_test():
             new_lab_test = labs_tests(lab_id = current_user_lab_id, 
                                     test_id = test_id,
                                     price = test_price,
-                                    turnaround = turnaround)
+                                    turnaround = turnaround,
+                                    test_description=test_description,
+                                    certifications=certifications)
 
             db_session.add(new_lab_test)
             db_session.commit()
         
-        flash('New test successfully added!', 'success')
-        return redirect(url_for('views.provider_settings'))
+            flash('New test successfully added!', 'success')
+            return redirect(url_for('views.provider_settings'))
 
-    with db.session() as db_session:
-        test_names = db_session.query(tests.name).order_by(tests.name).all()
-        # Convert list of tuples to list of strings:
-        test_names = [name[0] for name in test_names]
+    else: # Handle GET request
+        with db.session() as db_session: 
+            test_names = db_session.query(tests.name).order_by(tests.name).all()
+            test_names = [name[0] for name in test_names] # Converts list of tuples to list of strings:
 
-    return render_template('add_new_test.html', 
-                            user = current_user,
-                            test_names = test_names
-                            )
+            return render_template('add_new_test.html', 
+                                    user = current_user,
+                                    test_names = test_names
+                                    )
 
 
 @views.route("/update_prices/<int:id>/<path:test_name>", methods=['GET', 'POST'])
