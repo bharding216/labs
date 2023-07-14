@@ -63,6 +63,17 @@
 
             </div>
 
+            {% elif field_name == 'lab_description' %}
+
+            <div class="form-floating mb-4 col-md-8 col-lg-6">
+                <textarea class="form-control" 
+                          name="{{ field_name }}" 
+                          style="height: 150px;"
+                          placeholder="{{ field_name|replace('_',' ')|title }}">{{ lab_object[field_name] }}</textarea>
+                <!--returns a title-cased string-->
+                <label for="{{ field_name }}">{{ field_name|replace('_',' ')|title }}</label>
+            </div>            
+
             {% else %}
 
             <div class="form-floating mb-4 col-md-8 col-lg-6">

@@ -28,6 +28,7 @@ class labs(db.Model):
     website_url = db.Column(db.String(100))
     point_of_contact = db.Column(db.String(200))
     phone = db.Column(db.String(20))
+    lab_description = db.Column(Text(length='medium'))
     tests = db.relationship('tests', secondary='labs_tests', back_populates='labs')
     lab_logins = db.relationship('labs_login', backref='labs', lazy=True)
 

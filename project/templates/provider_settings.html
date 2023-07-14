@@ -173,6 +173,31 @@
                         </td>
                     </tr>
 
+                    <tr>
+                        <td class="text-center align-middle"><b>Specialty</b></td>
+                        <td class="text-center align-middle">{{ lab.major_category }}</td>
+                        <td class="text-center align-middle">
+                            <form action="{{ url_for('views.provider_settings') }}" method="POST">
+                                <input type="hidden" name="type" value="info">
+                                <input type="hidden" name="id" value="{{ lab.id }}">
+                                <input type="hidden" name="field_name" value="major_category">
+                                <input type="submit" class="btn btn-primary my-1" value="Edit">
+                            </form>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-center align-middle"><b>Lab Description</b></td>
+                        <td class="text-center align-middle">{{ lab.lab_description }}</td>
+                        <td class="text-center align-middle">
+                            <form action="{{ url_for('views.provider_settings') }}" method="POST">
+                                <input type="hidden" name="type" value="info">
+                                <input type="hidden" name="id" value="{{ lab.id }}">
+                                <input type="hidden" name="field_name" value="lab_description">
+                                <input type="submit" class="btn btn-primary my-1" value="Edit">
+                            </form>
+                        </td>
+                    </tr>
 
             </tbody>
     
