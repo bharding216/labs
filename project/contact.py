@@ -7,6 +7,7 @@ import datetime
 import phonenumbers
 import os
 import requests
+import time
 
 contact_bp = Blueprint('contact', __name__, 
     template_folder='contact_templates', static_folder='static')
@@ -18,10 +19,14 @@ def contact_function():
         VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify'
         secret_key = os.getenv('recaptcha_secret_key')
         recaptcha_site_key = os.getenv('recaptcha_site_key')
-
-        # Get the reCAPTCHA response from the form
         recaptcha_response = request.form.get('g-recaptcha-response')
-        if recaptcha_response:
+
+        if not recaptcha_response:
+            flash('No reCAPTCHA response received.')
+            return redirect(url_for('contact.contact_function'))
+        elif request.form['honeypot']:
+            return 'Form submission rejected due to spam detection.'
+        else:
             # Verify the reCAPTCHA response using the Google reCAPTCHA API
             response = requests.post(url=VERIFY_URL + '?secret=' + secret_key + '&response=' + recaptcha_response).json()
 
@@ -59,11 +64,6 @@ def contact_function():
             else:
                 flash('Invalid reCAPTCHA. Please try again.')
                 return redirect(url_for('contact.contact_function'))
-        else:
-            flash('Please complete the reCAPTCHA.')
-            return redirect(url_for('contact.contact_function'))
-
-
 
     recaptcha_site_key = os.getenv('recaptcha_site_key')
     return render_template('contact.html', 
