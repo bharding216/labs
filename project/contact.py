@@ -24,7 +24,7 @@ def contact_function():
         if not recaptcha_response:
             flash('No reCAPTCHA response received.')
             return redirect(url_for('contact.contact_function'))
-        elif request.form['honeypot']:
+        elif request.form['fax_number']: # Honeypot for spam
             return 'Form submission rejected due to spam detection.'
         else:
             # Verify the reCAPTCHA response using the Google reCAPTCHA API
