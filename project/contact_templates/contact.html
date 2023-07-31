@@ -80,8 +80,11 @@
             <label for="message">Message</label>
         </div>        
 
-        <!-- Honeypot for spam -->
-        <input type="hidden" name="fax_number" id="fax_number" value="">
+        <div class="form-floating mb-3 col-md-12 col-lg-8" style="display: none;">
+            <input type="hidden" name="phone_number" id="phone_number" 
+                value="123-456-7890" placeholder="Phone Number">
+            <label for="phone_number">Phone Number</label>
+        </div>        
 
         <button class="g-recaptcha btn btn-primary" 
                 data-sitekey="{{ recaptcha_site_key }}" 

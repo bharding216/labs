@@ -8,10 +8,14 @@ import phonenumbers
 import os
 import requests
 import time
+import re
 
 contact_bp = Blueprint('contact', __name__, 
     template_folder='contact_templates', static_folder='static')
 
+def has_letters(input_string):
+    pattern = r'[a-zA-Z]'
+    return bool(re.search(pattern, input_string))
 
 @contact_bp.route('/', methods=['GET', 'POST'])
 def contact_function():
@@ -24,8 +28,10 @@ def contact_function():
         if not recaptcha_response:
             flash('No reCAPTCHA response received.')
             return redirect(url_for('contact.contact_function'))
-        elif request.form['fax_number']: # Honeypot for spam
+        elif request.form['phone_number'] != '123-456-7890': # Honeypot for spam
             return 'Form submission rejected due to spam detection.'
+        elif has_letters(request.form['phone']):
+            return 'Form submission rejected due to spam detection.'        
         else:
             # Verify the reCAPTCHA response using the Google reCAPTCHA API
             response = requests.post(url=VERIFY_URL + '?secret=' + secret_key + '&response=' + recaptcha_response).json()
