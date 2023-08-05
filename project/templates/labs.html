@@ -3,6 +3,54 @@
 {% block title %}Unified Science Labs | Provider Results{% endblock %}
 
 {% block head %}
+<style>
+    .card-header a {
+        text-decoration: none;
+        color: black;
+        font-size: 18px;
+    }
+
+    #lab-name:hover {
+        text-decoration: underline;
+        color: black;
+        cursor: pointer;
+    }
+
+    .hover-effect:hover {
+        box-shadow: 0 4px 16px 0 rgba(93, 207, 255, 0.4);
+        transform: scale(1.01);
+        cursor: pointer;
+    }
+
+    .price-badge {
+        color: rgb(0, 0, 0);
+        background-color: #c0c1ff;
+        padding: 5px;
+        font-size: 14px;
+        border-radius: 10px;
+        margin-right: 10px;
+    }
+
+    .turnaround-badge {
+        color: white;
+        background-color: #8d8fff;
+        padding: 5px;
+        font-size: 14px;
+        border-radius: 10px;
+        margin-right: 10px;
+    }
+
+    .specialty-badge {
+        color: white;
+        background-color: #4744ff;
+        padding: 5px;
+        font-size: 14px;
+        border-radius: 10px;
+        margin-right: 10px;
+    }
+        
+</style>
+
 {% endblock %}
 
 {% block content %}
@@ -17,51 +65,45 @@
     <p>All prices are <i>per sample</i>.</p>
 </div>
 
+<div class="container">
+    {% for lab in test_query_results %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <a href="" onclick="submitForm('{{ lab.name }}'); return false;">
+                <span id="lab-name"><strong>{{ lab.name }}</strong></span></a>
+            <span>{{ lab.city }},</span>
+            <span>{{ lab.state }}</span>
+        </div>
+        <a href="" onclick="submitForm('{{ lab.name }}'); return false;" style="text-decoration: none;">
+            <div class="hover-effect">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <span class="price-badge">Price: ${{ lab.price }} </span>
+                        <span class="turnaround-badge">Turnaround: {{ lab.turnaround }} days</span>
+                        <span class="specialty-badge">Specialty: {{ lab.major_category }}</span>
+                    </li>
 
-
-<div class="container pb-5 pt-3" style="overflow-x: auto;">
-    <table class="mx-auto" id="lab_choice_table">
-        <thead>
-            <tr>
-                <th class="text-center" scope="col" style="width: 40%;">Lab Name</th>
-                <th class="text-center" scope="col" style="width: 10%;">Test Price [$USD]</th>
-                <th class="text-center" scope="col" style="width: 10%;">Turnaround [days]</th>
-                <th class="text-center" scope="col" style="width: 10%;">Distance [miles]</th>
-                <th class="text-center" scope="col" style="width: 15%;">City</th>
-                <th class="text-center" scope="col" style="width: 10%;">State</th>
-                <th class="text-center" scope="col" style="width: 10%;">Select</th>
-            </tr>
-        </thead>
-
-
-        <tbody>
-
-            {% for row, distance in combined_data %}
-            <tr>
-                <td class="text-center">{{ row.name }}</td>
-                <td class="text-center">{{ row.price }}</td>
-                <td class="text-center">{{ row.turnaround }}</td>
-                <td class="text-center">{{ distance }}</td>
-                <td class="text-center">{{ row.city }}</td>
-                <td class="text-center">{{ row.state }}</td>
-
-                <td class="text-center">
-                    
-                    <form action="{{ url_for('views.lab_function') }}" method="POST">
-                        <input type="hidden" name="lab_name" value="{{ row.name }}">
-                        <input type="submit" class="btn btn-primary m-1" value="Choose Lab">
-                    </form>
-
-                </td>
-            </tr>
-            {% endfor %}
-
-        </tbody>
-
-    </table>
-
+                    <li class="list-group-item">
+                        <span>{{ lab.lab_description }}</span>
+                    </li>
+                </ul>
+            </div>
+        </a>
+    </div>
+    {% endfor %}
 </div>
 
+<form id="labForm" action="{{ url_for('views.lab_function') }}" method="POST" style="display: none;">
+    <input type="hidden" name="lab_name" id="lab_name_input" value="">
+    <input type="submit" class="btn btn-primary m-1" value="Choose Lab">
+</form>
+
+<script>
+    function submitForm(labName) {
+      document.getElementById('lab_name_input').value = labName;
+      document.getElementById('labForm').submit();
+    }
+</script>
 
 
 {% endblock %}

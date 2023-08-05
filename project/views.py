@@ -99,7 +99,7 @@ def lab_function():
         else:
             return redirect(url_for('views.user_info'))
 
-    else:
+    else: # Handle the GET request
         selected_test = session.get('selected_test')
         user_zipcode = session.get('zipcode')
         
@@ -118,40 +118,42 @@ def lab_function():
                 labs_tests.turnaround, 
                 labs.city, 
                 labs.state,
-                labs.zip_code) \
+                labs.zip_code,
+                labs.lab_description,
+                labs.major_category) \
                 .join(labs_tests, labs_tests.lab_id == labs.id) \
                 .filter(labs_tests.test_id == id_in_tests_table) \
                 .order_by(labs_tests.price.asc()) \
                 .all()
 
 
-            # Make a list of all zip codes
-            zip_code_list = [user_zipcode]
-            zip_code_list.extend([result.zip_code for result in test_query_results])
+        #     # Make a list of all zip codes
+        #     zip_code_list = [user_zipcode]
+        #     zip_code_list.extend([result.zip_code for result in test_query_results])
 
-            lat_lng_list = []
-            for code in zip_code_list:
-                lat_and_lng = get_lat_long_from_zipcode(code)
-                lat_lng_list.append(lat_and_lng)
+        #     lat_lng_list = []
+        #     for code in zip_code_list:
+        #         lat_and_lng = get_lat_long_from_zipcode(code)
+        #         lat_lng_list.append(lat_and_lng)
 
-            # Calculate the distance between the coordinates.
-            user_latitude, user_longitude = lat_lng_list[0]
-            distances = []
+        #     # Calculate the distance between the coordinates.
+        #     user_latitude, user_longitude = lat_lng_list[0]
+        #     distances = []
 
-            for i in range(1, len(lat_lng_list)):
-                lab_latitude, lab_longitude = lat_lng_list[i]
-                distance = round(distance_calculation(user_latitude, 
-                                                      user_longitude, 
-                                                      lab_latitude, 
-                                                      lab_longitude
-                                                      ))
-                distances.append(distance)
+        #     for i in range(1, len(lat_lng_list)):
+        #         lab_latitude, lab_longitude = lat_lng_list[i]
+        #         distance = round(distance_calculation(user_latitude, 
+        #                                               user_longitude, 
+        #                                               lab_latitude, 
+        #                                               lab_longitude
+        #                                               ))
+        #         distances.append(distance)
 
-        combined_data = zip(test_query_results, distances)
+        # combined_data = zip(test_query_results, distances)
 
         return render_template('labs.html', 
             selected_test = selected_test, 
-            combined_data = combined_data,
+            test_query_results = test_query_results,
             user = current_user
             )
 

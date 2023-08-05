@@ -3,6 +3,13 @@
 {% block title %}USL | Provider Contact Form{% endblock %}
 
 {% block head %}
+<script src="https://www.google.com/recaptcha/api.js"></script>
+
+<script>
+    function onSubmit(token) {
+      document.getElementById("lab-contact-form").submit();
+    }
+  </script>
 {% endblock %}
 
 {% block content %}
@@ -19,7 +26,7 @@
 
 <div class="container my-5">
 
-    <form action="{{ url_for('contact.lab_contact_question') }}" method="POST">
+    <form action="{{ url_for('contact.lab_contact_question') }}" method="POST" id="lab-contact-form">
 
         <div class="form-floating mb-3 col-md-8 col-lg-6">
             <input type="text" class="form-control" id="first_name" name="first_name"
@@ -63,8 +70,17 @@
             <label for="message">Your message here</label>
         </div>        
 
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <div class="form-floating mb-3 col-md-12 col-lg-8" style="display: none;">
+            <input type="hidden" name="phone_number" id="phone_number" 
+                value="123-456-7890" placeholder="Phone Number">
+            <label for="phone_number">Phone Number</label>
+        </div>   
 
+        <button class="g-recaptcha btn btn-primary" 
+                data-sitekey="{{ recaptcha_site_key }}" 
+                data-callback='onSubmit' 
+                data-action='submit'
+                type="submit">Submit</button>
     </form>
 
 </div>

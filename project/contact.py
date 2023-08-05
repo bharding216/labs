@@ -125,43 +125,64 @@ def lab_contact():
 @contact_bp.route('/lab_contact_question', methods=['GET', 'POST'])
 def lab_contact_question():
     if request.method == 'POST':
-        first_name = request.form['first_name']
-        last_name = request.form['last_name']
-        lab_name = request.form['lab_name']
-        title = request.form['title']
-        user_email = request.form['email']
-        phone = request.form['phone']
-        user_message = request.form['message']
+        VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify'
+        secret_key = os.getenv('recaptcha_secret_key')
+        recaptcha_response = request.form.get('g-recaptcha-response')
 
-        msg = Message('New Contact Form Submission',
-                        sender = ("USL Contact Form", 'hello@unifiedsl.com'),
-                        recipients = ['team@unifiedsl.com,'
-                                      ]
-                        )
-        
-        msg.html = render_template('contact_email.html',
-                                   first_name = first_name,
-                                   last_name = last_name,
-                                   lab_name = lab_name,
-                                   title = title,
-                                   user_email = user_email,
-                                   phone = phone,
-                                   user_message = user_message,
-                                   customer_type = 'Provider')
-        try:
-            mail.send(msg)
+        if not recaptcha_response:
+            flash('No reCAPTCHA response received.')
+            return redirect(url_for('contact.contact_function'))
+        elif request.form['phone_number'] != '123-456-7890': # Honeypot for spam
+            return 'Form submission rejected due to spam detection.'
+        elif has_letters(request.form['phone']):
+            return 'Form submission rejected due to spam detection.'        
+        else:
+            response = requests.post(url=VERIFY_URL + '?secret=' + secret_key + '&response=' + recaptcha_response).json()
 
-            return render_template('lab_contact_success.html',
-                                user = current_user,
-                                first_name = first_name,
-                                lab_name = lab_name
+            if response['success'] == True:
+                first_name = request.form['first_name']
+                last_name = request.form['last_name']
+                lab_name = request.form['lab_name']
+                title = request.form['title']
+                user_email = request.form['email']
+                phone = request.form['phone']
+                user_message = request.form['message']
+
+                msg = Message('New Contact Form Submission',
+                                sender = ("USL Contact Form", 'hello@unifiedsl.com'),
+                                recipients = ['team@unifiedsl.com,'
+                                            ]
                                 )
+                
+                msg.html = render_template('contact_email.html',
+                                        first_name = first_name,
+                                        last_name = last_name,
+                                        lab_name = lab_name,
+                                        title = title,
+                                        user_email = user_email,
+                                        phone = phone,
+                                        user_message = user_message,
+                                        customer_type = 'Provider')
+                try:
+                    mail.send(msg)
 
-        except Exception as e:
-            return str(e)
+                    return render_template('lab_contact_success.html',
+                                        user = current_user,
+                                        first_name = first_name,
+                                        lab_name = lab_name
+                                        )
 
+                except Exception as e:
+                    return str(e)
+        
+            else:
+                flash('Invalid reCAPTCHA. Please try again.')
+                return redirect(url_for('contact.contact_function'))
+
+    recaptcha_site_key = os.getenv('recaptcha_site_key')
     return render_template('lab_contact_question.html', 
-                           user = current_user)
+                           user = current_user,
+                           recaptcha_site_key = recaptcha_site_key)
 
 @contact_bp.route('/new_test_request', methods=['GET', 'POST'])
 def new_test_request():
