@@ -135,7 +135,9 @@ def lab_contact_question():
         elif request.form['phone_number'] != '123-456-7890': # Honeypot for spam
             return 'Form submission rejected due to spam detection.'
         elif has_letters(request.form['phone']):
-            return 'Form submission rejected due to spam detection.'        
+            return 'Form submission rejected due to spam detection.' 
+        elif request.form['panda'] != 'white':  
+            return 'Form submission rejected due to spam detection.'
         else:
             response = requests.post(url=VERIFY_URL + '?secret=' + secret_key + '&response=' + recaptcha_response).json()
 

@@ -6,9 +6,11 @@
 <script src="https://www.google.com/recaptcha/api.js"></script>
 
 <script>
+    /*
     function onSubmit(token) {
       document.getElementById("lab-contact-form").submit();
-    }
+    }*/
+
   </script>
 {% endblock %}
 
@@ -76,10 +78,15 @@
             <label for="phone_number">Phone Number</label>
         </div>   
 
-        <button class="g-recaptcha btn btn-primary" 
-                data-sitekey="{{ recaptcha_site_key }}" 
-                data-callback='onSubmit' 
-                data-action='submit'
+        <div class="form-floating mb-3 col-md-8 col-lg-6">
+            <input type="text" class="form-control" id="panda" name="panda"
+                placeholder="Pandas are black and:">
+            <label for="panda">Pandas are black and:</label>
+        </div>
+
+        <div class="g-recaptcha mb-3" data-sitekey="{{ recaptcha_site_key }}"></div>
+
+        <button class="btn btn-primary"
                 type="submit">Submit</button>
     </form>
 
