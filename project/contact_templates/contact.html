@@ -84,12 +84,17 @@
             <input type="hidden" name="phone_number" id="phone_number" 
                 value="123-456-7890" placeholder="Phone Number">
             <label for="phone_number">Phone Number</label>
-        </div>        
+        </div>   
 
-        <button class="g-recaptcha btn btn-primary" 
-                data-sitekey="{{ recaptcha_site_key }}" 
-                data-callback='onSubmit' 
-                data-action='submit'
+        <div class="form-floating mb-3 col-md-8 col-lg-6">
+            <input type="text" class="form-control" id="panda" name="panda"
+                placeholder="Pandas are black and:">
+            <label for="panda">Pandas are black and:</label>
+        </div>
+        
+        <div class="g-recaptcha mb-3" data-sitekey="{{ recaptcha_site_key }}"></div>
+
+        <button class="btn btn-primary" 
                 type="submit">Submit</button>
 
     </form>

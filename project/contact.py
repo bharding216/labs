@@ -31,7 +31,9 @@ def contact_function():
         elif request.form['phone_number'] != '123-456-7890': # Honeypot for spam
             return 'Form submission rejected due to spam detection.'
         elif has_letters(request.form['phone']):
-            return 'Form submission rejected due to spam detection.'        
+            return 'Form submission rejected due to spam detection.'  
+        elif request.form['panda'] != 'white':  
+            return 'Form submission rejected due to spam detection.'      
         else:
             # Verify the reCAPTCHA response using the Google reCAPTCHA API
             response = requests.post(url=VERIFY_URL + '?secret=' + secret_key + '&response=' + recaptcha_response).json()
@@ -131,7 +133,7 @@ def lab_contact_question():
 
         if not recaptcha_response:
             flash('No reCAPTCHA response received.')
-            return redirect(url_for('contact.contact_function'))
+            return redirect(url_for('contact.lab_contact_question'))
         elif request.form['phone_number'] != '123-456-7890': # Honeypot for spam
             return 'Form submission rejected due to spam detection.'
         elif has_letters(request.form['phone']):
