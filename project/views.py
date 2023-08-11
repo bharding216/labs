@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, flash, url_for, \
-    session, send_file, jsonify, make_response, Response, send_from_directory, current_app
+    session, send_file, jsonify, make_response, Response, send_from_directory, current_app, \
+    render_template_string
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload
 from flask_login import login_required, current_user, login_user
@@ -159,15 +160,64 @@ def lab_query(test, zipcode):
         # combined_data = zip(test_query_results, distances)
 
 
+@views.route('/sort-lab-query/<string:sort_type>', methods=['GET', 'POST'])
+def sort_lab_query(sort_type):
+    logging.info('PROCESSING THE SORT LAB QUERY VIEW FUNCTION')
+
+    test = request.args.get('test')
+    logging.info('SORT TYPE: %s', sort_type)
+    logging.info('TEST NAME: %s', test)
+
+    id_in_tests_table = db.session.query(tests.id) \
+        .filter(tests.name == test) \
+        .scalar()
+    
+    if sort_type == 'high_to_low':   
+        test_query_results = db.session.query(
+            labs.name, 
+            labs_tests.price, 
+            labs_tests.turnaround, 
+            labs.city, 
+            labs.state,
+            labs.zip_code,
+            labs.lab_description,
+            labs.major_category) \
+            .join(labs_tests, labs_tests.lab_id == labs.id) \
+            .filter(labs_tests.test_id == id_in_tests_table) \
+            .order_by(labs_tests.price.desc()) \
+            .all()
+        
+    elif sort_type == 'low_to_high':
+        test_query_results = db.session.query(
+            labs.name, 
+            labs_tests.price, 
+            labs_tests.turnaround, 
+            labs.city, 
+            labs.state,
+            labs.zip_code,
+            labs.lab_description,
+            labs.major_category) \
+            .join(labs_tests, labs_tests.lab_id == labs.id) \
+            .filter(labs_tests.test_id == id_in_tests_table) \
+            .order_by(labs_tests.price.asc()) \
+            .all()
+    else:
+        return 'Sorry, we are experiencing technical difficulties.'
+    
+    lab_cards_html = render_template('lab_cards_partial.html', 
+                                    test_query_results=test_query_results)
+    
+    logging.info('RETURNING NEW LAB CARD HTML DATA')
+    return lab_cards_html
+
+
+
 
 
 @views.route('/user_info', methods=['GET', 'POST'])
 def user_info():
     return render_template('user_info.html', 
                            user = current_user)
-
-
-
 
 @views.route('/new_user_booking', methods=['GET', 'POST'])
 def new_user_booking():

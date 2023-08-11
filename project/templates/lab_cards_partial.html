@@ -1,0 +1,27 @@
+{% for lab in test_query_results %}
+<div class="card mb-3">
+    <div class="card-header">
+        <a href="" onclick="submitForm('{{ lab.name }}'); return false;">
+            <span id="lab-name"><strong>{{ lab.name }}</strong></span></a>
+        <span>{{ lab.city }},</span>
+        <span>{{ lab.state }}</span>
+    </div>
+
+    <a href="" onclick="submitForm('{{ lab.name }}'); return false;" style="text-decoration: none;">
+        <div class="hover-effect">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <span class="price-badge">Price: ${{ lab.price }} </span>
+                    <span class="turnaround-badge">Turnaround: {{ lab.turnaround }} days</span>
+                    <span class="specialty-badge">Specialty: {{ lab.major_category }}</span>
+                </li>
+
+                <li class="list-group-item">
+                    <span>{{ lab.lab_description }}</span>
+                </li>
+            </ul>
+        </div>
+    </a>
+
+</div>
+{% endfor %}
