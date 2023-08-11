@@ -34,23 +34,27 @@ views = Blueprint('views', __name__)
 def index():
     if request.method == 'POST':
         selected_test = request.form.get('selected_test')
+        zipcode = request.form.get('zipcode')
+
         if selected_test is None:
             flash('Please choose a test before submitting the form.')
             return redirect(url_for('views.index'))
+        elif zipcode is None:
+            flash('Please enter a valid ZIP Code before submitting the form.')
+            return redirect(url_for('views.index'))
         else:
             session['selected_test'] = selected_test
+            session['zipcode'] = zipcode
 
-            zipcode = request.form['zipcode']
-            if zipcode:
-                session['zipcode'] = zipcode
-            else:
-                flash('Please enter a valid ZIP Code before submitting the form.')
-                return redirect(url_for('views.index'))
+            logging.info('SELECTED TEST: %s', selected_test)
+            logging.info('ZIPCODE: %s', zipcode)
+           
+            logging.info('REDIRECTING TO LAB QUERY PAGE')
+            return redirect(url_for('views.lab_query',
+                                    test=selected_test,
+                                    zipcode=zipcode))
 
-            return redirect(url_for('views.lab_function'))
-
-
-    else:
+    else: # Handle GET request
         with db.session() as db_session:
             test_names = db_session.query(tests).all()
 
@@ -74,25 +78,22 @@ def custom_title(value):
 def about():
     return render_template('about.html', user = current_user)
 
-
-
 @views.route('/labs_about', methods=['GET'])
 def labs_about():
     return render_template('labs_about.html', user = current_user)
 
-
-
-@views.route('/labs', methods=['GET', 'POST'])
-def lab_function():
-    if request.method == 'POST':    
-        selected_lab_name = request.form['lab_name']
+@views.route('/labs/<string:test>/<string:zipcode>', methods=['GET', 'POST'])
+def lab_query(test, zipcode):
+    if request.method == 'POST':  
+        logging.info('HANDLING POST REQUEST FOR LAB QUERY VIEW FUNCTION')
+  
+        selected_lab_name = request.form.get('lab_name')
         session['selected_lab_name'] = selected_lab_name
 
-        with db.session() as db_session:
-            selected_lab_id = db_session.query(labs.id) \
-                .filter(labs.name == selected_lab_name) \
-                .scalar()        
-            session['selected_lab_id'] = selected_lab_id
+        selected_lab_id = db.session.query(labs.id) \
+            .filter(labs.name == selected_lab_name) \
+            .scalar()        
+        session['selected_lab_id'] = selected_lab_id
 
         if current_user.is_authenticated:
             return redirect(url_for('views.returning_user_booking'))
@@ -100,32 +101,38 @@ def lab_function():
             return redirect(url_for('views.user_info'))
 
     else: # Handle the GET request
-        selected_test = session.get('selected_test')
-        user_zipcode = session.get('zipcode')
-        
-        with db.session() as db_session:
+        logging.info('HANDLING GET REQUEST FOR LAB QUERY VIEW FUNCTION')
 
-            # Get the id of the 'selected_test' from the 'tests' table.
-            id_in_tests_table = db_session.query(tests.id) \
-                .filter(tests.name == selected_test) \
-                .scalar()
+        # selected_test = session.get('selected_test')
+        # user_zipcode = session.get('zipcode')
+
+        # Get the id of the 'selected_test' from the 'tests' table.
+        id_in_tests_table = db.session.query(tests.id) \
+            .filter(tests.name == test) \
+            .scalar()
             
-            # Query all the rows in the 'labs_tests' table that match that 'test_id'.
-            # This table has lab_ids, prices, and turnaround times for that test_id. 
-            test_query_results = db_session.query(
-                labs.name, 
-                labs_tests.price, 
-                labs_tests.turnaround, 
-                labs.city, 
-                labs.state,
-                labs.zip_code,
-                labs.lab_description,
-                labs.major_category) \
-                .join(labs_tests, labs_tests.lab_id == labs.id) \
-                .filter(labs_tests.test_id == id_in_tests_table) \
-                .order_by(labs_tests.price.asc()) \
-                .all()
+        # Query all the rows in the 'labs_tests' table that match that 'test_id'.
+        # This table has lab_ids, prices, and turnaround times for that test_id. 
+        test_query_results = db.session.query(
+            labs.name, 
+            labs_tests.price, 
+            labs_tests.turnaround, 
+            labs.city, 
+            labs.state,
+            labs.zip_code,
+            labs.lab_description,
+            labs.major_category) \
+            .join(labs_tests, labs_tests.lab_id == labs.id) \
+            .filter(labs_tests.test_id == id_in_tests_table) \
+            .order_by(labs_tests.price.asc()) \
+            .all()
 
+        return render_template('labs.html', 
+            test=test, 
+            zipcode=zipcode,
+            test_query_results=test_query_results,
+            user=current_user
+            )
 
         #     # Make a list of all zip codes
         #     zip_code_list = [user_zipcode]
@@ -150,12 +157,6 @@ def lab_function():
         #         distances.append(distance)
 
         # combined_data = zip(test_query_results, distances)
-
-        return render_template('labs.html', 
-            selected_test = selected_test, 
-            test_query_results = test_query_results,
-            user = current_user
-            )
 
 
 
@@ -1647,7 +1648,7 @@ def success():
 
 
 
-@views.route("/privacy_policy", methods=['GET', 'POST'])
+@views.route("/privacy-policy", methods=['GET', 'POST'])
 def privacy_policy():
     return render_template('privacy_policy.html', 
                             user = current_user
@@ -1750,7 +1751,7 @@ def reset_password(token):
 
 
 
-@views.route('/terms')
+@views.route('/terms-and-conditions')
 def terms():
     return render_template('terms.html',
                            user = current_user)

@@ -55,17 +55,28 @@
 
 {% block content %}
 
-<div class="container mt-5">
-    <h1>Select a lab</h1>
+<div class="container pt-5 mt-5">
+    <h1>Discover Top Labs Near You</h1>
     <br>
-    <p>Here is a list of labs in your area that can perform this test: 
-        <b>{{ selected_test }}</b>
-    </p>
-
+    <p>Explore our curated list of local laboratories ready to perform the <b>{{ test }}</b> test with accuracy and efficiency.</p>
     <p>All prices are <i>per sample</i>.</p>
 </div>
 
-<div class="container">
+<div class="container mb-5 pb-5">
+    <section class="mb-3">
+        <span class="mx-2">
+            <strong>Sort by:</strong>
+        </span>
+
+        <span class="mx-2">
+            <button type="button" class="btn btn-primary">Price</button>
+        </span>
+
+        <span class="mx-2">
+            <button type="button" class="btn btn-primary">Turnaround</button>
+        </span>
+    </section>
+
     {% for lab in test_query_results %}
     <div class="card mb-3">
         <div class="card-header">
@@ -74,6 +85,7 @@
             <span>{{ lab.city }},</span>
             <span>{{ lab.state }}</span>
         </div>
+
         <a href="" onclick="submitForm('{{ lab.name }}'); return false;" style="text-decoration: none;">
             <div class="hover-effect">
                 <ul class="list-group list-group-flush">
@@ -89,17 +101,19 @@
                 </ul>
             </div>
         </a>
+
     </div>
     {% endfor %}
 </div>
 
-<form id="labForm" action="{{ url_for('views.lab_function') }}" method="POST" style="display: none;">
+<form id="labForm" action="{{ url_for('views.lab_query', test=test, zipcode=zipcode) }}" method="POST" style="display: none;">
     <input type="hidden" name="lab_name" id="lab_name_input" value="">
     <input type="submit" class="btn btn-primary m-1" value="Choose Lab">
 </form>
 
 <script>
     function submitForm(labName) {
+        console.log(labName)
       document.getElementById('lab_name_input').value = labName;
       document.getElementById('labForm').submit();
     }

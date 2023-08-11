@@ -6,7 +6,6 @@ import requests, math, pgeocode
 def my_enumerate(seq, start=0):
     return enumerate(seq, start)
 
-
 def generate_sitemap():
     with current_app.app_context():
         base_url = request.host_url
