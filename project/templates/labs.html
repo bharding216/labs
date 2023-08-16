@@ -94,8 +94,27 @@
         </div>
 
         <span class="mx-2">
-            <button type="button" class="btn btn-primary" id="turnaround_sort_btn">Turnaround</button>
+            <button type="button" class="btn btn-primary" id="turnaround_sort_btn"
+                data-bs-toggle="modal" data-bs-target="#turnaroundModal">Turnaround</button>
         </span>
+
+        <div class="modal fade" id="turnaroundModal" tabindex="-1" aria-labelledby="turnaroundModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="turnaroundModalLabel">Sort by Turnaround</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body text-center">
+                        <button type="button" class="btn btn-primary mx-2" id="turnaround_high_to_low">High to Low</button>
+                        <button type="button" class="btn btn-primary mx-2" id="turnaround_low_to_high">Low to High</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
     </section>
 
     <div id="lab_query_container">
@@ -118,18 +137,45 @@
             },
             success: function (data) {            
                 document.getElementById("lab_query_container").innerHTML = data;
-                $('#priceModal').modal('hide');
+                if ($('#priceModal').is(':visible') || $('#turnaroundModal').is(':visible')) {
+                    $('#priceModal, #turnaroundModal').modal('hide');
+                }
             },
         });
     }
 
+    // Attach event listeners to the sorting buttons.
+    const sortingTypes = ["price", "turnaround"];
+    const sortingDirections = ["high_to_low", "low_to_high"];
+
+    sortingTypes.forEach((type) => {
+        sortingDirections.forEach((direction) => {
+            const elementId = `${type}_${direction}`;
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.addEventListener("click", function () {
+                    sortTable(elementId);
+                });
+            }
+        });
+    });
+
+    /*
     document.getElementById("price_high_to_low").addEventListener("click", function () {
-        sortTable("high_to_low");
+        sortTable("price_high_to_low");
     });
 
     document.getElementById("price_low_to_high").addEventListener("click", function () {
-        sortTable("low_to_high");
+        sortTable("price_low_to_high");
     });
+
+    document.getElementById("turnaround_high_to_low").addEventListener("click", function () {
+        sortTable("turnaround_high_to_low");
+    });
+
+    document.getElementById("turnaround_low_to_high").addEventListener("click", function () {
+        sortTable("turnaround_low_to_high");
+    });*/
 
     function submitForm(labName) {
         document.getElementById('lab_name_input').value = labName;

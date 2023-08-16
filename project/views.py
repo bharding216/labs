@@ -172,7 +172,7 @@ def sort_lab_query(sort_type):
         .filter(tests.name == test) \
         .scalar()
     
-    if sort_type == 'high_to_low':   
+    if sort_type == 'price_high_to_low':   
         test_query_results = db.session.query(
             labs.name, 
             labs_tests.price, 
@@ -186,8 +186,7 @@ def sort_lab_query(sort_type):
             .filter(labs_tests.test_id == id_in_tests_table) \
             .order_by(labs_tests.price.desc()) \
             .all()
-        
-    elif sort_type == 'low_to_high':
+    elif sort_type == 'price_low_to_high':
         test_query_results = db.session.query(
             labs.name, 
             labs_tests.price, 
@@ -200,6 +199,34 @@ def sort_lab_query(sort_type):
             .join(labs_tests, labs_tests.lab_id == labs.id) \
             .filter(labs_tests.test_id == id_in_tests_table) \
             .order_by(labs_tests.price.asc()) \
+            .all()
+    elif sort_type == 'turnaround_high_to_low':
+        test_query_results = db.session.query(
+            labs.name, 
+            labs_tests.price, 
+            labs_tests.turnaround, 
+            labs.city, 
+            labs.state,
+            labs.zip_code,
+            labs.lab_description,
+            labs.major_category) \
+            .join(labs_tests, labs_tests.lab_id == labs.id) \
+            .filter(labs_tests.test_id == id_in_tests_table) \
+            .order_by(labs_tests.turnaround.desc()) \
+            .all()
+    elif sort_type == 'turnaround_low_to_high':
+        test_query_results = db.session.query(
+            labs.name, 
+            labs_tests.price, 
+            labs_tests.turnaround, 
+            labs.city, 
+            labs.state,
+            labs.zip_code,
+            labs.lab_description,
+            labs.major_category) \
+            .join(labs_tests, labs_tests.lab_id == labs.id) \
+            .filter(labs_tests.test_id == id_in_tests_table) \
+            .order_by(labs_tests.turnaround.asc()) \
             .all()
     else:
         return 'Sorry, we are experiencing technical difficulties.'
