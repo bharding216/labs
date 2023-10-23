@@ -36,17 +36,17 @@ def contact_function():
         recaptcha_response = request.form.get('g-recaptcha-response')
 
         if not recaptcha_response:
-            send_email_stopped_bot()
+            # send_email_stopped_bot()
             flash('No reCAPTCHA response received.')
             return redirect(url_for('contact.contact_function'))
         elif request.form['phone_number'] != '123-456-7890': # Honeypot for spam
-            send_email_stopped_bot()
+            # send_email_stopped_bot()
             return 'Form submission rejected due to spam detection.'
         elif has_letters(request.form['phone']):
-            send_email_stopped_bot()
+            # send_email_stopped_bot()
             return 'Form submission rejected due to spam detection.'  
         elif request.form['panda'] != 'white':  
-            send_email_stopped_bot()
+            # send_email_stopped_bot()
             flash('Form submission rejected due to spam detection (wrong answer to secret question).')
             return redirect(url_for('contact.contact_function'))
         else:
@@ -145,17 +145,17 @@ def lab_contact_question():
         recaptcha_response = request.form.get('g-recaptcha-response')
 
         if not recaptcha_response:
-            send_email_stopped_bot()
+            # send_email_stopped_bot()
             flash('No reCAPTCHA response received.')
             return redirect(url_for('contact.lab_contact_question'))
         elif request.form['phone_number'] != '123-456-7890': # Honeypot for spam
-            send_email_stopped_bot()
+            # send_email_stopped_bot()
             return 'Form submission rejected due to spam detection (honeypot).'
         elif has_letters(request.form['phone']):
-            send_email_stopped_bot()
+            # send_email_stopped_bot()
             return 'Form submission rejected due to spam detection (phone has letters).' 
         elif request.form['panda'] != 'white':  
-            send_email_stopped_bot()
+            # send_email_stopped_bot()
             flash('Form submission rejected due to spam detection (wrong answer to secret question).')
             return redirect(url_for('contact.lab_contact_question'))
         else:
