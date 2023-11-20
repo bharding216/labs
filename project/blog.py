@@ -14,6 +14,33 @@ def blog_home():
                     user = current_user)
 
 
+@blog.route("/elemental-analysis", methods=['GET', 'POST'])
+def elemental_analysis():
+    url = 'https://www.unifiedsl.com/blog/elemental-analysis'
+    title = 'Decoding Matter: The Art and Science of Quantitative Elemental Analysis'
+    description = "Quantitative elemental analysis empowers scientists and researchers to decipher the secrets held within matter, offering a precise and detailed view of the elemental composition of substances."
+
+    return render_template('chemical/elemental.html',
+                    user = current_user,
+                    title = title,
+                    description = description,
+                    url = url
+                    )
+
+@blog.route("/mass-spectrometry", methods=['GET', 'POST'])
+def mass_spectrometry():
+    url = 'https://www.unifiedsl.com/blog/mass-spectrometry'
+    title = 'Mastering Mass: The Wonders of Mass Spectrometry'
+    description = "Mass spectrometry is a journey into the molecular realm, enabling scientists to unravel the mysteries of matter at the atomic and molecular levels. From deciphering the complexities of biological systems to identifying environmental pollutants, the wonders of mass spectrometry continue to shape the landscape of scientific discovery."
+
+    return render_template('chemical/mass_spec.html',
+                    user = current_user,
+                    title = title,
+                    description = description,
+                    url = url
+                    )
+
+
 @blog.route("/particle-size-distribution", methods=['GET', 'POST'])
 def psd():
     url = 'https://www.unifiedsl.com/blog/particle-size-distribution'
@@ -26,4 +53,5 @@ def psd():
                     user = current_user,
                     title = title,
                     description = description,
-                    url = url)
+                    url = url
+                    )
