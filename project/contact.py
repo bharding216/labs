@@ -221,6 +221,10 @@ def new_test_request():
         phone = request.form['phone']
         user_message = request.form['message']
 
+        if request.form['panda'] != 'white':  
+            flash('Form submission rejected due to spam detection (wrong answer to secret question).')
+            return redirect(url_for('contact.new_test_request'))
+
         msg = Message('New Test Inquiry',
                         sender = ("USL New Test Inquiry", 'hello@unifiedsl.com'),
                         recipients = ['team@unifiedsl.com'
