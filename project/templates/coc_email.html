@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Test Request</title>
+</head>
+
+<body>
+    <h1>You have received a new message</h1>
+
+    <hr>
+
+    <h2>Contact Info</h2>
+        <ul>
+            <li><strong>First Name:</strong> {{ first_name }}</li>
+            <li><strong>Last Name:</strong> {{ last_name }}</li>
+            <li><strong>Email:</strong> {{ email }}</li>
+            <li><strong>Phone:</strong> {{ phone }}</li>
+
+            <li><strong>Test:</strong> {{ selected_test }}</li>
+            <li><strong>Zip Code:</strong> {{ zipcode }}</li>
+            <li><strong>Sample Name:</strong> {{ sample_name }}</li>
+            <li><strong>Container Type:</strong> {{ container_type }}</li>
+        </ul>
+    <hr>
+
+    <h2>Message</h2>
+    <p>{{ message }}</p>
+
+    <hr>
+
+    <p>Sent from Unified Science Labs LLC (https://www.unifiedsl.com)</p>
+</body>
+</html>

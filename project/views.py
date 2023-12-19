@@ -31,29 +31,66 @@ import logging
 
 views = Blueprint('views', __name__)
 
+
+@views.route('/coc-form-submit', methods=['GET', 'POST'])
+def coc_form_submit():
+    if request.method == 'POST':
+        selected_test = session.get('selected_test')
+        zipcode = session.get('zipcode')
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        email = request.form['email']
+        phone = request.form['phone']
+        sample_name = request.form['sample_name']
+        container_type = request.form['container_type']
+        message = request.form['message']
+
+        if request.form['panda'] != 'white':  
+            flash('Wrong answer to secret question.', category='error')
+            return redirect(url_for('views.coc_form_submit'))
+
+        msg = Message('New Test Inquiry',
+                        sender = ("USL New Test Inquiry", 'hello@unifiedsl.com'),
+                        recipients = ['team@unifiedsl.com'
+                                      ]
+                        )
+        
+        msg.html = render_template('coc_email.html',
+                                   first_name = first_name,
+                                   last_name = last_name,
+                                   email = email,
+                                   phone = phone,
+                                   sample_name=sample_name,
+                                   container_type=container_type,
+                                   message = message,
+                                   selected_test=selected_test,
+                                   zipcode=zipcode
+                                   )
+
+        mail.send(msg)
+
+        flash('Thanks for your submission! We\'ll follow up shortly.', category='success')
+        return redirect(url_for('views.index'))
+    else:
+        return render_template('coc.html', user=current_user)
+
+
 @views.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
         selected_test = request.form.get('selected_test')
         zipcode = request.form.get('zipcode')
+        logging.info('SELECTED TEST: %s', selected_test)
+        logging.info('ZIPCODE: %s', zipcode)
 
         if selected_test is None:
             flash('Please choose a test before submitting the form.')
-            return redirect(url_for('views.index'))
-        elif zipcode is None:
-            flash('Please enter a valid ZIP Code before submitting the form.')
             return redirect(url_for('views.index'))
         else:
             session['selected_test'] = selected_test
             session['zipcode'] = zipcode
 
-            logging.info('SELECTED TEST: %s', selected_test)
-            logging.info('ZIPCODE: %s', zipcode)
-           
-            logging.info('REDIRECTING TO LAB QUERY PAGE')
-            return redirect(url_for('views.lab_query',
-                                    test=selected_test,
-                                    zipcode=zipcode))
+        return redirect(url_for('views.coc_form_submit'))
 
     else: # Handle GET request
         with db.session() as db_session:
