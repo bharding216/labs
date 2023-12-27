@@ -42,7 +42,7 @@ def coc_form_submit():
         email = request.form['email']
         phone = request.form['phone']
         sample_name = request.form['sample_name']
-        container_type = request.form['container_type']
+        number_of_samples = request.form['number_of_samples']
         message = request.form['message']
 
         if request.form['panda'] != 'white':  
@@ -61,7 +61,7 @@ def coc_form_submit():
                                    email = email,
                                    phone = phone,
                                    sample_name=sample_name,
-                                   container_type=container_type,
+                                   number_of_samples=number_of_samples,
                                    message = message,
                                    selected_test=selected_test,
                                    zipcode=zipcode
