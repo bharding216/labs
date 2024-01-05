@@ -1,69 +1,123 @@
 {% extends 'base.html' %}
 
-{% block title %}Mastering Mass: The Wonders of Mass Spectrometry{% endblock %}
+{% block title %}Mastering Mass: The Capabilities of Mass Spectrometry{% endblock %}
 
 {% block head %}
 <meta name="description" content="{{ description }}">
 <meta property="og:title" content="{{ title }}">
 <meta property="og:description" content="{{ description }}">
 <meta property="og:url" content="{{ url }}">
+
+<style>
+  p, li {
+    font-size: 14px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+
+  @media (max-width: 576px) {
+    #flask_image {
+      max-width: 50%;
+    }
+
+    #contact_button {
+      display: none;
+    }
+  }
+
+  @media (min-width: 576px) {
+    #flask_image {
+      max-width: 100%;
+    }
+  }
+</style>
 {% endblock %}
 
 {% block content %}
 
 <div class="py-5" style="background-image:linear-gradient(#1e96fc, #11296b);">
     <div class="container">
-        <div class="row mb-3 text-center">   
-            <h1 class="mb-3" style="color: white;">Mastering Mass: The Wonders of Mass Spectrometry</h1>
+        <div class="row mb-3 text-center">  
+          <div class="col-12">
+            <h1 class="mb-3" style="color: white;">The Capabilities of Mass Spectrometry</h1>
+          </div> 
         </div>
     </div>
 </div>
 
-<div class="container my-5 py-5">  
-    <p>Mass spectrometry is a revolutionary analytical technique that allows scientists to explore the composition and structure of molecules with remarkable precision. It's like uncovering the secrets of matter by measuring the masses of its components. In this blog post, we will delve into the principles, methods, applications, and significance of mass spectrometry across various scientific disciplines.</p>
-  
-    <h2>The Principles of Mass Spectrometry</h2>
-    <p>Mass spectrometry involves ionizing molecules, separating ions based on their mass-to-charge ratio, and detecting these ions to provide information about the molecular structure. Key components and principles of mass spectrometry include:</p>
-    
-    <ul>
-      <li><strong>Ionization:</strong> Molecules are ionized, often by techniques like electron impact, laser ablation, or electrospray ionization, resulting in the formation of charged particles.</li>
-      <li><strong>Mass-to-Charge Separation:</strong> Ions are accelerated in an electric or magnetic field, causing them to travel along a path. The degree of deflection or acceleration is determined by the mass-to-charge ratio.</li>
-      <li><strong>Detection:</strong> The separated ions are detected, and the resulting mass spectrum provides information about the types and abundance of ions present in the sample.</li>
-      <li><strong>Identification:</strong> Mass spectrometry is used to identify compounds based on their unique mass spectra, which serve as molecular fingerprints.</li>
-    </ul>
-    
-    <h2>Methods of Mass Spectrometry</h2>
-    <p>Various methods are employed in mass spectrometry to suit different types of samples and research objectives:</p>
-    
-    <ul>
-      <li>**Electrospray Ionization Mass Spectrometry (ESI-MS):** Particularly useful for analyzing large biomolecules like proteins and nucleic acids in solution.</li>
-      <li>**Matrix-Assisted Laser Desorption/Ionization Mass Spectrometry (MALDI-MS):** Ideal for analyzing large biomolecules and peptides, often used in proteomics.</li>
-      <li>**Gas Chromatography-Mass Spectrometry (GC-MS):** Couples gas chromatography with mass spectrometry, widely used for analyzing volatile compounds in complex mixtures.</li>
-      <li>**Liquid Chromatography-Mass Spectrometry (LC-MS):** Combines liquid chromatography with mass spectrometry, suitable for a wide range of compounds in various sample matrices.</li>
-    </ul>
-    
-    <h2>Applications of Mass Spectrometry</h2>
-    <p>Mass spectrometry finds applications across diverse scientific and industrial fields, contributing to research, diagnostics, and environmental monitoring:</p>
-    
-    <ul>
-      <li>**Proteomics:** Identifying and quantifying proteins to understand their functions and roles in biological processes.</li>
-      <li>**Drug Discovery:** Analyzing the structure of potential drug candidates and studying their metabolism in biological systems.</li>
-      <li>**Environmental Analysis:** Detecting and quantifying pollutants and contaminants in air, water, and soil for environmental monitoring.</li>
-      <li>**Forensic Science:** Analyzing trace evidence and identifying unknown substances in criminal investigations.</li>
-    </ul>
-    
-    <h2>The Significance of Mass Spectrometry</h2>
-    <p>Mass spectrometry offers several advantages, making it a cornerstone of modern analytical chemistry and scientific research:</p>
-    
-    <ul>
-      <li>**High Sensitivity:** Mass spectrometry can detect compounds at very low concentrations, making it invaluable for analyzing complex samples.</li>
-      <li>**Structural Insights:** Provides detailed information about the structure, composition, and fragmentation patterns of molecules.</li>
-      <li>**Quantitative Analysis:** Can be used for both qualitative and quantitative analysis, allowing researchers to measure the abundance of specific compounds in a sample.</li>
-      <li>**Versatility:** Applicable to a wide range of compounds, from small organic molecules to large biomolecules.</li>
-    </ul>
-    
-    <h2>Conclusion</h2>
-    <p>Mass spectrometry is a journey into the molecular realm, enabling scientists to unravel the mysteries of matter at the atomic and molecular levels. From deciphering the complexities of biological systems to identifying environmental pollutants, the wonders of mass spectrometry continue to shape the landscape of scientific discovery. As technology advances and our understanding of analytical techniques deepens, mass spectrometry remains a powerful tool for researchers and analysts seeking to explore and master the intricacies of mass in all its forms.</p>
+<div class="container py-5">  
+  <div class="row pb-5">
+    <div class="col-12 text-center">
+      <p style="color: grey; font-style: italic;">Mass spectrometry is a revolutionary analytical technique that allows scientists to explore the composition and structure of molecules with remarkable precision. It's like uncovering the secrets of matter by measuring the masses of its components. In this blog post, we will delve into the principles, methods, applications, and significance of mass spectrometry across various scientific disciplines.</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12 col-sm-8 order-2 order-sm-1">
+      <h2>The Principles of Mass Spectrometry</h2>
+      <p>Mass spectrometry involves ionizing molecules, separating ions based on their mass-to-charge ratio, and detecting these ions to provide information about the molecular structure. Key components and principles of mass spectrometry include:</p>
+      
+      <ul>
+        <li><strong>Ionization:</strong> Molecules are ionized, often by techniques like electron impact, laser ablation, or electrospray ionization, resulting in the formation of charged particles.</li>
+        <li><strong>Mass-to-Charge Separation:</strong> Ions are accelerated in an electric or magnetic field, causing them to travel along a path. The degree of deflection or acceleration is determined by the mass-to-charge ratio.</li>
+        <li><strong>Detection:</strong> The separated ions are detected, and the resulting mass spectrum provides information about the types and abundance of ions present in the sample.</li>
+        <li><strong>Identification:</strong> Mass spectrometry is used to identify compounds based on their unique mass spectra, which serve as molecular fingerprints.</li>
+      </ul>
+      
+      <h2>Methods of Mass Spectrometry</h2>
+      <p>Various methods are employed in mass spectrometry to suit different types of samples and research objectives:</p>
+      
+      <ul>
+        <li><strong>Electrospray Ionization Mass Spectrometry (ESI-MS):</strong> Particularly useful for analyzing large biomolecules like proteins and nucleic acids in solution.</li>
+        <li><strong>Matrix-Assisted Laser Desorption/Ionization Mass Spectrometry (MALDI-MS):</strong> Ideal for analyzing large biomolecules and peptides, often used in proteomics.</li>
+        <li><strong>Gas Chromatography-Mass Spectrometry (GC-MS):</strong> Couples gas chromatography with mass spectrometry, widely used for analyzing volatile compounds in complex mixtures.</li>
+        <li><strong>Liquid Chromatography-Mass Spectrometry (LC-MS):</strong> Combines liquid chromatography with mass spectrometry, suitable for a wide range of compounds in various sample matrices.</li>
+      </ul>
+      
+      <h2>Applications of Mass Spectrometry</h2>
+      <p>Mass spectrometry finds applications across diverse scientific and industrial fields, contributing to research, diagnostics, and environmental monitoring:</p>
+      
+      <ul>
+        <li><strong>Proteomics:</strong> Identifying and quantifying proteins to understand their functions and roles in biological processes.</li>
+        <li><strong>Drug Discovery:</strong> Analyzing the structure of potential drug candidates and studying their metabolism in biological systems.</li>
+        <li><strong>Environmental Analysis:</strong> Detecting and quantifying pollutants and contaminants in air, water, and soil for environmental monitoring.</li>
+        <li><strong>Forensic Science:</strong> Analyzing trace evidence and identifying unknown substances in criminal investigations.</li>
+      </ul>
+      
+      <h2>The Significance of Mass Spectrometry</h2>
+      <p>Mass spectrometry offers several advantages, making it a cornerstone of modern analytical chemistry and scientific research:</p>
+      
+      <ul>
+        <li><strong>High Sensitivity:</strong> Mass spectrometry can detect compounds at very low concentrations, making it invaluable for analyzing complex samples.</li>
+        <li><strong>Structural Insights:</strong> Provides detailed information about the structure, composition, and fragmentation patterns of molecules.</li>
+        <li><strong>Quantitative Analysis:</strong> Can be used for both qualitative and quantitative analysis, allowing researchers to measure the abundance of specific compounds in a sample.</li>
+        <li><strong>Versatility:</strong> Applicable to a wide range of compounds, from small organic molecules to large biomolecules.</li>
+      </ul>
+      
+      <h2>Conclusion</h2>
+      <p>Mass spectrometry is a journey into the molecular realm, enabling scientists to unravel the mysteries of matter at the atomic and molecular levels. From deciphering the complexities of biological systems to identifying environmental pollutants, the wonders of mass spectrometry continue to shape the landscape of scientific discovery. As technology advances and our understanding of analytical techniques deepens, mass spectrometry remains a powerful tool for researchers and analysts seeking to explore and master the intricacies of mass in all its forms.</p>
+    </div>
+
+    <div class="col-12 col-sm-4 order-1 order-sm-2">
+      <div class="row">
+        <div class="col-12 text-center">
+          <img src='/static/lab_image.jpg' 
+            alt="An erlenmeyer flask in a mass spectrometry lab."
+            id="flask_image">
+        </div>
+
+        <div class="row py-5">
+          <div class="col-12 text-center">
+            <a href="{{ url_for('views.coc_form_submit')}}">
+              <button type="button" class="btn btn-primary" id="contact_button">Contact us</button>
+            </a>  
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="py-5" style="background-image:linear-gradient(#11296b, #1e96fc);">
