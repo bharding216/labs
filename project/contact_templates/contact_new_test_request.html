@@ -1,6 +1,16 @@
 {% extends 'base.html' %}
 
-{% block title %}Contact Support{% endblock %}
+{% block title %}New Test Request{% endblock %}
+
+{% block head %}
+<script src="https://www.google.com/recaptcha/api.js"></script>
+
+<script>
+    function onSubmit(token) {
+      document.getElementById("new_test_request_form").submit();
+    }
+  </script>
+{% endblock %}
 
 {% block content %}
 
@@ -36,7 +46,7 @@
 
 <div class="container my-5">
 
-    <form action="{{ url_for('contact.new_test_request') }}" method="POST">
+    <form action="{{ url_for('contact.new_test_request') }}" method="POST" id="new_test_request_form">
 
         <div class="form-floating mb-3 col-md-8 col-lg-6">
             <input type="text" class="form-control" id="first_name" name="first_name"
@@ -68,11 +78,13 @@
             <label for="message">Please describe your testing needs</label>
         </div>     
         
-        <div class="form-floating mb-3 col-md-8 col-lg-6">
+        <!-- <div class="form-floating mb-3 col-md-8 col-lg-6">
             <input type="text" class="form-control" id="panda" name="panda"
                 placeholder="Pandas are black and:">
             <label for="panda">Pandas are black and:</label>
-        </div>
+        </div> -->
+
+        <div class="g-recaptcha mb-3" data-sitekey="{{ recaptcha_site_key }}"></div>
 
         <button type="submit" class="btn btn-primary">Submit</button>
 

@@ -45,10 +45,10 @@ def contact_function():
         elif has_letters(request.form['phone']):
             # send_email_stopped_bot()
             return 'Form submission rejected due to spam detection.'  
-        elif request.form['panda'] != 'white':  
-            # send_email_stopped_bot()
-            flash('Form submission rejected due to spam detection (wrong answer to secret question).')
-            return redirect(url_for('contact.contact_function'))
+        # elif request.form['panda'] != 'white':  
+        #     # send_email_stopped_bot()
+        #     flash('Form submission rejected due to spam detection (wrong answer to secret question).')
+        #     return redirect(url_for('contact.contact_function'))
         else:
             # Verify the reCAPTCHA response using the Google reCAPTCHA API
             response = requests.post(url=VERIFY_URL + '?secret=' + secret_key + '&response=' + recaptcha_response).json()
@@ -215,39 +215,53 @@ def lab_contact_question():
 @contact_bp.route('/new_test_request', methods=['GET', 'POST'])
 def new_test_request():
     if request.method == 'POST':
-        first_name = request.form['first_name']
-        last_name = request.form['last_name']
-        user_email = request.form['email']
-        phone = request.form['phone']
-        user_message = request.form['message']
+        VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify'
+        secret_key = os.getenv('recaptcha_secret_key')
+        recaptcha_site_key = os.getenv('recaptcha_site_key')
+        recaptcha_response = request.form.get('g-recaptcha-response')
 
-        if request.form['panda'] != 'white':  
-            flash('Form submission rejected due to spam detection (wrong answer to secret question).')
+        # if request.form['panda'] != 'white':  
+        #     flash('Form submission rejected due to spam detection (wrong answer to secret question).')
+        #     return redirect(url_for('contact.new_test_request'))
+
+        if not recaptcha_response:
+            flash('No reCAPTCHA response received.')
             return redirect(url_for('contact.new_test_request'))
 
-        msg = Message('New Test Inquiry',
-                        sender = ("USL New Test Inquiry", 'hello@unifiedsl.com'),
-                        recipients = ['team@unifiedsl.com'
-                                      ]
-                        )
+        response = requests.post(url=VERIFY_URL + '?secret=' + secret_key + '&response=' + recaptcha_response).json()
         
-        msg.html = render_template('contact_inquiry_email.html',
-                                   first_name = first_name,
-                                   last_name = last_name,
-                                   user_email = user_email,
-                                   phone = phone,
-                                   user_message = user_message
-                                   )
+        if response['success'] == True:
+            first_name = request.form['first_name']
+            last_name = request.form['last_name']
+            user_email = request.form['email']
+            phone = request.form['phone']
+            user_message = request.form['message']
 
-        mail.send(msg)
+            msg = Message('New Test Inquiry',
+                            sender = ("USL New Test Inquiry", 'hello@unifiedsl.com'),
+                            recipients = ['team@unifiedsl.com'
+                                        ]
+                            )
+            
+            msg.html = render_template('contact_inquiry_email.html',
+                                    first_name = first_name,
+                                    last_name = last_name,
+                                    user_email = user_email,
+                                    phone = phone,
+                                    user_message = user_message
+                                    )
 
-        return render_template('contact_success.html', 
-                                first_name = first_name,
-                                email = user_email, 
-                                phone = phone, 
-                                message = user_message,
-                                user = current_user)
+            mail.send(msg)
 
-
+            return render_template('contact_success.html', 
+                                    first_name = first_name,
+                                    email = user_email, 
+                                    phone = phone, 
+                                    message = user_message,
+                                    user = current_user)
+        
+    recaptcha_site_key = os.getenv('recaptcha_site_key')
     return render_template('contact_new_test_request.html',
-                           user = current_user)
+                           user = current_user,
+                           recaptcha_site_key = recaptcha_site_key
+                           )
